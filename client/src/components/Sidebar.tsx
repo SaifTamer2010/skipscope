@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 
 import Logo from "@/components/ui/logo/logo";
+import { supabase } from "@/lib/supabase";
 
 const menuItems = [
   {
@@ -50,9 +51,15 @@ export default function Sidebar() {
   const logout = useUserStore((state) => state.logout);
   const unreadCount = useNotificationStore((state) => state.unreadCount);
 
-  const handleLogout = () => {
-    logout();
-    router.push("/auth/login");
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error("Error logging out:", error);
+    } else {
+      logout();
+      router.push("auth/login");
+    }
   };
 
   return (
@@ -103,9 +110,10 @@ export default function Sidebar() {
                 item.name === "Notifications" && unreadCount > 0;
 
               return (
-                <>
+                <div key={item.name}>
                   <section className="inline-flex gap-4">
                     <Image
+                      key={item.name}
                       src={item.icon}
                       alt={item.alt}
                       height={25}
@@ -142,7 +150,7 @@ export default function Sidebar() {
                       )}
                     </Link>
                   </section>
-                </>
+                </div>
               );
             })}
           </nav>

@@ -5,6 +5,12 @@ import ViewDetailsModal from "@/components/ui/modals/viewDetailsModal";
 
 interface Request {
   id: string;
+  market: string;
+  state: string;
+  zipCode: string;
+  ownershipCriteriaFinale: object;
+  customNotes: string;
+  motivations: string;
   county: string;
   rows: number;
   status: "Pending" | "Waiting Confirmation" | "Finished";

@@ -15,6 +15,7 @@ const page = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [keepLoggedIn, setKeepLoggedIn] = useState(false); // Default to session only
+
   const router = useRouter();
   const setUser = useUserStore((state) => state.setUser);
 
@@ -60,17 +61,6 @@ const page = () => {
 
   return (
     <>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: "#0d0d0d",
-            color: "#f2f2f2",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-          },
-        }}
-      />
       <div className="flex justify-center items-center h-screen">
         <AuthContainer>
           <header className="flex justify-center items-center flex-col gap-4">
@@ -129,8 +119,21 @@ const page = () => {
                 type="checkbox"
                 id="keepLoggedIn"
                 checked={keepLoggedIn}
-                onChange={(e) => setKeepLoggedIn(e.target.checked)}
-                className="w-4 h-4 rounded border-gray-300 text-bg-background-third focus:ring-indigo-500"
+                onChange={(e) => {
+                  setKeepLoggedIn(e.target.checked);
+                }}
+                className="hidden relative peer"
+              />
+              <label
+                htmlFor="keepLoggedIn"
+                className="w-5 h-5 rounded-md bg-background-third border-slate-800 border cursor-pointer hover:bg-slate-900 peer-checked:bg-purple-500 peer-checked:border-purple-800 relative flex items-center justify-center ml-2"
+              ></label>
+              <Image
+                src={"/tick.svg"}
+                alt="tick"
+                width={20}
+                height={20}
+                className="absolute hidden peer-checked:block pointer-events-none ml-2"
               />
               <label
                 htmlFor="keepLoggedIn"

@@ -4,8 +4,11 @@ import ComingSoon from "@/src/components/ui/comingSoon";
 const page = () => {
   return (
     <>
-      <div className="flex items-center justify-center flex-col px-30 pt-5">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div
+        className="flex items-center justify-center flex-col px-6 mt-15 md:px-30 md:pt-5 
+      overflow-y-auto max-h-[85vh] "
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 ">
           <IndustriesContainer
             title={"Real Estate Professionals"}
             alt={"home"}
@@ -19,9 +22,9 @@ const page = () => {
             src={"/realtor.svg"}
           />
           <ComingSoon />
+          {/*<ComingSoon />
           <ComingSoon />
-          <ComingSoon />
-          <ComingSoon />
+          <ComingSoon /> */}
         </div>
       </div>
     </>

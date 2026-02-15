@@ -5,8 +5,11 @@ import Modal from "@/components/Modal";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import statesCounties from "@/public/data/states+counties/data.json";
+import statesZips from "@/public/data/states+zipcode/data.json";
+import ownerShipCriterias from "@/public/data/ownershipCriteria/data.json";
 
-const options: string[] = [
+const motivations: string[] = [
   "Active Foreclosures",
   "Absentee",
   "Absentee Out Of State",
@@ -25,33 +28,83 @@ const options: string[] = [
   "Top Land Zip Codes",
 ];
 
+type CountiesByState = {
+  [state: string]: string[];
+};
+
+type StateZips = {
+  [state: string]: { min: string; max: string };
+};
+
+type ownerShipCriteria = {
+  [option: string]: string[];
+};
+
+type CriteriaItem = {
+  key: string;
+  value: string;
+};
+
+const data: CountiesByState = statesCounties;
+const zip: StateZips = statesZips;
+const ownerCriteria: ownerShipCriteria = ownerShipCriterias;
+
+const states: string[] = Object.keys(data);
+const ownerCriteriaValues: string[] = Object.keys(ownerCriteria);
+
 export default function SubmitRequestPage() {
-  const [rows, setRows] = useState("");
+  //data states
+  const [market, setMarket] = useState("");
+  const [usState, setUsState] = useState("");
   const [county, setCounty] = useState("");
+  const [zipCode, setZipCode] = useState("");
+  const [ownershipCriteriaFinale, setOwnershipCriteriaFinale] = useState<
+    CriteriaItem[]
+  >([]);
+  const [customOwnershipCriteriaFinale, setCustomOwnershipCriteriaFinale] =
+    useState("");
+
+  const [rows, setRows] = useState("");
   const [motivation, setMotivation] = useState<string[]>([]);
   const [customNotes, setCustomNotes] = useState("");
-  const [loading, setLoading] = useState(false);
 
+  //ui states
+  const [loading, setLoading] = useState(false);
+  const [ownershipCriteriaOption, setOwnershipCriteriaOption] = useState("");
+  const [ownershipCriteria, setOwnershipCriteria] = useState("");
+  const [customOwnershipCriteria, setCustomOwnershipCriteria] = useState(false);
+
+  // submission to backend
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!county || !rows || motivation.length === 0) {
+    if (!market || !usState || !rows) {
       toast.error("Please fill in all fields");
       return;
     }
 
     setLoading(true);
+
     const payload = {
-      county,
-      rows,
-      motivation: motivation.join(","),
-      customNotes: customNotes,
+      rows: rows === "" ? "N/A" : rows,
+      county: county === "" ? "N/A" : county,
+      motivations: county === "" ? "N/A" : motivation.join(","),
+      state: usState === "" ? "N/A" : usState,
+      zipCode: zipCode === "" ? "N/A" : zipCode,
+      ownershipCriteriaFinale: ownershipCriteriaFinale,
+      market: market === "" ? "N/A" : market,
+      customNotes: customNotes === "" ? "N/A" : customNotes,
     };
+
     try {
       await api.post("/requests", payload);
       toast.success("Request submitted successfully!");
-      setCounty("");
       setRows("");
+      setCounty("");
+      setUsState("");
+      setOwnershipCriteria("");
+      setOwnershipCriteria("");
+      setOwnershipCriteriaFinale([]);
       setCustomNotes("");
       setMotivation([]);
     } catch (error: any) {
@@ -68,27 +121,287 @@ export default function SubmitRequestPage() {
         <h1 className="text-4xl font-bold mb-2 text-text-primary">
           Submit a Request
         </h1>
-        <p className="text-text-secondry">
-          Create a new data request for your county.
-        </p>
+        <p className="text-text-secondry">Create a new List Request.</p>
       </div>
 
       {/* Submit Modal */}
       <div title="Submit Request">
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* County Input */}
           <div>
-            <label className="block text-sm font-medium mb-2">County</label>
-            <input
-              type="text"
-              value={county}
-              onChange={(e) => setCounty(e.target.value)}
-              placeholder="Enter county name"
-              className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 transition-colors"
-            />
+            <label className="block text-sm font-medium mb-2">Market *</label>
+            <select
+              className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 text-white"
+              value={market}
+              onChange={(e) => setMarket(e.target.value)}
+            >
+              <option disabled value={""}>
+                Choose Market
+              </option>
+
+              <option value={"state"}>State</option>
+              <option value={"county"}>County</option>
+              <option value={"zipcode"}>Zip Code</option>
+            </select>
           </div>
+
+          {market && (
+            <div>
+              <label className="block text-sm font-medium mb-2">State *</label>
+              <select
+                className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 text-white"
+                value={usState}
+                onChange={(e) => {
+                  setUsState(e.target.value);
+                }}
+              >
+                <option disabled value={""}>
+                  Choose State
+                </option>
+                {states.map((item: string) => (
+                  <option value={item} key={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {usState && market == "county" && (
+            <div>
+              <label className="block text-sm font-medium mb-2">County *</label>
+              <select
+                className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 text-white"
+                value={county}
+                onChange={(e) => setCounty(e.target.value)}
+              >
+                <option disabled value={""}>
+                  Choose County
+                </option>
+                {data[usState].map((item: string) => (
+                  <option value={item} key={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {market == "zipcode" && usState && (
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Zip Code *
+              </label>
+              <input
+                type="text"
+                value={zipCode}
+                onChange={(e) => setZipCode(e.target.value)}
+                placeholder="Enter Zip Code"
+                className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 transition-colors appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              />
+              <div className="my-4 ml-4 font-medium">
+                <span>Zip Codes can be entered in 2 formats:</span>
+                <ul>
+                  <li>
+                    Separated by <b>comma (,)</b>
+                  </li>
+                  <li>
+                    Range - <b>Start</b> and <b>End</b> values must be separated
+                    by <b>dash (-)</b>
+                  </li>
+                </ul>
+                <span>
+                  {" "}
+                  Allowed Zip Codes range for the selected state:&nbsp;{" "}
+                  <b>
+                    {" "}
+                    {zip[usState].min} : {zip[usState].max}
+                  </b>
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* <div>
+            <label className="block text-sm font-medium mb-2">
+              Property Criteria
+            </label>
+            <select
+              className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 text-white"
+              value={propertyCriteria}
+              onChange={(e) => setPropertyCriteria(e.target.value)}
+            >
+              <option disabled value={""}>
+                Choose State
+              </option>
+              {states.map((item: string) => (
+                <option value={item}>{item}</option>
+              ))}
+            </select>
+          </div> */}
+
           <div>
-            <label className="block text-sm font-medium mb-2">Rows</label>
+            <label className="block text-sm font-medium mb-2">
+              Ownership Criteria
+            </label>
+
+            <select
+              className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 text-white"
+              value={ownershipCriteria}
+              onChange={(e) => {
+                setOwnershipCriteria(e.target.value);
+              }}
+            >
+              <option disabled value={""}>
+                Choose Ownership Criteria
+              </option>
+              {ownerCriteriaValues.map((item: string) => (
+                <option value={item} key={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {ownershipCriteria && (
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                {ownershipCriteria}
+              </label>
+
+              <select
+                className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 text-white"
+                value={ownershipCriteriaOption}
+                onChange={(e) => {
+                  if (e.target.value === "manualInput") {
+                    setCustomOwnershipCriteria(true);
+                    setOwnershipCriteriaOption("manualInput");
+                  } else {
+                    setCustomOwnershipCriteria(false);
+                    setOwnershipCriteriaOption(e.target.value);
+                    setOwnershipCriteriaFinale((prev) => {
+                      // Check if this key already exists
+                      const exists = prev.some(
+                        (item) => item.key === ownershipCriteria,
+                      );
+
+                      if (exists) {
+                        // Update existing
+                        return prev.map((item) =>
+                          item.key === ownershipCriteria
+                            ? { ...item, value: e.target.value }
+                            : item,
+                        );
+                      } else {
+                        // Add new
+                        return [
+                          ...prev,
+                          { key: ownershipCriteria, value: e.target.value },
+                        ];
+                      }
+                    });
+                  }
+                }}
+              >
+                <option disabled value={""}>
+                  Choose {ownershipCriteria}
+                </option>
+                {ownerCriteria[ownershipCriteria].map((item: string) => (
+                  <option value={item} key={item}>
+                    {item}
+                  </option>
+                ))}
+                <option value={"manualInput"}>Manual Input</option>
+              </select>
+            </div>
+          )}
+
+          {ownershipCriteria && customOwnershipCriteria && (
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Manual Input
+              </label>
+              <div className="grid grid-cols-[1fr_10rem] gap-4">
+                <input
+                  type="text"
+                  value={customOwnershipCriteriaFinale}
+                  onChange={(e) =>
+                    setCustomOwnershipCriteriaFinale(e.target.value)
+                  }
+                  placeholder="How Many Rows you need"
+                  className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 transition-colors appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
+                <button
+                  type="button"
+                  className="w-full py-3 bg-background-third rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer"
+                  onClick={() => {
+                    setOwnershipCriteriaFinale((prev) => {
+                      // Check if this key already exists
+                      const exists = prev.some(
+                        (item) => item.key === ownershipCriteria,
+                      );
+
+                      if (exists) {
+                        // Update existing
+                        return prev.map((item) =>
+                          item.key === ownershipCriteria
+                            ? { ...item, value: customOwnershipCriteriaFinale }
+                            : item,
+                        );
+                      } else {
+                        // Add new
+                        return [
+                          ...prev,
+                          {
+                            key: ownershipCriteria,
+                            value: customOwnershipCriteriaFinale,
+                          },
+                        ];
+                      }
+                    });
+                  }}
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-4 gap-6">
+            {ownershipCriteriaFinale.map((item) => (
+              <div
+                className="bg-background-third rounded-xl w-50 p-3 inline-flex justify-between "
+                key={item.value}
+              >
+                <p className="text-sm">
+                  <span className="text-text-primary font-semibold">
+                    {item.key} :
+                  </span>
+                </p>
+
+                <span className="text-text-secondry text-sm">
+                  {" "}
+                  {item.value}
+                </span>
+                <Image
+                  src={"/x.svg"}
+                  alt={"close"}
+                  width={15}
+                  height={15}
+                  className="opacity-0 cursor-pointer mt-1 hover:opacity-100 transition-all"
+                  onClick={() => {
+                    setOwnershipCriteriaFinale((prev) =>
+                      prev.filter((i) => i.value !== item.value),
+                    );
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Total Leads *
+            </label>
             <input
               type="number"
               value={rows}
@@ -97,10 +410,11 @@ export default function SubmitRequestPage() {
               className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 transition-colors appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             />
           </div>
+
           <div>
             <label className="block text-sm font-medium mb-2">Motivation</label>
             <div className="grid grid-cols-3 max-w-full gap-2">
-              {options.map((item: string) => (
+              {motivations.map((item: string) => (
                 <div key={item} className="inline-flex items-center gap-2">
                   <input
                     type="checkbox"
@@ -136,6 +450,7 @@ export default function SubmitRequestPage() {
               ))}
             </div>
           </div>
+
           <div>
             <label className="block text-sm font-medium mb-2">
               Custom Notes

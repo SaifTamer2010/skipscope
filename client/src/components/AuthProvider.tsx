@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useUserStore } from "@/store/userStore";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function AuthProvider({
   children,
@@ -11,15 +11,29 @@ export default function AuthProvider({
   children: React.ReactNode;
 }) {
   const setUser = useUserStore((state) => state.setUser);
+
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
-    // Check active session on mount
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-    });
+    const getSession: any = async () => {
+      const { data, error } = await supabase.auth.getSession();
 
-    // Listen for changes
+      if (
+        data.session &&
+        (pathname === "/app/auth/login" || pathname === "/app/auth/register")
+      ) {
+        setUser(data.session.user);
+        router.push("/app/dashboard");
+      } else if (!data.session && !pathname.startsWith("/app/auth")) {
+        router.push("/app/auth/login");
+      } else if (data.session) {
+        setUser(data.session.user);
+      }
+    };
+
+    getSession();
+
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
@@ -33,7 +47,7 @@ export default function AuthProvider({
     return () => {
       subscription.unsubscribe();
     };
-  }, [setUser, router]);
+  }, [setUser, router, pathname]);
 
   return <>{children}</>;
 }

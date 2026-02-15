@@ -1,8 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import helmet from "helmet";
-import morgan from "morgan";
+var morgan = require("morgan");
 import router from "./router";
 
 dotenv.config();
@@ -13,81 +12,63 @@ const PORT = Number(process.env.PORT || 5000);
 // ============================================================================
 // SECURITY HEADERS MIDDLEWARE
 // ============================================================================
-// Must be applied BEFORE other middleware to ensure headers are set correctly
+// Manual implementation of security headers (no helmet dependency)
 // Configured for production SaaS deployment behind Fly.io
 
-app.use(
-  helmet({
-    // Strict-Transport-Security: Force HTTPS for 1 year
-    // trustProxy: true is required when behind Fly.io reverse proxy
-    hsts: {
-      maxAge: 31536000, // 1 year in seconds
-      includeSubDomains: true,
-      preload: true,
-    },
-
-    // Content-Security-Policy: Strict policy for API server
-    // Note: This is for the API server. Your frontend should have its own CSP.
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"], // Only allow resources from same origin by default
-        scriptSrc: ["'self'"], // No inline scripts
-        styleSrc: ["'self'"], // No inline styles
-        imgSrc: ["'self'", "data:", "https:"], // Allow HTTPS images and data URIs
-        connectSrc: [
-          "'self'",
-          "https://*.supabase.co", // Allow Supabase API calls
-          process.env.FRONTEND_URL || "http://localhost:3000", // Allow frontend
-        ],
-        fontSrc: ["'self'", "data:"],
-        objectSrc: ["'none'"], // Disable plugins
-        mediaSrc: ["'self'"],
-        frameSrc: ["'none'"], // No iframes
-        baseUri: ["'self'"],
-        formAction: ["'self'"],
-        frameAncestors: ["'none'"], // Prevent clickjacking (same as X-Frame-Options: DENY)
-        upgradeInsecureRequests: [], // Upgrade HTTP to HTTPS
-      },
-    },
-
-    // X-Frame-Options: Prevent clickjacking
-    // Using 'DENY' since this is an API server
-    frameguard: {
-      action: "deny",
-    },
-
-    // X-Content-Type-Options: Prevent MIME sniffing
-    noSniff: true,
-
-    // Referrer-Policy: Control referrer information
-    referrerPolicy: {
-      policy: "strict-origin-when-cross-origin",
-    },
-
-    // Permissions-Policy: Restrict browser features
-    permittedCrossDomainPolicies: {
-      permittedPolicies: "none",
-    },
-
-    // X-DNS-Prefetch-Control: Control DNS prefetching
-    dnsPrefetchControl: {
-      allow: false,
-    },
-
-    // X-Download-Options: Prevent IE from executing downloads
-    ieNoOpen: true,
-
-    // X-Powered-By: Remove Express fingerprint
-    hidePoweredBy: true,
-  }),
-);
-
-// Additional Permissions-Policy header (not covered by helmet)
 app.use((req, res, next) => {
+  // Strict-Transport-Security: Force HTTPS for 1 year
+  res.setHeader(
+    "Strict-Transport-Security",
+    "max-age=31536000; includeSubDomains; preload",
+  );
+
+  // Content-Security-Policy: Strict policy for API server
+  res.setHeader(
+    "Content-Security-Policy",
+    [
+      "default-src 'self'",
+      "script-src 'self'",
+      "style-src 'self'",
+      "img-src 'self' data: https:",
+      `connect-src 'self' https://*.supabase.co ${process.env.FRONTEND_URL || "http://localhost:3000"}`,
+      "font-src 'self' data:",
+      "object-src 'none'",
+      "media-src 'self'",
+      "frame-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'none'",
+      "upgrade-insecure-requests",
+    ].join("; "),
+  );
+
+  // X-Frame-Options: Prevent clickjacking
+  res.setHeader("X-Frame-Options", "DENY");
+
+  // X-Content-Type-Options: Prevent MIME sniffing
+  res.setHeader("X-Content-Type-Options", "nosniff");
+
+  // Referrer-Policy: Control referrer information
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+
+  // Permissions-Policy: Restrict browser features
   res.setHeader(
     "Permissions-Policy",
     "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()",
   );
+
+  // X-DNS-Prefetch-Control: Control DNS prefetching
+  res.setHeader("X-DNS-Prefetch-Control", "off");
+
+  // X-Download-Options: Prevent IE from executing downloads
+  res.setHeader("X-Download-Options", "noopen");
+
+  // X-Permitted-Cross-Domain-Policies: Restrict cross-domain policies
+  res.setHeader("X-Permitted-Cross-Domain-Policies", "none");
+
+  // Remove X-Powered-By header
+  res.removeHeader("X-Powered-By");
+
   next();
 });
 
@@ -99,7 +80,7 @@ app.set("trust proxy", 1);
 // STANDARD MIDDLEWARE
 // ============================================================================
 
-// CORS - Must come AFTER helmet to avoid conflicts
+// CORS - Must come AFTER security headers
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || "http://localhost:3000",

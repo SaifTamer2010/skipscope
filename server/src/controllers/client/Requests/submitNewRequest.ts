@@ -4,9 +4,18 @@ import { supabase } from "../../../config/supabase";
 
 const submitNewRequest = async (req: AuthRequest, res: Response) => {
   try {
-    const { county, rows, motivation, customNotes } = req.body;
+    const {
+      rows,
+      county,
+      motivations,
+      state,
+      zipCode,
+      ownershipCriteriaFinale,
+      market,
+      customNotes,
+    } = req.body;
 
-    if (!county || !rows || !motivation) {
+    if (!market || !state || !rows) {
       return res.status(400).json({ error: "All Fields are required" });
     }
 
@@ -23,9 +32,13 @@ const submitNewRequest = async (req: AuthRequest, res: Response) => {
       .from("requests")
       .insert({
         user_id: req.userId,
-        county,
         rows,
-        motivations: motivation,
+        county,
+        motivations,
+        state,
+        zipCode,
+        ownershipCriteriaFinale, //
+        market,
         customNotes,
         status: "Pending",
         kanban_column_id: defaultColumn?.id, // Assign to first column

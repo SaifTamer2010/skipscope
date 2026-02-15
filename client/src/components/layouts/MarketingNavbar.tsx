@@ -1,11 +1,29 @@
 "use client";
+
 import Link from "next/link";
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 
 import MainButton from "@/src/components/buttons/MainButton";
 import Logo from "../ui/logo/logo";
+
+import { Button } from "@/components/shadcn/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/shadcn/dropdown-menu";
+import Image from "next/image";
 
 const links = [
   { href: "/", label: "Home" },
@@ -17,6 +35,7 @@ const links = [
 const MarketingNavbar = () => {
   const [isSideBar, toggleIsSideBar] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <>
@@ -62,68 +81,50 @@ const MarketingNavbar = () => {
           </MainButton>
         </div>
         {/* mobile devices navbar */}
-        <button
-          className="flex md:hidden w-8 h-8 shadow-2xs shadow-black bg-background-third items-center justify-center rounded-xs"
-          onClick={() => {
-            toggleIsSideBar(!isSideBar);
-          }}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="19"
-            height="19"
-            viewBox="0 0 24 24"
-          >
-            <path
-              fill="currentColor"
-              d="M3 18v-2h18v2zm0-5v-2h18v2zm0-5V6h18v2z"
-            />
-          </svg>
-        </button>
-        {isSideBar && (
-          <div
-            className="absolute w-fll h-screen bg-black/50  left-0 right-0 top-0 bottom-0"
-            onClick={() => {
-              toggleIsSideBar(false);
-            }}
-          >
-            <aside
-              className="absolute right-15 top-15 bg-background-third w-50 z-55 h-55 p-4 flex gap-6 flex-col justify-center  shadow-2xs shadow-black rounded-tl-xl rounded-b-xl"
-              // onClick={(e) => {
-              //   e.stopPropagation();
-              // }}
-            >
-              <Link
-                href={"/"}
-                className={`text-sm sm:text-xl font-semibold cursor-pointer text-center 
-              ${pathname == "/" ? "text-text-primary" : " text-text-secondry"}`}
-              >
-                Home
-              </Link>
-              <Link
-                href={"/industries"}
-                className={`text-sm sm:text-xl font-semibold cursor-pointer text-center 
-              ${pathname == "/industries" ? "text-text-primary" : " text-text-secondry"}`}
-              >
-                Industries
-              </Link>
-              <Link
-                href={"/"}
-                className={`text-sm sm:text-xl font-semibold cursor-pointer text-center 
-              ${pathname == "/" ? "text-text-primary" : " text-text-secondry"}`}
-              >
-                How It Works
-              </Link>
-              <Link
-                href={"/"}
-                className={`text-sm sm:text-xl font-semibold cursor-pointer text-center 
-              ${pathname == "/" ? "text-text-primary" : " text-text-secondry"}`}
-              >
-                Packages
-              </Link>
-            </aside>
-          </div>
-        )}
+        <div className="sm:hidden block">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" suppressHydrationWarning>
+                <Image src={"/menu.svg"} alt={"menu"} height={25} width={25} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-40" align="start">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>
+                  <span className="font-medium text-gray-300/80">Menu</span>
+                </DropdownMenuLabel>
+                <DropdownMenuItem onClick={() => router.push("/")}>
+                  Home
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/industries")}>
+                  Industries
+                  {/* <DropdownMenuShortcut>Shift + U</DropdownMenuShortcut> */}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/how_it_works")}>
+                  How it works
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/packages")}>
+                  Packages
+                </DropdownMenuItem>
+                {/* <DropdownMenuItem>Settings</DropdownMenuItem> */}
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator className="bg-gray-500/80 mx-2" />
+
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  onClick={() => router.push("/app/auth/login")}
+                >
+                  Login
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => router.push("/app/auth/register")}
+                >
+                  Sign up
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </>
   );

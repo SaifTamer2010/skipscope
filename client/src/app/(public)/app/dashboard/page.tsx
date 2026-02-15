@@ -1,9 +1,12 @@
 "use client";
 
+// we are going to remove the wiating confirmation with pending payments we need to if the service was paid or not by screenshot or maybe transaction id
+// 4 cards in the dashboard total requests - Waiting for payments - pending - finished
 import { useEffect, useState } from "react";
 import DashboardCard from "@/components/DashboardCard";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
+import LoadingScreen from "@/src/components/LoadingScreen";
 
 interface Stats {
   total: number;
@@ -37,15 +40,11 @@ export default function DashboardPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 ">
       {/* Header */}
       <div>
         <h1 className="text-4xl font-bold mb-2 text-text-primary ">

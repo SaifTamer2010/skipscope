@@ -6,9 +6,16 @@ import api from "@/lib/api";
 import toast from "react-hot-toast";
 import BillingSection from "@/components/BillingSection";
 import Image from "next/image";
+import LoadingScreen from "@/src/components/LoadingScreen";
 
 interface Request {
   id: string;
+  market: string;
+  state: string;
+  zipCode: string;
+  ownershipCriteriaFinale: object;
+  customNotes: string;
+  motivations: string;
   county: string;
   rows: number;
   status: "Pending" | "Waiting Confirmation" | "Finished";
@@ -56,11 +63,7 @@ export default function HistoryPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (

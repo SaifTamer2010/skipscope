@@ -5,12 +5,17 @@ import toast from "react-hot-toast";
 
 interface RequestDetails {
   id: string;
+  market: string;
+  state: string;
+  zipCode: string;
+  ownershipCriteriaFinale: [{ key: string; value: string }];
+  customNotes: string;
+  motivations: string;
   county: string;
   rows: number;
-  motivations: string;
-  customNotes?: string;
-  status: string;
+  status: "Pending" | "Waiting Confirmation" | "Finished";
   created_at: string;
+  updated_at?: string;
   files?: Array<{
     id: string;
     file_name: string;
@@ -110,12 +115,45 @@ const ViewDetailsModal = ({
             <>
               {/* Basic Info Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-1 col-span-2">
+                  <label className="text-xs font-medium text-text-secondry uppercase tracking-wider ">
+                    Request ID
+                  </label>
+                  <p className="text-white font-medium">{details.id}</p>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-text-secondry uppercase tracking-wider">
+                    Market
+                  </label>
+                  <p className="text-white font-medium">{details.market}</p>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-text-secondry uppercase tracking-wider">
+                    State
+                  </label>
+                  <p className="text-white font-medium">
+                    {details.state || "N/A"}
+                  </p>
+                </div>
+
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-text-secondry uppercase tracking-wider">
                     County
                   </label>
                   <p className="text-white font-medium">{details.county}</p>
                 </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-text-secondry uppercase tracking-wider">
+                    Zip Code
+                  </label>
+                  <p className="text-white font-medium">
+                    {details.zipCode || "N/A"}
+                  </p>
+                </div>
+
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-text-secondry uppercase tracking-wider">
                     Rows
@@ -157,6 +195,19 @@ const ViewDetailsModal = ({
                   </label>
                   <div className="p-4 bg-background-third rounded-xl border border-white/5 text-sm text-text-secondry leading-relaxed">
                     {details.motivations}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-text-secondry uppercase tracking-wider">
+                    Custom Ownership Criteria
+                  </label>
+                  <div className="p-4 bg-background-third rounded-xl border border-white/5 text-sm text-text-secondry leading-relaxed">
+                    {details.ownershipCriteriaFinale.map((item) => (
+                      <p>
+                        {item.key}: {item.value}
+                      </p>
+                    ))}
                   </div>
                 </div>
 

@@ -5,6 +5,7 @@ import NotificationCard from "@/components/NotificationCard";
 import { useNotificationStore } from "@/store/notificationStore";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
+import LoadingScreen from "@/src/components/LoadingScreen";
 
 interface Notification {
   id: string;
@@ -55,11 +56,7 @@ export default function NotificationsPage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   const unreadNotifications = notifications.filter((n) => !n.is_read);

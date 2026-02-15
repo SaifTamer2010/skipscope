@@ -3,8 +3,8 @@ import PackagesContainer from "@/src/components/ui/packagesContainer";
 const page = () => {
   return (
     <>
-      <div className="flex items-center justify-center flex-col px-30 pt-5">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+      <div className="flex items-center justify-center flex-col pl-22 md:px-30 pt-5 max-h-full overflow-y-auto mt-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 ">
           <PackagesContainer
             title={"Starter"}
             alt={"home"}
@@ -42,21 +42,3 @@ const page = () => {
 };
 
 export default page;
-
-// Icon idea: Single house outline / map pin
-// Description:
-
-// Icon idea: Multiple houses / stacked layers
-// Description:
-
-//
-
-// Icon idea: Chart over a house / analytics dashboard
-// Description:
-
-// Enterprise
-
-// Icon idea: Gear + database / network nodes
-// Description:
-// Custom scraping, enrichment, and integrations.
-// Built for scale, automation, and unique data needs.

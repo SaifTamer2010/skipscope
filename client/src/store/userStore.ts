@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { User } from "@supabase/supabase-js";
+import { persist } from "zustand/middleware";
 
 interface UserState {
   user: User | null;
@@ -8,9 +9,30 @@ interface UserState {
   logout: () => void;
 }
 
-export const useUserStore = create<UserState>((set) => ({
-  user: null,
-  isAuthenticated: false,
-  setUser: (user) => set({ user, isAuthenticated: !!user }),
-  logout: () => set({ user: null, isAuthenticated: false }),
-}));
+export const useUserStore = create<UserState>()(
+  persist(
+    (set) => ({
+      user: null,
+      isAuthenticated: false,
+
+      setUser: (user) =>
+        set({
+          user,
+          isAuthenticated: !!user,
+        }),
+
+      logout: () =>
+        set({
+          user: null,
+          isAuthenticated: false,
+        }),
+    }),
+    {
+      name: "user-storage",
+
+      partialize: (state) => ({
+        user: state.user,
+      }),
+    },
+  ),
+);

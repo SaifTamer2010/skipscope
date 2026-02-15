@@ -1,0 +1,45 @@
+{
+  "Age": [
+    "Unknown",
+    "19 or Younder",
+    "20's (20 - 29)",
+    "30's (30-39)",
+    "40's (40-49)",
+    "50's (50-59)",
+    "60's (60-69)",
+    "70's (70-79)",
+    "80's (80-89)",
+    "90's (90-99)",
+    "100+"
+  ],
+  "Years Of Ownership": [
+    "Unknown",
+    "Less than a year",
+    "1-10",
+    "11-20",
+    "21-30",
+    "31-40",
+    "40+"
+  ],
+  "Number Of Owners": ["Unknown", "1 Owner", "2+ Owners"],
+  "Properties  Owned By Mail Address": [
+    "1",
+    "1-10",
+    "1-20",
+    "1-50",
+    "1-100",
+    "100+"
+  ],
+  "Properties  Owned By Name": ["1", "1-10", "1-20", "1-50", "1-100", "100+"],
+  "Language": ["English", "Spanish"],
+  "Arms Length": ["Unknown", "Yes", "No"],
+  "Ownership Type": [
+    "individual",
+    " Company",
+    "Trustee",
+    "Bank",
+    "Church",
+    "Government"
+  ],
+  "MLS Status": ["On Market", "Off Market"]
+}

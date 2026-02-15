@@ -88,7 +88,7 @@ const HowItWorksPage = () => {
           className="mt-20 text-center"
         >
           <Link
-            href="/auth/register" // Adjust based on your actual route
+            href="/app/auth/register" // Adjust based on your actual route
             className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-background-main bg-text-primary rounded-full hover:bg-white transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
           >
             Get Started Now
