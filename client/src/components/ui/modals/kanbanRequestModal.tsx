@@ -244,9 +244,9 @@ const KanbanRequestModal = ({
             <label className="text-sm text-gray-400">
               Ownerships Criterias:
             </label>
-            {selectedRequest.ownershipCriteriaFinale.map(
-              (item: { key: string; value: string }) => (
-                <p>
+            {selectedRequest.ownershipCriteriaFinale?.map(
+              (item: { key: string; value: string }, idx: number) => (
+                <p key={item.key || idx}>
                   {item.key}: {item.value}
                 </p>
               ),
