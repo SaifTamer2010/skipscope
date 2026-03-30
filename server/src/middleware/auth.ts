@@ -11,7 +11,12 @@ export const authMiddleware = async (
   next: NextFunction,
 ) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1]; // Bearer TOKEN
+    // Check for token in Authorization header first, then query params (for SSE)
+    let token = req.headers.authorization?.split(" ")[1]; // Bearer TOKEN
+
+    if (!token && req.query.token) {
+      token = req.query.token as string;
+    }
 
     if (!token) {
       return res.status(401).json({ error: "No token provided" });

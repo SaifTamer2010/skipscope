@@ -24,9 +24,12 @@ interface Column {
 interface Request {
   id: string;
   user_id: string;
-  username: string;
   county: string;
-  package: string;
+  motivations: string;
+  state: string;
+  market: string;
+  zipCode: string;
+  ownershipCriteriaFinale: [{ key: string; value: string }];
   created_at: string;
   updated_at: string;
   rows: number;
@@ -36,7 +39,6 @@ interface Request {
   client_notes: string | null;
   adminFileCount: number;
   clientFileCount: number;
-  motivations: string;
   kanban_column_id: string;
   customNotes: string;
   users: {
@@ -211,13 +213,13 @@ export default function KanbanPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
-      <div className="max-w-[2000px] max-h-screen mx-auto px-6 py-8 ">
-        <div className="flex gap-6 overflow-x-auto pb-8 ">
+    <div className="min-h-[calc(100vh-4rem)] bg-gray-950 text-white w-full overflow-hidden flex flex-col">
+      <div className=" max-w-full p-8  flex-1 overflow-hidden flex flex-col m-6 border-2 border-gray-800 rounded-lg">
+        <div className="flex gap-6 overflow-x-auto overflow-y-hidden pb-8 flex-1 items-start max-w-full">
           {board.map((column) => (
             <div
               key={column.id}
-              className="shrink-0 w-80"
+              className="shrink-0 w-96"
               onDragOver={handleDragOver}
               onDrop={() => handleDrop(column.id)}
             >
@@ -266,13 +268,6 @@ export default function KanbanPage() {
                             .toUpperCase()}
                         </div>
                       )}
-                    </div>
-
-                    {/* Package Badge */}
-                    <div className="mb-3">
-                      <span className="inline-block px-2 py-1 bg-purple-500/20 text-purple-300 text-xs rounded">
-                        {request.package}
-                      </span>
                     </div>
 
                     {/* Files & Date */}

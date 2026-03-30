@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { supabase } from "../../../config/supabase";
 import { AdminRequest } from "../../../middleware/adminAuth";
+import { NotificationService } from "../../../services/notificationService";
 
 const moveRequest = async (req: AdminRequest, res: Response): Promise<void> => {
   try {
@@ -45,7 +46,9 @@ const moveRequest = async (req: AdminRequest, res: Response): Promise<void> => {
         .select("name")
         .eq("id", targetColumnId)
         .single();
+
       const status = normalizeStatus(newColumn?.name);
+
       await supabase
         .from("requests")
         .update({ status: status })
@@ -65,8 +68,15 @@ const moveRequest = async (req: AdminRequest, res: Response): Promise<void> => {
           to_column_name: newColumn?.name,
         },
       });
-    }
 
+      // Send notification using NotificationService
+      await NotificationService.notifyKanbanStatusChange(
+        currentRequest.user_id,
+        requestId,
+        currentRequest.kanban_columns?.name || "Unknown",
+        newColumn?.name || "Unknown",
+      );
+    }
     res.json({ success: true });
   } catch (error: any) {
     console.error("Move request error:", error);

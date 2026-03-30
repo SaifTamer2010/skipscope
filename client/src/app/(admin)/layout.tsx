@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import "@/src/app/globals.css";
+import "./globals.css";
 
-import AuthProvider from "@/components/AuthProvider";
+import AdminAuthProvider from "@/components/AdminAuthProvider";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
@@ -9,17 +9,14 @@ export const metadata: Metadata = {
   description: "scoop the data you need we will skip it for you (wink wink)",
 };
 
-export default function RootLayout({
+export default function AdminLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="dark bg-black">
-        <Toaster />
-        <AuthProvider>{children}</AuthProvider>
-      </body>
-    </html>
+    <div className="dark min-h-screen bg-background text-foreground">
+      <AdminAuthProvider>{children}</AdminAuthProvider>
+    </div>
   );
 }

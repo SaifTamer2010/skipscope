@@ -5,6 +5,7 @@ import { authMiddleware } from "../middleware/auth";
 import getAllNotifications from "../controllers/client/notifications/getAllNotifications";
 import markAsRead from "../controllers/client/notifications/markAsRead";
 import markAllAsRead from "../controllers/client/notifications/markAllAsRead";
+import subscribeNotifications from "../controllers/client/notifications/subscribeNotifications";
 
 const router = Router();
 
@@ -13,6 +14,9 @@ router.use(authMiddleware);
 
 // Get all notifications for the logged-in user
 router.get("/", getAllNotifications);
+
+// SSE endpoint for real-time notifications
+router.get("/subscribe", subscribeNotifications);
 
 // Mark notification as read
 router.patch("/:id/read", markAsRead);

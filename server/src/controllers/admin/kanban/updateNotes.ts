@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { supabase } from "../../../config/supabase";
 import { AdminRequest } from "../../../middleware/adminAuth";
+import { NotificationService } from "../../../services/notificationService";
 
 const updateNotes = async (req: AdminRequest, res: Response): Promise<void> => {
   try {
@@ -36,6 +37,23 @@ const updateNotes = async (req: AdminRequest, res: Response): Promise<void> => {
       action_description: noteDescription,
       metadata: { note_type: noteType },
     });
+
+    // Send notification to user if client notes were updated
+    if (clientNotes !== undefined) {
+      const { data: request } = await supabase
+        .from("requests")
+        .select("user_id")
+        .eq("id", requestId)
+        .single();
+
+      if (request) {
+        await NotificationService.notifyNotesUpdated(
+          request.user_id,
+          requestId,
+          "client",
+        );
+      }
+    }
 
     res.json({ success: true });
   } catch (error: any) {

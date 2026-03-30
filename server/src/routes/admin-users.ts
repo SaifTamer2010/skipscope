@@ -7,10 +7,6 @@ const router = express.Router();
 // All routes require admin authentication
 router.use(requireAdmin);
 
-/**
- * GET /api/admin/users
- * List all users
- */
 router.get("/", listUsers);
 
 export default router;

@@ -50,7 +50,7 @@ const nextConfig: NextConfig = {
 
               // Connect (API calls): Backend API, Supabase, Vercel Analytics
               // ADJUST: Replace localhost with your production API domain
-              "connect-src 'self' http://localhost:5000 https://*.supabase.co https://vercel.live wss://*.supabase.co",
+              "connect-src 'self' http://localhost:5000 https://*.supabase.co https://vercel.live wss://*.supabase.co  https://skipscope.fly.dev",
 
               // Media: same-origin and Supabase
               "media-src 'self' https://*.supabase.co",

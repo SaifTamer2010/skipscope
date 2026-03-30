@@ -16,6 +16,7 @@ interface RequestDetails {
   status: "Pending" | "Waiting Confirmation" | "Finished";
   created_at: string;
   updated_at?: string;
+  client_notes: string;
   files?: Array<{
     id: string;
     file_name: string;
@@ -211,16 +212,23 @@ const ViewDetailsModal = ({
                   </div>
                 </div>
 
-                {details.customNotes && (
-                  <div className="space-y-2">
-                    <label className="text-xs font-medium text-text-secondry uppercase tracking-wider">
-                      My Notes
-                    </label>
-                    <div className="p-4 bg-background-third rounded-xl border border-white/5 text-sm text-text-secondry leading-relaxed">
-                      {details.customNotes}
-                    </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-text-secondry uppercase tracking-wider">
+                    My Notes
+                  </label>
+                  <div className="p-4 bg-background-third rounded-xl border border-white/5 text-sm text-text-secondry leading-relaxed">
+                    {details.customNotes || "N/A"}
                   </div>
-                )}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-text-secondry uppercase tracking-wider">
+                  Internal Notes
+                </label>
+                <div className="p-4 bg-background-third rounded-xl border border-white/5 text-sm text-text-secondry leading-relaxed">
+                  {details.client_notes}
+                </div>
               </div>
 
               {/* Files Section */}

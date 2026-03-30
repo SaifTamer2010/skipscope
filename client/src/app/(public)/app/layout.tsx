@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 import { useUserStore } from "@/store/userStore";
 import AuthProvider from "@/src/components/AuthProvider";
+import NotificationToastProvider from "@/components/NotificationToastProvider";
 
 export default function DashboardLayout({
   children,
@@ -22,6 +23,7 @@ export default function DashboardLayout({
 
   return (
     <AuthProvider>
+      <NotificationToastProvider />
       <div
         className={`bg-background-main ${!isAuthRoute && "grid grid-cols-[auto_1fr]"} `}
       >

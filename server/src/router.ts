@@ -30,4 +30,8 @@ router.use("/admin/files", adminFilesRoutes);
 router.use("/admin/analytics", adminAnalyticsRoutes);
 router.use("/admin/users", adminUserRoutes);
 
+// Webhook routes
+import webhookRoutes from "./routes/webhooks";
+router.use("/webhooks", webhookRoutes);
+
 export default router;

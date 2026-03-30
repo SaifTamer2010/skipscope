@@ -224,6 +224,36 @@ const KanbanRequestModal = ({
             <p className="text-white">{selectedRequest.username}</p>
           </div>
           <div>
+            <label className="text-sm text-gray-400">Email:</label>
+            <p className="text-white">{selectedRequest.users.email}</p>
+          </div>
+          <div>
+            <label className="text-sm text-gray-400">Market:</label>
+            <p className="text-white">{selectedRequest.market}</p>
+          </div>
+          <div>
+            <label className="text-sm text-gray-400">State:</label>
+            <p className="text-white">{selectedRequest.state}</p>
+          </div>
+          <div>
+            <label className="text-sm text-gray-400">Zip Code(s):</label>
+            <p className="text-white">{selectedRequest.zipCode}</p>
+          </div>
+
+          <div>
+            <label className="text-sm text-gray-400">
+              Ownerships Criterias:
+            </label>
+            {selectedRequest.ownershipCriteriaFinale.map(
+              (item: { key: string; value: string }) => (
+                <p>
+                  {item.key}: {item.value}
+                </p>
+              ),
+            )}
+          </div>
+
+          <div>
             <label className="text-sm text-gray-400">User Email:</label>
             <p className="text-white">{selectedRequest.users.email}</p>
           </div>

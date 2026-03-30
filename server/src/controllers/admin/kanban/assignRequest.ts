@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { supabase } from "../../../config/supabase";
 import { AdminRequest } from "../../../middleware/adminAuth";
+import { NotificationService } from "../../../services/notificationService";
 
 const assignRequest = async (
   req: AdminRequest,
@@ -49,6 +50,24 @@ const assignRequest = async (
       action_description: actionDescription,
       metadata: { assigned_to: adminId },
     });
+
+    // Send notification to user if assigned
+    if (adminId) {
+      const { data: request } = await supabase
+        .from("requests")
+        .select("user_id")
+        .eq("id", requestId)
+        .single();
+
+      if (request) {
+        const adminName = actionDescription.replace("Assigned to ", "");
+        await NotificationService.notifyRequestAssigned(
+          request.user_id,
+          requestId,
+          adminName,
+        );
+      }
+    }
 
     res.json({ success: true });
   } catch (error: any) {
