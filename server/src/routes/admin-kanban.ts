@@ -10,6 +10,7 @@ import assignProviderRequest from "../controllers/admin/kanban/assignProviderReq
 import updateNotes from "../controllers/admin/kanban/updateNotes";
 import getColumns from "../controllers/admin/kanban/getColumns";
 import updateFinancials from "../controllers/admin/kanban/updateFinancials";
+import updateStatus from "../controllers/admin/kanban/updateStatus";
 
 const router = express.Router();
 
@@ -63,5 +64,11 @@ router.get("/columns", getColumns);
  * Update financials (invoice, expenses, profit)
  */
 router.patch("/financials", updateFinancials);
+
+/**
+ * PATCH /api/admin/kanban/status
+ * Manually update the status of a request
+ */
+router.patch("/status", updateStatus);
 
 export default router;

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import toast from "react-hot-toast";
+import adminApi from "@/lib/adminApi";
 
 interface FilesState {
   adminFiles: any[];
@@ -10,8 +11,14 @@ interface FilesState {
 }
 
 interface Provider {
+  id: string | null;
   name: string;
   price_per_lead: number;
+}
+
+interface Column {
+  id: string;
+  name: string;
 }
 
 const KanbanRequestModal = ({
@@ -29,55 +36,63 @@ const KanbanRequestModal = ({
   const [providers, setProviders] = useState<any[]>([]);
   const [isAssigningProvider, setIsAssigningProvider] = useState(false);
   const [isSavingFinancials, setIsSavingFinancials] = useState(false);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [isMovingColumn, setIsMovingColumn] = useState(false);
+  const [columns, setColumns] = useState<Column[]>([]);
   const [files, setFiles] = useState<FilesState>({
     adminFiles: [],
     clientFiles: [],
   });
-  const [currentProvider, setCurrentProvider] = useState<Provider>({ name: "", price_per_lead: 0 });
+  const [currentProvider, setCurrentProvider] = useState<Provider>({ id: null, name: "", price_per_lead: 0 });
   const [invoiceAmount, setInvoiceAmount] = useState<number>(selectedRequest?.invoice_amount || 0);
 
   useEffect(() => {
     if (selectedRequest) {
       fetchFiles(selectedRequest.id);
       fetchProviders();
+      fetchColumns();
       if (selectedRequest.providers) {
         setCurrentProvider(selectedRequest.providers);
       } else {
-        setCurrentProvider({ name: "", price_per_lead: 0 });
+        setCurrentProvider({ id: null, name: "", price_per_lead: 0 });
       }
       setInvoiceAmount(selectedRequest.invoice_amount || 0);
     }
+
+    // Add Escape key listener
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setSelectedRequest(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedRequest]);
 
-  const fetchFiles = async (requestId: string) => {
-    const token = localStorage.getItem("admin_token");
+  const fetchColumns = async () => {
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/admin/files/request/${requestId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const { data } = await adminApi.get(`/admin/kanban/columns`);
+      setColumns(data.columns || []);
+    } catch (error) {
+      console.error("Fetch columns error:", error);
+    }
+  };
 
-      const data = await res.json();
-      if (res.ok) {
-        setFiles(data);
-      }
+
+  const fetchFiles = async (requestId: string) => {
+    try {
+      const { data } = await adminApi.get(`/admin/files/request/${requestId}`);
+      setFiles(data);
     } catch (error) {
       console.error("Fetch files error:", error);
     }
   };
 
   const fetchProviders = async () => {
-    const token = localStorage.getItem("admin_token");
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/providers`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setProviders(data.providers || []);
-      }
+      const { data } = await adminApi.get(`/admin/providers`);
+      setProviders(data.providers || []);
     } catch (error) {
       console.error("Fetch providers error:", error);
     }
@@ -86,88 +101,110 @@ const KanbanRequestModal = ({
   const handleAssignProvider = async (providerId: string) => {
     if (!selectedRequest) return;
     setIsAssigningProvider(true);
-    const token = localStorage.getItem("admin_token");
 
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/admin/kanban/assign-provider`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            requestId: selectedRequest.id,
-            providerId: providerId === "none" ? null : providerId,
-          }),
-        },
-      );
+      await adminApi.patch(`/admin/kanban/assign-provider`, {
+        requestId: selectedRequest.id,
+        providerId: providerId === "none" ? null : providerId,
+      });
 
-      if (res.ok) {
-        toast.success("Provider assigned successfully");
-        fetchBoard();
-        // Update local state optimistically
-        const assignedProvider = providers.find((p) => p.id === providerId);
-        setCurrentProvider(assignedProvider || { name: "", price_per_lead: 0 });
-        setSelectedRequest({
-          ...selectedRequest,
-          provider_id: providerId === "none" ? null : providerId,
-          providers: assignedProvider || null,
-        });
-      } else {
-        toast.error("Failed to assign provider");
-      }
+      toast.success("Provider assigned successfully");
+      fetchBoard();
+      // Update local state optimistically
+      const assignedProvider = providers.find((p: any) => p.id === providerId);
+      setCurrentProvider(assignedProvider || { id: null, name: "", price_per_lead: 0 });
+      setSelectedRequest({
+        ...selectedRequest,
+        provider_id: providerId === "none" ? null : providerId,
+        providers: assignedProvider || null,
+      });
     } catch (error) {
       console.error("Assign provider error:", error);
-      toast.error("Connection error");
+      toast.error("Failed to assign provider");
     } finally {
       setIsAssigningProvider(false);
+    }
+  };
+
+  const handleUpdateStatus = async (newStatus: string) => {
+    if (!selectedRequest) return;
+    setIsUpdatingStatus(true);
+
+    try {
+      await adminApi.patch(`/admin/kanban/status`, {
+        requestId: selectedRequest.id,
+        status: newStatus,
+      });
+
+      toast.success("Status updated successfully");
+      fetchBoard();
+      setSelectedRequest({
+        ...selectedRequest,
+        status: newStatus,
+      });
+    } catch (error: any) {
+      console.error("Update status error:", error);
+      const errorMsg = error.response?.data?.error || "Failed to update status";
+      toast.error(errorMsg);
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
+  const handleMoveColumn = async (targetColumnId: string) => {
+    if (!selectedRequest) return;
+    if (selectedRequest.kanban_column_id === targetColumnId) return;
+
+    setIsMovingColumn(true);
+
+    try {
+      await adminApi.patch(`/admin/kanban/move`, {
+        requestId: selectedRequest.id,
+        targetColumnId,
+        newOrder: 0, // Simplified for modal move
+      });
+
+      toast.success("Column updated successfully");
+      fetchBoard();
+      setSelectedRequest({
+        ...selectedRequest,
+        kanban_column_id: targetColumnId,
+      });
+    } catch (error) {
+      console.error("Move column error:", error);
+      toast.error("Failed to move column");
+    } finally {
+      setIsMovingColumn(false);
     }
   };
 
   const handleSaveFinancials = async () => {
     if (!selectedRequest) return;
     setIsSavingFinancials(true);
-    const token = localStorage.getItem("admin_token");
-    
+
     const expense = currentProvider.price_per_lead * selectedRequest.rows;
     const currentProfit = invoiceAmount - expense;
 
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/admin/kanban/financials`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            requestId: selectedRequest.id,
-            invoiceAmount: invoiceAmount,
-            expenses: expense,
-            profit: currentProfit,
-          }),
-        },
-      );
+      await adminApi.patch(`/admin/kanban/financials`, {
+        requestId: selectedRequest.id,
+        invoiceAmount: invoiceAmount,
+        expenses: expense,
+        profit: currentProfit,
+      });
 
-      if (res.ok) {
-        toast.success("Financials saved successfully");
-        fetchBoard();
-        // Update local state so it doesn't revert
-        setSelectedRequest({
-          ...selectedRequest,
-          invoice_amount: invoiceAmount,
-          expenses: expense,
-          profit: currentProfit
-        });
-      } else {
-        toast.error("Failed to save financials");
-      }
+      toast.success("Financials saved successfully");
+      fetchBoard();
+      // Update local state so it doesn't revert
+      setSelectedRequest({
+        ...selectedRequest,
+        invoice_amount: invoiceAmount,
+        expenses: expense,
+        profit: currentProfit
+      });
     } catch (error) {
       console.error("Save financials error:", error);
-      toast.error("Connection error");
+      toast.error("Failed to save financials");
     } finally {
       setIsSavingFinancials(false);
     }
@@ -195,37 +232,28 @@ const KanbanRequestModal = ({
     }
 
     setIsUploading(true);
-    const token = localStorage.getItem("admin_token");
     const formData = new FormData();
     formData.append("file", file);
     formData.append("requestId", selectedRequest.id);
 
     const endpoint =
       type === "admin"
-        ? "http://localhost:5000/api/admin/files/upload-admin"
-        : "http://localhost:5000/api/admin/files/upload-client";
+        ? "/admin/files/upload-admin"
+        : "/admin/files/upload-client";
 
     try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData,
+      const { data } = await adminApi.post(endpoint, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        toast.success(
-          `${type === "admin" ? "Admin" : "Client"} file uploaded successfully!`,
-        );
-        fetchFiles(selectedRequest.id);
-        fetchBoard(); // Refresh file counts
-      } else {
-        toast.error(data.error || "Upload failed");
-      }
-    } catch (error) {
+      toast.success(
+        `${type === "admin" ? "Admin" : "Client"} file uploaded successfully!`,
+      );
+      fetchFiles(selectedRequest.id);
+      fetchBoard(); // Refresh file counts
+    } catch (error: any) {
       console.error("Upload error:", error);
-      toast.error("Connection error");
+      toast.error(error.response?.data?.error || "Upload failed");
     } finally {
       setIsUploading(false);
     }
@@ -235,53 +263,33 @@ const KanbanRequestModal = ({
     fileId: string,
     type: "admin" | "client",
   ) => {
-    const token = localStorage.getItem("admin_token");
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/admin/files/download/${fileId}/${type}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const { data } = await adminApi.get(`/admin/files/download/${fileId}/${type}`);
 
-      const data = await res.json();
-
-      if (res.ok && data.downloadUrl) {
+      if (data.downloadUrl) {
         window.open(data.downloadUrl, "_blank");
       } else {
         toast.error("Failed to get download URL");
       }
     } catch (error) {
       console.error("Download error:", error);
-      toast.error("Connection error");
+      toast.error("Failed to get download URL");
     }
   };
 
   const handleDeleteFile = async (fileId: string, type: "admin" | "client") => {
     if (!confirm("Are you sure you want to delete this file?")) return;
 
-    const token = localStorage.getItem("admin_token");
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/admin/files/${fileId}/${type}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-
-      if (res.ok) {
-        toast.success("File deleted successfully");
-        if (selectedRequest) {
-          fetchFiles(selectedRequest.id);
-          fetchBoard(); // Refresh file counts
-        }
-      } else {
-        toast.error("Failed to delete file");
+      await adminApi.delete(`/admin/files/${fileId}/${type}`);
+      toast.success("File deleted successfully");
+      if (selectedRequest) {
+        fetchFiles(selectedRequest.id);
+        fetchBoard(); // Refresh file counts
       }
     } catch (error) {
       console.error("Delete error:", error);
-      toast.error("Connection error");
+      toast.error("Failed to delete file");
     }
   };
 
@@ -289,31 +297,18 @@ const KanbanRequestModal = ({
     fileId: string,
     currentVisibility: boolean,
   ) => {
-    const token = localStorage.getItem("admin_token");
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/admin/files/visibility/${fileId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ isVisibleToClient: !currentVisibility }),
-        },
-      );
+      await adminApi.patch(`/admin/files/visibility/${fileId}`, {
+        isVisibleToClient: !currentVisibility,
+      });
 
-      if (res.ok) {
-        toast.success(
-          `File is now ${!currentVisibility ? "visible" : "hidden"} to client`,
-        );
-        if (selectedRequest) fetchFiles(selectedRequest.id);
-      } else {
-        toast.error("Failed to update visibility");
-      }
+      toast.success(
+        `File is now ${!currentVisibility ? "visible" : "hidden"} to client`,
+      );
+      if (selectedRequest) fetchFiles(selectedRequest.id);
     } catch (error) {
       console.error("Visibility toggle error:", error);
-      toast.error("Connection error");
+      toast.error("Failed to update visibility");
     }
   };
 
@@ -405,7 +400,33 @@ const KanbanRequestModal = ({
             <label className="text-sm text-gray-400">Notes</label>
             <p className="text-white">{selectedRequest.customNotes}</p>
           </div>
-          <div className="w-full h-2  border-slate-700 border-b"></div>
+          <div className="w-full h-px bg-gray-800 my-6"></div>
+
+          <h1 className="text-2xl font-bold text-white mb-4">Workflow & Status</h1>
+
+
+
+
+          {/* Status Selector */}
+          <div className="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+            <label className="text-sm text-gray-400 font-medium mb-2 block">
+              Request Status
+            </label>
+            <select
+              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50"
+              value={selectedRequest.status || "Pending"}
+              onChange={(e) => handleUpdateStatus(e.target.value)}
+              disabled={isUpdatingStatus}
+            >
+              <option value="Pending">Pending</option>
+              <option value="Waiting Confirmation">Waiting Confirmation</option>
+              <option value="Finished">Finished</option>
+            </select>
+          </div>
+
+
+          <div className="w-full h-px bg-gray-800 my-6"></div>
+
           <h1 className="text-2xl font-bold text-white mb-2">Sell Status</h1>
           {/* Provider Assignment */}
           <div className="bg-gray-800/50 p-4 rounded-lg mt-4 border border-gray-700">
@@ -419,7 +440,7 @@ const KanbanRequestModal = ({
               disabled={isAssigningProvider}
             >
               <option value="none">-- Select a Provider --</option>
-              {providers.map((provider) => (
+              {providers.map((provider: any) => (
                 <option key={provider.id} value={provider.id}>
                   {provider.name} (${Number(provider.price_per_lead).toString()}/lead)
                 </option>
@@ -463,7 +484,7 @@ const KanbanRequestModal = ({
                 })()}
               </div>
             </div>
-            
+
             <div className="mt-4 flex justify-end">
               <button
                 onClick={handleSaveFinancials}

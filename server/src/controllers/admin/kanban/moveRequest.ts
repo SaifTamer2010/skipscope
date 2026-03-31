@@ -47,20 +47,11 @@ const moveRequest = async (req: AdminRequest, res: Response): Promise<void> => {
         .eq("id", targetColumnId)
         .single();
 
-      const status = normalizeStatus(newColumn?.name);
-
-      await supabase
-        .from("requests")
-        .update({ status: status })
-        .eq("id", requestId)
-        .select()
-        .single();
-
       await supabase.from("activity_log").insert({
         request_id: requestId,
         admin_id: req.admin!.id,
-        action_type: "status_change",
-        action_description: `Status changed from "${currentRequest.kanban_columns?.name || "Unknown"}" to "${newColumn?.name || "Unknown"}"`,
+        action_type: "column_move",
+        action_description: `Moved from "${currentRequest.kanban_columns?.name || "Unknown"}" to "${newColumn?.name || "Unknown"}"`,
         metadata: {
           from_column: oldColumnId,
           to_column: targetColumnId,
@@ -85,23 +76,3 @@ const moveRequest = async (req: AdminRequest, res: Response): Promise<void> => {
 };
 
 export default moveRequest;
-
-const normalizeStatus = (columnName: string) => {
-  switch (columnName) {
-    case "New":
-      return "Waiting Confirmation";
-    case "Waiting Confirmation":
-      return "Waiting Confirmation";
-    case "In Progress":
-      return "Pending";
-    case "Waiting":
-      return "Pending";
-    case "Completed":
-      return "Finished";
-    case "Archived":
-      return "Cancelled";
-    default:
-      return "Unknown";
-      break;
-  }
-};
