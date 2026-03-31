@@ -28,6 +28,7 @@ const getDashboardStats = async (
       { count: totalRequests },
       { count: requestsToday },
       { data: completedRequests },
+      { data: financials },
     ] = await Promise.all([
       supabase.from("users").select("*", { count: "exact", head: true }),
       supabase
@@ -43,7 +44,19 @@ const getDashboardStats = async (
         .from("requests")
         .select("created_at, updated_at, kanban_columns!inner(name)")
         .eq("kanban_columns.name", "Completed"),
+      supabase.from("requests").select("invoice_amount, expenses, profit"),
     ]);
+
+    // Calculate financial totals
+    let total_revenue = 0;
+    let total_expenses = 0;
+    let total_profit = 0;
+    
+    financials?.forEach((req) => {
+      total_revenue += Number(req.invoice_amount || 0);
+      total_expenses += Number(req.expenses || 0);
+      total_profit += Number(req.profit || 0);
+    });
 
     // Calculate completion stats
     const completedThisWeek =
@@ -67,6 +80,9 @@ const getDashboardStats = async (
       requests_today: requestsToday || 0,
       completed_this_week: completedThisWeek,
       avg_completion_time: avgCompletionTime,
+      total_revenue,
+      total_expenses,
+      total_profit,
     };
 
     // 2. Get requests over time (last 30 days)

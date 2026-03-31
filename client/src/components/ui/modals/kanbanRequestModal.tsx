@@ -28,6 +28,7 @@ const KanbanRequestModal = ({
   const [isUploading, setIsUploading] = useState(false);
   const [providers, setProviders] = useState<any[]>([]);
   const [isAssigningProvider, setIsAssigningProvider] = useState(false);
+  const [isSavingFinancials, setIsSavingFinancials] = useState(false);
   const [files, setFiles] = useState<FilesState>({
     adminFiles: [],
     clientFiles: [],
@@ -122,6 +123,53 @@ const KanbanRequestModal = ({
       toast.error("Connection error");
     } finally {
       setIsAssigningProvider(false);
+    }
+  };
+
+  const handleSaveFinancials = async () => {
+    if (!selectedRequest) return;
+    setIsSavingFinancials(true);
+    const token = localStorage.getItem("admin_token");
+    
+    const expense = currentProvider.price_per_lead * selectedRequest.rows;
+    const currentProfit = invoiceAmount - expense;
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/admin/kanban/financials`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            requestId: selectedRequest.id,
+            invoiceAmount: invoiceAmount,
+            expenses: expense,
+            profit: currentProfit,
+          }),
+        },
+      );
+
+      if (res.ok) {
+        toast.success("Financials saved successfully");
+        fetchBoard();
+        // Update local state so it doesn't revert
+        setSelectedRequest({
+          ...selectedRequest,
+          invoice_amount: invoiceAmount,
+          expenses: expense,
+          profit: currentProfit
+        });
+      } else {
+        toast.error("Failed to save financials");
+      }
+    } catch (error) {
+      console.error("Save financials error:", error);
+      toast.error("Connection error");
+    } finally {
+      setIsSavingFinancials(false);
     }
   };
 
@@ -414,6 +462,23 @@ const KanbanRequestModal = ({
                   );
                 })()}
               </div>
+            </div>
+            
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={handleSaveFinancials}
+                disabled={isSavingFinancials}
+                className="px-6 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-700 disabled:text-gray-500 rounded-lg text-white font-medium transition-colors flex items-center gap-2"
+              >
+                {isSavingFinancials ? (
+                  <>
+                    <span className="w-4 h-4 rounded-full border-2 border-white/20 border-t-white animate-spin"></span>
+                    Saving...
+                  </>
+                ) : (
+                  "Save Financials"
+                )}
+              </button>
             </div>
           </div>
           <div

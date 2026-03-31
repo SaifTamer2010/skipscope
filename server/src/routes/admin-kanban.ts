@@ -9,6 +9,7 @@ import assignRequest from "../controllers/admin/kanban/assignRequest";
 import assignProviderRequest from "../controllers/admin/kanban/assignProviderRequest";
 import updateNotes from "../controllers/admin/kanban/updateNotes";
 import getColumns from "../controllers/admin/kanban/getColumns";
+import updateFinancials from "../controllers/admin/kanban/updateFinancials";
 
 const router = express.Router();
 
@@ -56,5 +57,11 @@ router.patch("/notes", updateNotes);
  * Get all kanban columns
  */
 router.get("/columns", getColumns);
+
+/**
+ * PATCH /api/admin/kanban/financials
+ * Update financials (invoice, expenses, profit)
+ */
+router.patch("/financials", updateFinancials);
 
 export default router;

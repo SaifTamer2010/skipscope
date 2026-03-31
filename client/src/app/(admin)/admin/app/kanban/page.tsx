@@ -41,6 +41,9 @@ interface Request {
   clientFileCount: number;
   kanban_column_id: string;
   customNotes: string;
+  invoice_amount?: number;
+  expenses?: number;
+  profit?: number;
   users: {
     email: string;
   };

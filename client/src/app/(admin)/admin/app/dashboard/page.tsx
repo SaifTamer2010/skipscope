@@ -28,6 +28,9 @@ interface DashboardStats {
   requests_today: number;
   completed_this_week: number;
   avg_completion_time: number;
+  total_revenue: number;
+  total_expenses: number;
+  total_profit: number;
 }
 
 interface StatusData {
@@ -216,6 +219,50 @@ export default function AdminDashboardPage() {
               {Math.round(stats?.avg_completion_time || 0)}h
             </div>
             <div className="text-sm text-gray-400">Avg Completion Time</div>
+          </div>
+        </div>
+
+        {/* Financial Metrics */}
+        <h2 className="text-xl font-bold text-white mb-4 mt-8">Financial Overview</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Total Revenue */}
+          <div className="bg-gradient-to-br from-indigo-500/20 to-blue-600/20 border border-indigo-500/30 rounded-xl p-6">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-medium text-gray-300">Total Revenue</h3>
+              <span className="p-2 bg-indigo-500/20 rounded-lg text-indigo-400">
+                💰
+              </span>
+            </div>
+            <div className="text-3xl font-bold text-white">
+              ${(stats?.total_revenue || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </div>
+          </div>
+
+          {/* Total Expenses */}
+          <div className="bg-gradient-to-br from-red-500/20 to-rose-600/20 border border-red-500/30 rounded-xl p-6">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-medium text-gray-300">Total Expenses</h3>
+              <span className="p-2 bg-red-500/20 rounded-lg text-red-400">
+                📉
+              </span>
+            </div>
+            <div className="text-3xl font-bold text-white">
+              ${(stats?.total_expenses || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </div>
+          </div>
+
+          {/* Net Profit */}
+          <div className="bg-gradient-to-br from-emerald-500/20 to-teal-600/20 border border-emerald-500/30 rounded-xl p-6 relative overflow-hidden">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-medium text-gray-300">Net Profit</h3>
+              <span className="p-2 bg-emerald-500/20 rounded-lg text-emerald-400">
+                📈
+              </span>
+            </div>
+            <div className={`text-3xl font-bold ${(stats?.total_profit || 0) >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+              {(stats?.total_profit || 0) >= 0 ? "+" : "-"}$
+              {Math.abs(stats?.total_profit || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </div>
           </div>
         </div>
 
