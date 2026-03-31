@@ -32,7 +32,7 @@ const submitNewRequest = async (req: AuthRequest, res: Response) => {
       .from("requests")
       .insert({
         user_id: req.userId,
-        rows,
+        rows: parseInt(rows as string),
         county: county || "N/A",
         motivations,
         state,

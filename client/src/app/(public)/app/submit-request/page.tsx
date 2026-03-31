@@ -86,9 +86,9 @@ export default function SubmitRequestPage() {
     setLoading(true);
 
     const payload = {
-      rows: rows === "" ? "N/A" : rows,
+      rows: parseInt(rows),
       county: county === "" ? "N/A" : county,
-      motivations: county === "" ? "N/A" : motivation.join(","),
+      motivations: motivation.length === 0 ? "N/A" : motivation.join(","),
       state: usState === "" ? "N/A" : usState,
       zipCode: zipCode === "" ? "N/A" : zipCode,
       ownershipCriteriaFinale: ownershipCriteriaFinale,
