@@ -32,6 +32,11 @@ const getBoard = async (req: AdminRequest, res: Response): Promise<void> => {
           id,
           name,
           color
+        ),
+        providers (
+          id,
+          name,
+          price_per_lead
         )
       `,
       )

@@ -13,6 +13,7 @@ import adminKanbanRoutes from "./routes/admin-kanban";
 import adminFilesRoutes from "./routes/admin-files";
 import adminAnalyticsRoutes from "./routes/admin-analytics";
 import adminUserRoutes from "./routes/admin-users";
+import adminProvidersRoutes from "./routes/admin-providers";
 
 const router = express.Router();
 
@@ -29,6 +30,7 @@ router.use("/admin/kanban", adminKanbanRoutes);
 router.use("/admin/files", adminFilesRoutes);
 router.use("/admin/analytics", adminAnalyticsRoutes);
 router.use("/admin/users", adminUserRoutes);
+router.use("/admin/providers", adminProvidersRoutes);
 
 // Webhook routes
 import webhookRoutes from "./routes/webhooks";

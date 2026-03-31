@@ -6,6 +6,7 @@ import getBoard from "../controllers/admin/kanban/getBoard";
 import getRequestDetails from "../controllers/admin/kanban/getRequestDetails";
 import moveRequest from "../controllers/admin/kanban/moveRequest";
 import assignRequest from "../controllers/admin/kanban/assignRequest";
+import assignProviderRequest from "../controllers/admin/kanban/assignProviderRequest";
 import updateNotes from "../controllers/admin/kanban/updateNotes";
 import getColumns from "../controllers/admin/kanban/getColumns";
 
@@ -37,6 +38,12 @@ router.patch("/move", moveRequest);
  * Assign/unassign admin to a request
  */
 router.patch("/assign", assignRequest);
+
+/**
+ * PATCH /api/admin/kanban/assign-provider
+ * Assign/unassign provider to a request
+ */
+router.patch("/assign-provider", assignProviderRequest);
 
 /**
  * PATCH /api/admin/kanban/notes

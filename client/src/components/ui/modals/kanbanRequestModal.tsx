@@ -9,6 +9,11 @@ interface FilesState {
   clientFiles: any[];
 }
 
+interface Provider {
+  name: string;
+  price_per_lead: number;
+}
+
 const KanbanRequestModal = ({
   setSelectedRequest,
   selectedRequest,
@@ -21,14 +26,25 @@ const KanbanRequestModal = ({
   fetchBoard: () => void;
 }) => {
   const [isUploading, setIsUploading] = useState(false);
+  const [providers, setProviders] = useState<any[]>([]);
+  const [isAssigningProvider, setIsAssigningProvider] = useState(false);
   const [files, setFiles] = useState<FilesState>({
     adminFiles: [],
     clientFiles: [],
   });
+  const [currentProvider, setCurrentProvider] = useState<Provider>({ name: "", price_per_lead: 0 });
+  const [invoiceAmount, setInvoiceAmount] = useState<number>(selectedRequest?.invoice_amount || 0);
 
   useEffect(() => {
     if (selectedRequest) {
       fetchFiles(selectedRequest.id);
+      fetchProviders();
+      if (selectedRequest.providers) {
+        setCurrentProvider(selectedRequest.providers);
+      } else {
+        setCurrentProvider({ name: "", price_per_lead: 0 });
+      }
+      setInvoiceAmount(selectedRequest.invoice_amount || 0);
     }
   }, [selectedRequest]);
 
@@ -48,6 +64,64 @@ const KanbanRequestModal = ({
       }
     } catch (error) {
       console.error("Fetch files error:", error);
+    }
+  };
+
+  const fetchProviders = async () => {
+    const token = localStorage.getItem("admin_token");
+    try {
+      const res = await fetch(`http://localhost:5000/api/admin/providers`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setProviders(data.providers || []);
+      }
+    } catch (error) {
+      console.error("Fetch providers error:", error);
+    }
+  };
+
+  const handleAssignProvider = async (providerId: string) => {
+    if (!selectedRequest) return;
+    setIsAssigningProvider(true);
+    const token = localStorage.getItem("admin_token");
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/admin/kanban/assign-provider`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            requestId: selectedRequest.id,
+            providerId: providerId === "none" ? null : providerId,
+          }),
+        },
+      );
+
+      if (res.ok) {
+        toast.success("Provider assigned successfully");
+        fetchBoard();
+        // Update local state optimistically
+        const assignedProvider = providers.find((p) => p.id === providerId);
+        setCurrentProvider(assignedProvider || { name: "", price_per_lead: 0 });
+        setSelectedRequest({
+          ...selectedRequest,
+          provider_id: providerId === "none" ? null : providerId,
+          providers: assignedProvider || null,
+        });
+      } else {
+        toast.error("Failed to assign provider");
+      }
+    } catch (error) {
+      console.error("Assign provider error:", error);
+      toast.error("Connection error");
+    } finally {
+      setIsAssigningProvider(false);
     }
   };
 
@@ -257,9 +331,17 @@ const KanbanRequestModal = ({
             <label className="text-sm text-gray-400">User Email:</label>
             <p className="text-white">{selectedRequest.users.email}</p>
           </div>
-          <div>
-            <label className="text-sm text-gray-400">Rows Ordered:</label>
-            <p className="text-white">{selectedRequest.rows / 1000}k</p>
+          <div className="flex gap-16">
+            <div>
+              <label className="text-sm text-gray-400">Leads Ordered:</label>
+              <p className="text-white">{selectedRequest.rows / 1000}k</p>
+            </div>
+
+            <div>
+
+              <p className="text-red-600 mt-6">-{currentProvider.price_per_lead * selectedRequest.rows}$</p>
+            </div>
+
           </div>
           <div>
             <label className="text-sm text-gray-400">Motivations:</label>
@@ -276,6 +358,64 @@ const KanbanRequestModal = ({
             <p className="text-white">{selectedRequest.customNotes}</p>
           </div>
           <div className="w-full h-2  border-slate-700 border-b"></div>
+          <h1 className="text-2xl font-bold text-white mb-2">Sell Status</h1>
+          {/* Provider Assignment */}
+          <div className="bg-gray-800/50 p-4 rounded-lg mt-4 border border-gray-700">
+            <label className="text-sm text-gray-300 font-medium mb-2 block">
+              Assigned Provider
+            </label>
+            <select
+              className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500 disabled:opacity-50"
+              value={selectedRequest.provider_id || "none"}
+              onChange={(e) => handleAssignProvider(e.target.value)}
+              disabled={isAssigningProvider}
+            >
+              <option value="none">-- Select a Provider --</option>
+              {providers.map((provider) => (
+                <option key={provider.id} value={provider.id}>
+                  {provider.name} (${Number(provider.price_per_lead).toString()}/lead)
+                </option>
+              ))}
+            </select>
+          </div>
+          {/* Invoice and Profit Calculator */}
+          <div className="bg-gray-800/50 p-4 rounded-lg mt-4 border border-gray-700">
+            <h3 className="text-lg font-bold text-white mb-4">Financials & Profit</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+              <div>
+                <label className="text-sm text-gray-400 block mb-2">Invoice Amount ($)</label>
+                <input
+                  type="number"
+                  step="any"
+                  className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-green-500"
+                  value={invoiceAmount || ""}
+                  onChange={(e) => setInvoiceAmount(parseFloat(e.target.value) || 0)}
+                  placeholder="0.00"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-400 block mb-2">Total Expenses</label>
+                <p className="text-red-400 font-mono text-lg bg-gray-900 border border-gray-700 rounded-lg px-3 py-2">
+                  ${(currentProvider.price_per_lead * selectedRequest.rows).toFixed(2)}
+                </p>
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-400 block mb-2">Estimated Profit</label>
+                {(() => {
+                  const expense = currentProvider.price_per_lead * selectedRequest.rows;
+                  const profit = invoiceAmount - expense;
+                  const isProfit = profit >= 0;
+                  return (
+                    <div className={`font-mono text-lg font-bold bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 ${isProfit ? 'text-green-400' : 'text-red-400'}`}>
+                      {isProfit ? '+' : '-'}${Math.abs(profit).toFixed(2)}
+                    </div>
+                  );
+                })()}
+              </div>
+            </div>
+          </div>
           <div
             className="bg-gray-900 rounded-xl w-full p-6 border border-gray-700"
             onClick={(e) => e.stopPropagation()}

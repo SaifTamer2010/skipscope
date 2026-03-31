@@ -49,6 +49,12 @@ interface Request {
     username: string;
     display_name: string;
   } | null;
+  provider_id: string | null;
+  providers: {
+    id: string;
+    name: string;
+    price_per_lead: number;
+  } | null;
 }
 
 export default function KanbanPage() {
@@ -257,6 +263,11 @@ export default function KanbanPage() {
                         <p className="text-xs text-gray-400">
                           {request.users.email}
                         </p>
+                        {request.providers && (
+                          <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                            🏢 {request.providers.name}
+                          </div>
+                        )}
                       </div>
                       {request.admin_users && (
                         <div

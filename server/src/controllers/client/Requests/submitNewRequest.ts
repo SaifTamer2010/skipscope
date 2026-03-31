@@ -33,10 +33,10 @@ const submitNewRequest = async (req: AuthRequest, res: Response) => {
       .insert({
         user_id: req.userId,
         rows,
-        county,
+        county: county || "N/A",
         motivations,
         state,
-        zipCode,
+        zipCode: zipCode || "N/A",
         ownershipCriteriaFinale, //
         market,
         customNotes,

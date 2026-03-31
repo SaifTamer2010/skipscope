@@ -71,6 +71,11 @@ const AdminNavbar = () => {
                   >
                     Users
                   </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => router.push("/admin/app/providers")}
+                  >
+                    Providers
+                  </DropdownMenuItem>
                   {/* <DropdownMenuItem>Settings</DropdownMenuItem> */}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />

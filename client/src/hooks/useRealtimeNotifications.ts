@@ -96,13 +96,13 @@ export function useRealtimeNotifications() {
           ...prev,
         ]);
 
-        // Show browser notification if permitted
-        if (Notification.permission === "granted") {
-          new Notification("SkipScope Notification", {
-            body: data.message,
-            icon: "/favicon.png",
-          });
-        }
+        // Browser push notifications disabled for now
+        // if (Notification.permission === "granted") {
+        //   new Notification("SkipScope Notification", {
+        //     body: data.message,
+        //     icon: "/favicon.png",
+        //   });
+        // }
       } catch (error) {
         console.error("Error parsing SSE message:", error);
       }
@@ -193,12 +193,12 @@ export function useRealtimeNotifications() {
     }
   }, []);
 
-  // Request browser notification permission
-  useEffect(() => {
-    if ("Notification" in window && Notification.permission === "default") {
-      Notification.requestPermission();
-    }
-  }, []);
+  // Browser notification permissions temporarily disabled
+  // useEffect(() => {
+  //   if ("Notification" in window && Notification.permission === "default") {
+  //     Notification.requestPermission();
+  //   }
+  // }, []);
 
   // Connect to SSE when user is authenticated
   useEffect(() => {
