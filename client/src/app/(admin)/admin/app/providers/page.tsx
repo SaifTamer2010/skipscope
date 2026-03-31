@@ -22,6 +22,10 @@ export default function ProvidersManagementPage() {
   const [newProviderName, setNewProviderName] = useState("");
   const [newProviderPrice, setNewProviderPrice] = useState("");
 
+  const [editingProvider, setEditingProvider] = useState<Provider | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editPrice, setEditPrice] = useState("");
+
   useEffect(() => {
     verifyAuth();
     fetchProviders();
@@ -74,6 +78,32 @@ export default function ProvidersManagementPage() {
     } catch (error) {
       console.error("Add provider error:", error);
       toast.error("Failed to add provider");
+    }
+  };
+
+  const openEditModal = (provider: Provider) => {
+    setEditingProvider(provider);
+    setEditName(provider.name);
+    setEditPrice(String(provider.price_per_lead));
+  };
+
+  const handleEditProvider = async () => {
+    if (!editingProvider) return;
+    if (!editName || !editPrice) {
+      toast.error("Please fill all fields");
+      return;
+    }
+    try {
+      await adminApi.put(`/admin/providers/${editingProvider.id}`, {
+        name: editName,
+        price_per_lead: parseFloat(editPrice),
+      });
+      toast.success("Provider updated successfully");
+      setEditingProvider(null);
+      fetchProviders();
+    } catch (error) {
+      console.error("Edit provider error:", error);
+      toast.error("Failed to update provider");
     }
   };
 
@@ -181,12 +211,20 @@ export default function ProvidersManagementPage() {
                         })}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                        <button
-                          onClick={() => handleDeleteProvider(provider.id)}
-                          className="text-red-400 hover:text-red-300 font-medium transition-colors"
-                        >
-                          Delete
-                        </button>
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => openEditModal(provider)}
+                            className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProvider(provider.id)}
+                            className="text-red-400 hover:text-red-300 font-medium transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -196,6 +234,59 @@ export default function ProvidersManagementPage() {
           </div>
         </div>
       </div>
+
+      {/* Edit Provider Modal */}
+      {editingProvider && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[60] px-4">
+          <div className="bg-gray-900 rounded-xl max-w-md w-full p-6 border border-gray-700">
+            <h2 className="text-2xl font-bold text-white mb-6">Edit Provider</h2>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Provider Name
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                  placeholder="e.g. DataFinder Pro"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Price per Lead ($)
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
+                  placeholder="0.15"
+                  value={editPrice}
+                  onChange={(e) => setEditPrice(e.target.value)}
+                />
+              </div>
+
+              <div className="flex gap-3 pt-4">
+                <button
+                  onClick={handleEditProvider}
+                  className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors"
+                >
+                  Save Changes
+                </button>
+                <button
+                  onClick={() => setEditingProvider(null)}
+                  className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add Provider Modal */}
       {showAddModal && (
