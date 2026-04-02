@@ -26,13 +26,17 @@ const KanbanRequestModal = ({
   selectedRequest,
   setShowEditModal,
   fetchBoard,
+  admin,
 }: {
   setSelectedRequest: (request: any) => void;
   selectedRequest: any;
   setShowEditModal: (show: boolean) => void;
   fetchBoard: () => void;
+  admin: any;
 }) => {
   const [isUploading, setIsUploading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isHardDeleting, setIsHardDeleting] = useState(false);
   const [providers, setProviders] = useState<any[]>([]);
   const [isAssigningProvider, setIsAssigningProvider] = useState(false);
   const [isSavingFinancials, setIsSavingFinancials] = useState(false);
@@ -309,6 +313,56 @@ const KanbanRequestModal = ({
     } catch (error) {
       console.error("Visibility toggle error:", error);
       toast.error("Failed to update visibility");
+    }
+  };
+
+  const handleSoftDelete = async () => {
+    if (!selectedRequest || !columns.length) return;
+    
+    const deletedColumn = columns.find(c => c.name.toLowerCase() === "deleted");
+    if (!deletedColumn) {
+      toast.error("No 'Deleted' column found. Please contact an admin to create one.");
+      return;
+    }
+
+    if (!confirm("Are you sure you want to move this request to the Deleted column?")) return;
+
+    setIsDeleting(true);
+    try {
+      await adminApi.patch(`/admin/kanban/move`, {
+        requestId: selectedRequest.id,
+        targetColumnId: deletedColumn.id,
+        newOrder: 0,
+      });
+
+      toast.success("Request moved to Deleted");
+      fetchBoard();
+      setSelectedRequest(null); // Close modal
+    } catch (error) {
+      console.error("Soft delete error:", error);
+      toast.error("Failed to move request to Deleted");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleHardDelete = async () => {
+    if (!selectedRequest) return;
+    
+    if (!confirm("⚠️ WARNING: This will PERMANENTLY delete this request and all associated files/logs. This action cannot be undone. Are you absolutely sure?")) return;
+
+    setIsHardDeleting(true);
+    try {
+      await adminApi.delete(`/admin/kanban/request/${selectedRequest.id}`);
+
+      toast.success("Request permanently deleted");
+      fetchBoard();
+      setSelectedRequest(null); // Close modal
+    } catch (error) {
+      console.error("Hard delete error:", error);
+      toast.error("Failed to permanently delete request");
+    } finally {
+      setIsHardDeleting(false);
     }
   };
 
@@ -745,15 +799,41 @@ const KanbanRequestModal = ({
           </div>
         )}
 
-        <div className="flex gap-2 pt-4">
-          <button
-            onClick={() => {
-              setShowEditModal(true);
-            }}
-            className="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors"
-          >
-            Edit Request
-          </button>
+        <div className="flex flex-col gap-3 pt-6 border-t border-gray-800">
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                setShowEditModal(true);
+              }}
+              className="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors text-sm font-medium"
+            >
+              Edit Request
+            </button>
+            <button
+              onClick={handleSoftDelete}
+              disabled={isDeleting || isHardDeleting}
+              className="flex-1 px-4 py-2 bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 border border-orange-600/30 rounded-lg transition-colors text-sm font-medium disabled:opacity-50"
+            >
+              Move to Deleted
+            </button>
+          </div>
+          
+          {admin?.isSuperAdmin && (
+            <button
+              onClick={handleHardDelete}
+              disabled={isDeleting || isHardDeleting}
+              className="w-full px-4 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-600/30 rounded-lg transition-colors text-sm font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {isHardDeleting ? (
+                <>
+                  <span className="w-3 h-3 rounded-full border-2 border-red-400/20 border-t-red-400 animate-spin"></span>
+                  Deleting Permanently...
+                </>
+              ) : (
+                "Permanently Delete Request (Super Admin Only)"
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

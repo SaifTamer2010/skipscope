@@ -51,11 +51,14 @@ const submitNewRequest = async (req: AuthRequest, res: Response) => {
       throw error;
     }
 
-    // Create a notification for the new request
-    await supabase.from("notifications").insert({
-      user_id: req.userId,
-      message: `Your request for ${county} has been submitted and is pending.`,
-      is_read: false,
+    // Create a notification for the new request using NotificationService
+    const { NotificationService } = require("../../../services/notificationService");
+    await NotificationService.createNotification({
+      userId: req.userId,
+      message: `Your request for ${county || state} has been submitted successfully and is now pending review.`,
+      type: "success",
+      requestId: newRequest.id,
+      metadata: { action: "request_submitted", county, state }
     });
 
     res.status(201).json({

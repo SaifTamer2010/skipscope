@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { supabase } from "../../../config/supabase";
 import { AdminRequest } from "../../../middleware/adminAuth";
+import { NotificationService } from "../../../services/notificationService";
 
 const updateStatus = async (
   req: AdminRequest,
@@ -21,15 +22,18 @@ const updateStatus = async (
       return;
     }
 
-    const { error: updateError } = await supabase
+    // Update the status and get the user_id to notify the user
+    const { data: updatedRequest, error: updateError } = await supabase
       .from("requests")
       .update({
         status: status,
         updated_at: new Date().toISOString(),
       })
-      .eq("id", requestId);
+      .eq("id", requestId)
+      .select("user_id")
+      .single();
 
-    if (updateError) throw updateError;
+    if (updateError || !updatedRequest) throw updateError || new Error("Request not found");
 
     // Log activity
     const { error: activityError } = await supabase.from("activity_log").insert({
@@ -42,9 +46,21 @@ const updateStatus = async (
 
     if (activityError) {
       console.error("Activity log error:", activityError);
-      // We still return success as the primary status update worked, 
-      // or we could throw. Let's see if this is the failure point.
     }
+
+    // Determine notification type based on status
+    let notificationType: "info" | "success" | "warning" = "info";
+    if (status === "Waiting Confirmation") notificationType = "warning";
+    if (status === "Finished") notificationType = "success";
+
+    // Trigger notification
+    await NotificationService.createNotification({
+      userId: updatedRequest.user_id,
+      requestId: requestId,
+      message: `Your request status has been updated to "${status}"`,
+      type: notificationType,
+      metadata: { action: "status_change", status },
+    });
 
     res.json({ success: true, message: "Status updated successfully" });
   } catch (error: any) {

@@ -14,27 +14,33 @@ export class NotificationService {
    */
   static async createNotification(payload: NotificationPayload): Promise<void> {
     try {
-      const { error } = await supabase.from("notifications").insert({
-        user_id: payload.userId,
-        message: payload.message,
-        type: payload.type || "info",
-        metadata: payload.metadata || {},
-        request_id: payload.requestId,
-        is_read: false,
-        created_at: new Date().toISOString(),
-      });
+      const { data: newNotification, error } = await supabase
+        .from("notifications")
+        .insert({
+          user_id: payload.userId,
+          message: payload.message,
+          type: payload.type || "info",
+          metadata: payload.metadata || {},
+          request_id: payload.requestId,
+          is_read: false,
+          created_at: new Date().toISOString(),
+        })
+        .select()
+        .single();
 
       if (error) {
         console.error("Error creating notification:", error);
         throw error;
       }
 
-      // Emit SSE event for real-time updates
+      // Emit SSE event for real-time updates with the generated ID
       this.emitNotificationEvent(payload.userId, {
-        message: payload.message,
-        type: payload.type || "info",
-        metadata: payload.metadata,
-        requestId: payload.requestId,
+        id: newNotification.id,
+        message: newNotification.message,
+        type: newNotification.type,
+        metadata: newNotification.metadata,
+        requestId: newNotification.request_id,
+        created_at: newNotification.created_at,
       });
     } catch (error) {
       console.error("Failed to create notification:", error);

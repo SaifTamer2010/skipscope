@@ -1,5 +1,5 @@
 import express from "express";
-import { requireAdmin } from "../middleware/adminAuth";
+import { requireAdmin, requireSuperAdmin } from "../middleware/adminAuth";
 
 // Controllers
 import getBoard from "../controllers/admin/kanban/getBoard";
@@ -11,11 +11,18 @@ import updateNotes from "../controllers/admin/kanban/updateNotes";
 import getColumns from "../controllers/admin/kanban/getColumns";
 import updateFinancials from "../controllers/admin/kanban/updateFinancials";
 import updateStatus from "../controllers/admin/kanban/updateStatus";
+import hardDeleteRequest from "../controllers/admin/kanban/hardDeleteRequest";
 
 const router = express.Router();
 
 // All routes require admin authentication
 router.use(requireAdmin);
+
+/**
+ * DELETE /api/admin/kanban/request/:id
+ * Permanently delete a request (Super admin only)
+ */
+router.delete("/request/:id", requireSuperAdmin, hardDeleteRequest);
 
 /**
  * GET /api/admin/kanban/board

@@ -83,14 +83,15 @@ export function useRealtimeNotifications() {
           return;
         }
 
-        // Add new notification to the list
+        // Add new notification to the list with ID from server
         setNotifications((prev) => [
           {
+            id: data.id,
             message: data.message,
             type: data.type || "info",
             metadata: data.metadata,
             requestId: data.requestId,
-            created_at: new Date().toISOString(),
+            created_at: data.created_at || new Date().toISOString(),
             is_read: false,
           },
           ...prev,

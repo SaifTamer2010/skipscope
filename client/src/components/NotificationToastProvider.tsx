@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   useRealtimeNotifications,
   Notification,
@@ -13,43 +13,44 @@ import toast from "react-hot-toast";
  */
 export default function NotificationToastProvider() {
   const { notifications } = useRealtimeNotifications();
+  const processedIds = useRef<Set<string>>(new Set());
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
-    // Get the latest unread notification
-    const latestNotification = notifications.find(
-      (n: Notification) => !n.is_read,
-    );
-
-    if (latestNotification) {
-      // Show toast based on notification type
-      switch (latestNotification.type) {
-        case "success":
-          toast.success(latestNotification.message, {
-            duration: 5000,
-            icon: "✅",
-          });
-          break;
-        case "error":
-          toast.error(latestNotification.message, {
-            duration: 6000,
-            icon: "❌",
-          });
-          break;
-        case "warning":
-          toast(latestNotification.message, {
-            duration: 5000,
-            icon: "⚠️",
-          });
-          break;
-        case "info":
-        default:
-          toast(latestNotification.message, {
-            duration: 4000,
-            icon: "ℹ️",
-          });
-          break;
-      }
+    // 1. Initial Mount: Mark existing unread notifications as processed to avoid back-to-back toasts
+    if (isInitialMount.current && notifications.length > 0) {
+      notifications.forEach((n) => {
+        if (n.id) processedIds.current.add(n.id);
+      });
+      isInitialMount.current = false;
+      return;
     }
+
+    if (isInitialMount.current && notifications.length === 0) return;
+
+    // 2. Process Notifications: Only toast newly arrived notifications with fresh IDs
+    notifications.forEach((n: Notification) => {
+      if (!n.is_read && n.id && !processedIds.current.has(n.id)) {
+        processedIds.current.add(n.id);
+
+        switch (n.type) {
+          case "success":
+            toast.success(n.message, { duration: 5000, icon: "✅" });
+            break;
+          case "error":
+            toast.error(n.message, { duration: 6000, icon: "❌" });
+            break;
+          case "warning":
+            toast(n.message, { duration: 5000, icon: "⚠️" });
+            break;
+          case "info":
+          default:
+            toast(n.message, { duration: 4000, icon: "ℹ️" });
+            break;
+        }
+      }
+    });
+
   }, [notifications]);
 
   // This component doesn't render anything

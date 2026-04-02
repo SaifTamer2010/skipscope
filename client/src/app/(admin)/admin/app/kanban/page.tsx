@@ -332,6 +332,7 @@ export default function KanbanPage() {
           setSelectedRequest={setSelectedRequest}
           setShowEditModal={setShowEditModal}
           fetchBoard={fetchBoard}
+          admin={admin}
         />
       )}
 
