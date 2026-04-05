@@ -205,7 +205,7 @@ const ViewDetailsModal = ({
                   </label>
                   <div className="p-4 bg-background-third rounded-xl border border-white/5 text-sm text-text-secondry leading-relaxed">
                     {details.ownershipCriteriaFinale.map((item) => (
-                      <p>
+                      <p key={item.key}>
                         {item.key}: {item.value}
                       </p>
                     ))}

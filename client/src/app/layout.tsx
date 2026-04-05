@@ -5,25 +5,34 @@ import type { Metadata } from "next";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
-  title: "SkipScope",
-  description: "At skipscope you scope what you want and we Skip it wink wink",
+  title: "SkipScope | Precision Real Estate Intelligence & Skip Tracing",
+  description: "Scale your real estate portfolio with SkipScope's high-accuracy skip tracing, bulk lead enrichment, and deep search intelligence. 99.8% accuracy for modern real estate professionals.",
+  keywords: ["skip tracing", "real estate leads", "property data", "real estate intelligence", "contact enrichment", "distressed property data"],
   icons: {
     icon: "/favicon.png", // Path is relative to the public directory
     apple: "/favicon.png",
   },
   openGraph: {
-    title: "My Awesome Website",
-    description: "A website built with Next.js.",
-    url: "https://mywebsite.com",
-    siteName: "My Awesome Website",
+    title: "SkipScope | Lead Intelligence for Real Estate Pros",
+    description: "Find more deals with the most accurate skip tracing tool on the market. 99.8% precision for wholesalers and investors.",
+    url: "https://skipscope.ai",
+    siteName: "SkipScope",
     images: [
       {
-        url: "https://mywebsite.com",
-        width: 800,
-        height: 600,
-        alt: "My Awesome Website Open Graph Image",
+        url: "/data/hero.png",
+        width: 1200,
+        height: 630,
+        alt: "SkipScope Real Estate Intelligence Platform",
       },
     ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SkipScope | Real Estate Skip Tracing & Lead Intelligence",
+    description: "Scale your real estate deals with 99.8% accurate data.",
+    images: ["/data/hero.png"],
   },
 };
 
