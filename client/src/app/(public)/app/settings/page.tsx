@@ -26,17 +26,13 @@ export default function SettingsPage() {
   });
 
 
+  const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   
   const router = useRouter();
   const logout = useUserStore((state) => state.logout);
-
-
-  useEffect(() => {
-    fetchSettings();
-  }, []);
 
   const fetchSettings = async () => {
     try {
@@ -60,6 +56,14 @@ export default function SettingsPage() {
       console.error("Failed to load settings", error);
     }
   };
+
+  useEffect(() => {
+    setMounted(true);
+    fetchSettings();
+  }, []);
+
+  if (!mounted) return null;
+
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 import api from "@/lib/api";
-import { X, FileText, Download, Hash, Zap, MapPin, Layers } from "lucide-react";
+import { X, FileText, Download, Hash, Zap, MapPin, Layers, DollarSign } from "lucide-react";
+
 
 import toast from "react-hot-toast";
 
@@ -20,6 +21,8 @@ interface RequestDetails {
   created_at: string;
   updated_at?: string;
   client_notes: string;
+  invoice_amount?: number;
+
   files?: Array<{
     id: string;
     file_name: string;
@@ -210,7 +213,18 @@ const ViewDetailsModal = ({
                     })}
                   </p>
                 </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black text-text-secondry uppercase tracking-widest opacity-60">
+                    Invoice Amount
+                  </label>
+                  <p className="text-emerald-500 font-black text-lg flex items-center gap-1">
+                    <DollarSign size={16} className="opacity-70" />
+                    {details.invoice_amount ? details.invoice_amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : '$0.00'}
+                  </p>
+                </div>
               </div>
+
 
               {/* Advanced Intelligence Section */}
               <div className="grid grid-cols-1 gap-8 pt-4">

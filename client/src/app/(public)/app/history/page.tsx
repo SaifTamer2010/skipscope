@@ -26,10 +26,7 @@ interface Request {
 export default function HistoryPage() {
   const [requests, setRequests] = useState<Request[]>([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchHistory();
-  }, []);
+  const [mounted, setMounted] = useState(false);
 
   const fetchHistory = async () => {
     try {
@@ -41,6 +38,14 @@ export default function HistoryPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    setMounted(true);
+    fetchHistory();
+  }, []);
+
+  if (!mounted) return null;
+
 
   const handleDownloadCSV = async () => {
     try {

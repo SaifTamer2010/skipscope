@@ -49,11 +49,13 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
-                  const theme = localStorage.getItem('theme');
+                  const theme = localStorage.getItem('theme') || 'light';
                   if (theme === 'dark') {
-                    document.body.classList.remove('light');
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.classList.remove('light');
                   } else {
-                    document.body.classList.add('light');
+                    document.documentElement.classList.add('light');
+                    document.documentElement.classList.remove('dark');
                   }
                 } catch (e) {}
               })();
@@ -61,7 +63,9 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="light">
+      <body suppressHydrationWarning>
+
+
         <Toaster
           position="top-right"
           toastOptions={{

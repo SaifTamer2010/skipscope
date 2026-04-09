@@ -88,7 +88,7 @@ body {
   transition: background 0.3s ease, color 0.3s ease;
 }
 
-.light {
+.light, .light body {
   --color-background-main: #ffffff;
   --color-background-secondry: #f8f9fa;
   --color-background-third: #f1f3f5;
@@ -108,6 +108,7 @@ body {
   --color-text-button: #ffffff;
   background: radial-gradient(circle at 50% -20%, #e7f5f7 0%, #ffffff 100%);
 }
+
 
 /* 
 ---break--- */

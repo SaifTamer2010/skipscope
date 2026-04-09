@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Modal from "@/components/Modal";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
@@ -75,11 +75,18 @@ export default function SubmitRequestPage() {
   const [motivation, setMotivation] = useState<string[]>([]);
   const [customNotes, setCustomNotes] = useState("");
 
-  //ui states
+  const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [ownershipCriteriaOption, setOwnershipCriteriaOption] = useState("");
   const [ownershipCriteria, setOwnershipCriteria] = useState("");
   const [customOwnershipCriteria, setCustomOwnershipCriteria] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
 
   // submission to backend
   const handleSubmit = async (e: React.FormEvent) => {
@@ -380,8 +387,8 @@ export default function SubmitRequestPage() {
                   <label
                     htmlFor={item}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all cursor-pointer ${motivation.includes(item)
-                        ? "bg-brand-primary/10 border-brand-primary/50 text-text-primary shadow-sm"
-                        : "bg-background-main/30 border-border-light text-text-secondry hover:border-text-secondry/30"
+                      ? "bg-brand-primary/10 border-brand-primary/50 text-text-primary shadow-sm"
+                      : "bg-background-main/30 border-border-light text-text-secondry hover:border-text-secondry/30"
                       }`}
                   >
                     <div className={`w-4 h-4 rounded-md border flex items-center justify-center transition-all ${motivation.includes(item) ? "bg-brand-primary border-brand-primary" : "border-text-secondry/40"

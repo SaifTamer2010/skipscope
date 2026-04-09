@@ -22,7 +22,9 @@ const SelectTrigger = React.forwardRef<
       "flex h-12 w-full items-center justify-between rounded-2xl border border-border-light bg-background-main/50 px-5 py-3.5 text-sm font-medium text-text-primary ring-offset-background placeholder:text-text-secondry/30 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 transition-all",
       className
     )}
+    suppressHydrationWarning
     {...props}
+
   >
     {children}
     <SelectPrimitive.Icon asChild>

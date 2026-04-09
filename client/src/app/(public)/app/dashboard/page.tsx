@@ -33,10 +33,7 @@ export default function DashboardPage() {
     finished: 0,
   });
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchStats();
-  }, []);
+  const [mounted, setMounted] = useState(false);
 
   const fetchStats = async () => {
     try {
@@ -48,6 +45,14 @@ export default function DashboardPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    setMounted(true);
+    fetchStats();
+  }, []);
+
+  if (!mounted) return null;
+
 
   if (loading) {
     return <LoadingScreen />;

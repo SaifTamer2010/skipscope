@@ -5,13 +5,14 @@ import { Sun, Moon } from "lucide-react";
 
 export default function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<"dark" | "light">("light");
 
   useEffect(() => {
     setMounted(true);
-    const savedTheme = (localStorage.getItem("theme") as "dark" | "light") || "dark";
+    const savedTheme = (localStorage.getItem("theme") as "dark" | "light") || "light";
     setTheme(savedTheme);
-    document.body.classList.toggle("light", savedTheme === "light");
+    document.documentElement.classList.toggle("light", savedTheme === "light");
+    document.documentElement.classList.toggle("dark", savedTheme === "dark");
   }, []);
 
   if (!mounted) return <div className="w-14 h-7" />; // Prevent hydration mismatch
@@ -20,8 +21,10 @@ export default function ThemeToggle() {
     const newTheme = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
-    document.body.classList.toggle("light", newTheme === "light");
+    document.documentElement.classList.toggle("light", newTheme === "light");
+    document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
+
 
   return (
     <button
