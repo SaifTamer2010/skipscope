@@ -7,7 +7,7 @@ const features = [
   {
     title: "Deep Search Intelligence",
     description: "Uncover hidden data points and verified contact info that standard tools miss.",
-    icon: <Search className="w-8 h-8 text-brand-red" />,
+    icon: <Search className="w-8 h-8 text-brand-primary" />,
   },
   {
     title: "Bulk Portfolio Processing",
@@ -26,7 +26,7 @@ const FeaturesGrid = () => {
     <section id="features" className="w-full max-w-7xl py-32 px-6 relative">
       <div className="text-center mb-24">
         <h2 className="text-4xl md:text-6xl font-black text-text-primary mb-8 tracking-tight">
-          Engineered for <span className="italic text-brand-red-strong">Precision</span>
+          Engineered for <span className="italic text-brand-primary-strong">Precision</span>
         </h2>
         <p className="text-text-secondry max-w-2xl mx-auto text-lg md:text-xl font-medium opacity-80">
           Traditional data providers are outdated. Skipscope utilizes real-time connectivity
@@ -42,7 +42,7 @@ const FeaturesGrid = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.2 }}
             viewport={{ once: true }}
-            className="bg-background-third border border-border-muted p-8 rounded-2xl hover:border-brand-red-strong/30 transition-colors group"
+            className="bg-background-third border border-border-muted p-8 rounded-2xl hover:border-brand-primary-strong/30 transition-colors group"
           >
             <div className="text-4xl mb-6 group-hover:scale-110 transition-transform">{feature.icon}</div>
             <h3 className="text-xl font-bold text-text-primary mb-4">{feature.title}</h3>

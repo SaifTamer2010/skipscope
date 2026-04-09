@@ -13,15 +13,16 @@ html {
   --color-text-primary: #f2f2f2;
   --color-text-secondry: #b3b3b3;
 
-  --color-brand-red: #ef4444;
-  --color-brand-red-strong: #dc2626;
-  --color-brand-red-dark: #991b1b;
-  
-  --color-brand-glow: rgba(239, 68, 68, 0.15);
-  --color-brand-glow-strong: rgba(220, 38, 38, 0.4);
+  --color-brand-primary: #128292;
+  --color-brand-primary-strong: #0e6b78;
+  --color-brand-primary-dark: #0a4d56;
+
+  --color-brand-glow: rgba(18, 130, 146, 0.15);
+  --color-brand-glow-strong: rgba(18, 130, 146, 0.4);
 
   --color-border-muted: rgba(255, 255, 255, 0.05);
   --color-border-light: rgba(255, 255, 255, 0.1);
+  --color-text-button: #ffffff;
 }
 
 @theme {
@@ -32,29 +33,39 @@ html {
   --color-text-primary: var(--color-text-primary);
   --color-text-secondry: var(--color-text-secondry);
 
-  --color-brand-red: var(--color-brand-red);
-  --color-brand-red-strong: var(--color-brand-red-strong);
-  --color-brand-red-dark: var(--color-brand-red-dark);
+  --color-brand-primary: var(--color-brand-primary);
+  --color-brand-primary-strong: var(--color-brand-primary-strong);
+  --color-brand-primary-dark: var(--color-brand-primary-dark);
+  --color-text-button: var(--color-text-button);
 }
 
 body {
-  --color-background-main: #000000;
-  --color-background-secondry: #0d0d0d;
-  --color-background-third: #0d0d0d;
-
-  --color-text-primary: #f2f2f2;
-  --color-text-secondy: #b3b3b3;
-  color: #f2f2f2;
+  background: radial-gradient(circle at 50% -20%, #0a4d56 0%, #000000 100%);
+  background-attachment: fixed;
+  color: var(--color-text-primary);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* body.light {
-  --color-background-main: #e6e6e6;
-  --color-background-secondry: #f2f2f2;
-  --color-background-third: #ffffff;
+.light {
+  --color-background-main: #ffffff;
+  --color-background-secondry: #f8f9fa;
+  --color-background-third: #f1f3f5;
 
-  --color-write-primary: #0d0d0d;
-  --color-write-secondy: #4d4d4d;
-} */
+  --color-text-primary: #1a1a1a;
+  --color-text-secondry: #6c757d;
+
+  --color-brand-primary: #128292;
+  --color-brand-primary-strong: #0e6b78;
+  --color-brand-primary-dark: #0a4d56;
+
+  --color-brand-glow: rgba(37, 99, 235, 0.1);
+  --color-brand-glow-strong: rgba(29, 78, 216, 0.2);
+
+  --color-border-muted: rgba(0, 0, 0, 0.05);
+  --color-border-light: rgba(0, 0, 0, 0.1);
+  --color-text-button: #ffffff;
+  background: radial-gradient(circle at 50% -20%, #e7f5f7 0%, #ffffff 100%);
+}
 
 /* 
 ---break--- */
@@ -148,10 +159,23 @@ body {
 
 @layer utilities {
   @keyframes scan {
-    0% { top: 0; opacity: 0; }
-    5% { opacity: 1; }
-    95% { opacity: 1; }
-    100% { top: 100%; opacity: 0; }
+    0% {
+      top: 0;
+      opacity: 0;
+    }
+
+    5% {
+      opacity: 1;
+    }
+
+    95% {
+      opacity: 1;
+    }
+
+    100% {
+      top: 100%;
+      opacity: 0;
+    }
   }
 
   /* Chrome, Safari, Edge */

@@ -92,7 +92,7 @@ const MarketingNavbar = () => {
       right: "0%",
       top: 0,
       borderRadius: 0,
-      backgroundColor: "rgba(0, 0, 0, 0.8)",
+      backgroundColor: "var(--color-background-main)",
       borderColor: "var(--color-border-muted)",
       height: 80,
       paddingLeft: "2rem",
@@ -104,7 +104,7 @@ const MarketingNavbar = () => {
       right: "3%",
       top: 16,
       borderRadius: 100,
-      backgroundColor: "rgba(0, 0, 0, 0.7)",
+      backgroundColor: "var(--color-background-main)",
       borderColor: "var(--color-brand-glow-strong)",
       height: 64,
       paddingLeft: "1.5rem",
@@ -149,7 +149,7 @@ const MarketingNavbar = () => {
                 scroll={false}
                 onClick={(e) => scrollToSection(e, link.href)}
                 className={`relative text-sm sm:text-lg font-bold text-center transition-all duration-300
-                  ${isActive ? "text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]" : "text-white/40 hover:text-white/80"}
+                  ${isActive ? "text-text-primary drop-shadow-[0_0_8px_var(--color-brand-glow)]" : "text-text-secondry hover:text-text-primary"}
                 `}
               >
                 {link.label}
@@ -157,7 +157,7 @@ const MarketingNavbar = () => {
                 {isActive && (
                   <motion.div
                     layoutId="navbar-indicator"
-                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-white shadow-[0_0_15px_rgba(255,255,255,1)]"
+                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-brand-primary shadow-[0_0_15px_var(--color-brand-primary)]"
                     transition={{
                       type: "spring",
                       stiffness: 500,
@@ -179,7 +179,7 @@ const MarketingNavbar = () => {
             Login
           </Link>
           <MainButton Goto="/app/auth/register">
-            <p className="text-text-primary font-black italic uppercase tracking-widest text-xs">
+            <p className="text-text-button font-black italic uppercase tracking-widest text-xs">
               Join Skipscope
             </p>
           </MainButton>
@@ -194,15 +194,15 @@ const MarketingNavbar = () => {
         >
           <motion.span
             animate={isMenuOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
-            className="w-8 h-0.5 bg-white mb-1.5 block rounded-full"
+            className="w-8 h-0.5 bg-text-primary mb-1.5 block rounded-full"
           />
           <motion.span
             animate={isMenuOpen ? { opacity: 0 } : { opacity: 1 }}
-            className="w-8 h-0.5 bg-white mb-1.5 block rounded-full"
+            className="w-8 h-0.5 bg-text-primary mb-1.5 block rounded-full"
           />
           <motion.span
             animate={isMenuOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
-            className="w-8 h-0.5 bg-white block rounded-full"
+            className="w-8 h-0.5 bg-text-primary block rounded-full"
           />
         </button>
 
@@ -214,7 +214,7 @@ const MarketingNavbar = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className="fixed left-0 right-0 top-20 bg-black/95 backdrop-blur-2xl z-50 md:hidden flex flex-col p-8 border-b border-white/10 shadow-2xl shadow-black h-[calc(100vh-80px)]"
+              className="fixed left-0 right-0 top-20 bg-background-main/95 backdrop-blur-2xl z-50 md:hidden flex flex-col p-8 border-b border-border-light shadow-2xl shadow-black h-[calc(100vh-80px)]"
             >
               <div className="flex flex-col gap-6">
                 {links.map((link, idx) => {
@@ -233,7 +233,7 @@ const MarketingNavbar = () => {
                           setIsMenuOpen(false);
                           scrollToSection(e, link.href);
                         }}
-                        className={`text-4xl font-black italic uppercase tracking-tighter transition-all duration-300 ${isActive ? "text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]" : "text-white/20"
+                        className={`text-4xl font-black italic uppercase tracking-tighter transition-all duration-300 ${isActive ? "text-text-primary drop-shadow-[0_0_15px_var(--color-brand-primary)]" : "text-text-secondry/40"
                           }`}
                       >
                         {link.label}
@@ -249,7 +249,7 @@ const MarketingNavbar = () => {
                 transition={{ delay: 0.5 }}
                 className="mt-auto flex flex-col gap-4 "
               >
-                  <button
+                <button
                   onClick={() => {
                     setIsMenuOpen(false);
                     router.push("/app/auth/login");
@@ -263,13 +263,13 @@ const MarketingNavbar = () => {
                     setIsMenuOpen(false);
                     router.push("/app/auth/register");
                   }}
-                  className="w-full py-5 rounded-2xl bg-brand-red-strong text-text-primary font-black italic uppercase tracking-widest text-xl shadow-lg shadow-brand-red-strong/20"
+                  className="w-full py-5 rounded-2xl bg-brand-primary-strong text-text-button font-black italic uppercase tracking-widest text-xl shadow-lg shadow-brand-primary-strong/20"
                 >
                   Join Skipscope
                 </button>
               </motion.div>
 
-              <div className="mt-12 text-center text-white/20 text-xs font-bold uppercase tracking-[0.3em]">
+              <div className="mt-12 text-center text-text-secondry/20 text-xs font-bold uppercase tracking-[0.3em]">
                 Fast Track Intelligence
               </div>
             </motion.div>

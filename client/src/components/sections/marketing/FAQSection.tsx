@@ -28,7 +28,7 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
     <div className="border-b border-border-light">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full py-6 flex justify-between items-center text-left hover:text-brand-red transition-colors"
+        className="w-full py-6 flex justify-between items-center text-left hover:text-brand-primary transition-colors"
       >
         <span className="text-lg font-bold text-text-primary">{question}</span>
         <span className="text-2xl">{isOpen ? "−" : "+"}</span>

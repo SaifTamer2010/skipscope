@@ -12,7 +12,7 @@ const StatsBar = () => {
   return (
     <section id="stats" className="w-full bg-background-secondry border-b border-border-muted py-12 px-6">
       <h2 className="text-3xl md:text-5xl font-bold text-text-primary mb-12 text-center ">
-        Why <span className="bg-gradient-to-r from-brand-red to-brand-red-dark bg-clip-text text-transparent italic">Skipscope?</span>
+        Why <span className="bg-gradient-to-r from-brand-primary to-brand-primary-dark bg-clip-text text-transparent italic">Skipscope?</span>
       </h2>
       <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-12 md:gap-24">
         {stats.map((stat, idx) => (

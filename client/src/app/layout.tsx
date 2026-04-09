@@ -43,6 +43,28 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const theme = localStorage.getItem('theme');
+                  const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  if (theme === 'light') {
+                    document.body.classList.add('light');
+                  } else if (theme === 'dark') {
+                    document.body.classList.remove('light');
+                  } else if (supportDarkMode) {
+                    // Default to dark if no preference, but could change if needed
+                    document.body.classList.remove('light');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body>
         <Toaster
           position="top-right"

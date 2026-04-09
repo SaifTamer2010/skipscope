@@ -9,9 +9,9 @@ export default {
     extend: {
       colors: {
         brand: {
-          red: "var(--color-brand-red)",
-          "red-strong": "var(--color-brand-red-strong)",
-          "red-dark": "var(--color-brand-red-dark)",
+          primary: "var(--color-brand-primary)",
+          "primary-strong": "var(--color-brand-primary-strong)",
+          "primary-dark": "var(--color-brand-primary-dark)",
         },
         background: {
           main: "var(--color-background-main)",
@@ -21,6 +21,7 @@ export default {
         text: {
           primary: "var(--color-text-primary)",
           secondry: "var(--color-text-secondry)",
+          button: "var(--color-text-button)",
         },
         border: {
           muted: "var(--color-border-muted)",

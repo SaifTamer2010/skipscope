@@ -8,7 +8,7 @@ const useCases = [
   {
     role: "Real Estate Professionals",
     benefit: "Wholesalers, investors, and agents who need motivated seller and buyer data to fuel their deals.",
-    icon: <Home className="w-6 h-6 text-brand-red" />,
+    icon: <Home className="w-6 h-6 text-brand-primary" />,
     results: [
       { label: "Distressed Sellers Found", value: "1,420" },
       { label: "Phone Match Rate", value: "94%" },
@@ -74,9 +74,9 @@ const IndustriesSection = () => {
     <section id="industries" className="w-full max-w-7xl py-32 px-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
         <div>
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 tracking-tight">
+          <h2 className="text-3xl md:text-5xl font-bold text-text-primary mb-8 tracking-tight">
             Tailored for Every <br />
-            <span className="bg-gradient-to-r from-brand-red to-brand-red-dark bg-clip-text text-transparent italic">Market Role</span>
+            <span className="bg-gradient-to-r from-brand-primary to-brand-primary-dark bg-clip-text text-transparent italic">Market Role</span>
           </h2>
           <p className="text-text-secondry mb-12 text-lg">Whether you are sourcing your first deal or managing a major portfolio, Skipscope provides the intelligence you need.</p>
           <div className="space-y-4">
@@ -89,11 +89,11 @@ const IndustriesSection = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ delay: idx * 0.1 }}
                 className={`flex items-start gap-4 p-6 rounded-2xl border transition-all duration-500 cursor-pointer ${hoveredRole === useCase.role
-                  ? "border-brand-red-strong/40 bg-brand-red-strong/5 shadow-[0_0_30px_rgba(220,38,38,0.05)]"
-                  : "border-border-muted bg-white/[0.02]"
+                  ? "border-brand-primary-strong/40 bg-brand-primary-strong/5 shadow-[0_0_30px_rgba(220,38,38,0.05)]"
+                  : "border-border-muted bg-background-secondry/50"
                   }`}
               >
-                <div className={`p-3 rounded-xl border transition-colors duration-500 ${hoveredRole === useCase.role ? "bg-brand-red-strong/20 border-brand-red-strong/40" : "bg-white/5 border-border-light"
+                <div className={`p-3 rounded-xl border transition-colors duration-500 ${hoveredRole === useCase.role ? "bg-brand-primary-strong/20 border-brand-primary-strong/40" : "bg-background-third border-border-light"
                   }`}>
                   {useCase.icon}
                 </div>
@@ -107,7 +107,7 @@ const IndustriesSection = () => {
         </div>
 
         <div className="relative aspect-square w-full">
-          <div className="absolute inset-0 bg-brand-red-strong/5 blur-[120px] -z-10 rounded-full"></div>
+          <div className="absolute inset-0 bg-brand-primary-strong/5 blur-[120px] -z-10 rounded-full"></div>
 
           <AnimatePresence mode="wait">
             <motion.div
@@ -116,18 +116,18 @@ const IndustriesSection = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 1.05, y: -20 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className="h-full w-full bg-white/[0.03] backdrop-blur-3xl border border-border-light rounded-[3rem] p-12 flex flex-col justify-center items-center text-center relative overflow-hidden group shadow-2xl"
+              className="h-full w-full bg-background-main/80 backdrop-blur-3xl border border-border-light rounded-[3rem] p-12 flex flex-col justify-center items-center text-center relative overflow-hidden group shadow-2xl"
             >
               {/* Visual Scanning Effect */}
-              <div className="absolute top-0 left-0 w-full h-1 bg-brand-red-strong/50 blur-[2px] animate-[scan_4s_infinite]"></div>
+              <div className="absolute top-0 left-0 w-full h-1 bg-brand-primary-strong/50 blur-[2px] animate-[scan_4s_infinite]"></div>
 
               {hoveredRole ? (
                 <div className="w-full space-y-12 relative z-10">
                   <div className="space-y-4">
-                    <div className="w-24 h-24 rounded-3xl bg-brand-red-strong/10 border border-brand-red-strong/20 flex items-center justify-center text-5xl mx-auto shadow-2xl shadow-brand-red-strong/10 group-hover:scale-110 transition-transform duration-500">
+                    <div className="w-24 h-24 rounded-3xl bg-brand-primary-strong/10 border border-brand-primary-strong/20 flex items-center justify-center text-5xl mx-auto shadow-2xl shadow-brand-primary-strong/10 group-hover:scale-110 transition-transform duration-500">
                       {useCases.find(u => u.role === hoveredRole)?.icon}
                     </div>
-                    <div className="inline-block px-4 py-1.2 rounded-full bg-brand-red-strong/10 border border-brand-red-strong/20 text-xs font-black text-brand-red uppercase tracking-[0.2em]">
+                    <div className="inline-block px-4 py-1.2 rounded-full bg-brand-primary-strong/10 border border-brand-primary-strong/20 text-xs font-black text-brand-primary uppercase tracking-[0.2em]">
                       {useCases.find(u => u.role === hoveredRole)?.metric}
                     </div>
                   </div>
@@ -139,7 +139,7 @@ const IndustriesSection = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 + i * 0.1 }}
-                        className="p-6 bg-white/5 rounded-2xl border border-border-light text-left"
+                        className="p-6 bg-background-secondry rounded-2xl border border-border-light text-left"
                       >
                         <div className="text-3xl font-black text-text-primary mb-2 tracking-tight">{res.value}</div>
                         <div className="text-[10px] text-text-secondry font-bold uppercase tracking-widest">{res.label}</div>
@@ -163,13 +163,13 @@ const IndustriesSection = () => {
                 </div>
               )}
 
-              <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-brand-red-strong/10 blur-[100px] rounded-full"></div>
+              <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-brand-primary-strong/10 blur-[100px] rounded-full"></div>
             </motion.div>
           </AnimatePresence>
         </div>
       </div>
       <div className="mt-24 text-center opacity-40">
-        <p className="text-lg text-text-secondry italic font-medium italic underline decoration-brand-red-strong/50 underline-offset-8">Precision Intelligence tailored for high-stakes markets.</p>
+        <p className="text-lg text-text-secondry italic font-medium italic underline decoration-brand-primary-strong/50 underline-offset-8">Precision Intelligence tailored for high-stakes markets.</p>
       </div>
     </section>
   );

@@ -14,8 +14,8 @@ const HeroSection = () => {
         className="flex-1 text-center md:text-left"
       >
         <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-6">
-          <span className="text-white">Precision Intelligence for </span>
-            <span className="bg-gradient-to-r from-brand-red to-brand-red-dark bg-clip-text text-transparent italic">
+          <span className="text-text-primary">Precision Intelligence for </span>
+            <span className="bg-gradient-to-r from-brand-primary to-brand-primary-dark bg-clip-text text-transparent italic">
              Real Estate Experts
            </span>
          </h1>

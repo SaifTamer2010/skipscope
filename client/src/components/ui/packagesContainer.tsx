@@ -23,7 +23,7 @@ const PackagesContainer = ({
   return (
     <div className="relative w-60 h-130 rounded-xl bg-background-secondry grid grid-rows-[50px_50px_70px_240px_50px] p-6 transition-all shadow-lg shadow-black hover:scale-105 overflow-hidden border border-border-muted">
       {poweredByActive && (
-        <div className="absolute -right-6 top-8 rotate-45 bg-brand-red-strong px-10 py-1 text-xs font-bold text-text-primary shadow-md ">
+        <div className="absolute -right-6 top-8 rotate-45 bg-brand-primary-strong px-10 py-1 text-xs font-bold text-text-primary shadow-md ">
           {poweredBy}
         </div>
       )}
@@ -31,7 +31,7 @@ const PackagesContainer = ({
         <Image src={src} alt={alt} width={80} height={80} />
       </div>
       <h1 className="text-xl font-semibold text-text-primary ">{title}</h1>
-      <div className="bg-brand-red-dark w-35 h-10 rounded-2xl text-xs justify-center items-center flex text-text-primary font-bold text-center shadow-2xs shadow-black border-border-light border">
+      <div className="bg-brand-primary-dark w-35 h-10 rounded-2xl text-xs justify-center items-center flex text-text-primary font-bold text-center shadow-2xs shadow-black border-border-light border">
         {records}
       </div>
       <p className="text-sm text-text-secondry">{description}</p>
