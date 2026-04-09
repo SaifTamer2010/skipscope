@@ -29,9 +29,6 @@ const RegisterPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
 
-  // OTP state
-  const [otpToken, setOtpToken] = useState("");
-
   const handleNext = () => {
     if (currentStep === 1) {
       if (!username || !email || !phone) {
@@ -82,34 +79,7 @@ const RegisterPage = () => {
       if (error) throw error;
 
       if (data.user) {
-        setDirection(1);
-        setCurrentStep(4);
-        toast.success("Verification code sent!");
-      }
-    } catch (error: any) {
-      toast.error(error.message || "Signup failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyOtp = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (loading) return;
-    if (!otpToken || otpToken.length < 6) return;
-
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.auth.verifyOtp({
-        email,
-        token: otpToken,
-        type: "signup",
-      });
-
-      if (error) throw error;
-
-      if (data.user) {
-        // Save to users table
+        // Direct DB Sync
         const { error: dbError } = await supabase.from("users").upsert({
           id: data.user.id,
           username,
@@ -118,15 +88,20 @@ const RegisterPage = () => {
           role,
           age: age ? parseInt(age) : null,
           company,
+          settings: { mode: "PRO", notifications: true } // Default settings
         });
 
         if (dbError) console.error("DB Sync error:", dbError);
 
-        toast.success("Welcome to Skipscope!");
-        router.push("/app/dashboard");
+        toast.success("Account Sealed. Welcome to Skipscope!");
+        
+        // Short delay for the feeling of "processing"
+        setTimeout(() => {
+          router.push("/app/dashboard");
+        }, 1500);
       }
     } catch (error: any) {
-      toast.error(error.message || "Invalid code");
+      toast.error(error.message || "Signup failed");
     } finally {
       setLoading(false);
     }
@@ -154,7 +129,6 @@ const RegisterPage = () => {
       case 1: return "Identity Access";
       case 2: return "Professional Profile";
       case 3: return "Security Gate";
-      case 4: return "Final Authorization";
       default: return "Join Skipscope";
     }
   };
@@ -175,7 +149,7 @@ const RegisterPage = () => {
             {stepTitle()}
           </motion.h1>
           <div className="flex gap-2">
-            {[1, 2, 3, 4].map((s) => (
+            {[1, 2, 3].map((s) => (
               <div
                 key={s}
                 className={`h-1 rounded-full transition-all duration-500 ${s === currentStep ? "w-8 bg-red-600" : "w-4 bg-white/10"}`}
@@ -328,41 +302,6 @@ const RegisterPage = () => {
                     </button>
                   </div>
                 </div>
-              )}
-
-              {currentStep === 4 && (
-                <form onSubmit={handleVerifyOtp} className="flex flex-col gap-6 items-center">
-                  <div className="text-center mb-2">
-                    <p className="text-white text-sm">Input the 6-digit code sent to</p>
-                    <p className="text-red-500 font-bold italic">{email}</p>
-                  </div>
-
-                  <input
-                    type="text"
-                    maxLength={6}
-                    placeholder="000 000"
-                    className="bg-black border border-white/20 w-full h-20 rounded-2xl text-center text-5xl font-black tracking-[0.4em] focus:border-red-600 outline-none text-white transition-all shadow-2xl shadow-red-900/20 placeholder:text-white/5"
-                    value={otpToken}
-                    onChange={(e) => setOtpToken(e.target.value.replace(/\D/g, ""))}
-                    autoFocus
-                  />
-
-                  <button
-                    type="submit"
-                    disabled={loading || otpToken.length < 6}
-                    className="w-full h-16 rounded-xl bg-red-600 shadow-lg shadow-red-900/40 text-white font-black uppercase italic tracking-widest disabled:opacity-20"
-                  >
-                    {loading ? "Authorizing..." : "Complete Access"}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => { setDirection(-1); setCurrentStep(1); }}
-                    className="text-white/30 hover:text-white/60 text-[10px] uppercase font-bold italic tracking-widest mt-2 transition-colors"
-                  >
-                    Identity Mismatch? Reset Form
-                  </button>
-                </form>
               )}
             </motion.div>
           </AnimatePresence>

@@ -25,12 +25,12 @@ const faqs = [
 const FAQItem = ({ question, answer }: { question: string, answer: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className="border-b border-white/10">
+    <div className="border-b border-border-light">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full py-6 flex justify-between items-center text-left hover:text-red-500 transition-colors"
+        className="w-full py-6 flex justify-between items-center text-left hover:text-brand-red transition-colors"
       >
-        <span className="text-lg font-bold text-white">{question}</span>
+        <span className="text-lg font-bold text-text-primary">{question}</span>
         <span className="text-2xl">{isOpen ? "−" : "+"}</span>
       </button>
       <AnimatePresence>
@@ -53,7 +53,7 @@ const FAQSection = () => {
   return (
     <section id="faq" className="w-full max-w-3xl py-32 px-6">
       <div className="mb-20 text-center">
-        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Common Questions</h2>
+        <h2 className="text-3xl md:text-5xl font-bold text-text-primary mb-4">Common Questions</h2>
         <p className="text-text-secondry">Everything you need to know about our precision data.</p>
       </div>
       <div className="space-y-4">

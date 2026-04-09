@@ -8,7 +8,7 @@ const useCases = [
   {
     role: "Real Estate Professionals",
     benefit: "Wholesalers, investors, and agents who need motivated seller and buyer data to fuel their deals.",
-    icon: <Home className="w-6 h-6 text-blue-500" />,
+    icon: <Home className="w-6 h-6 text-brand-red" />,
     results: [
       { label: "Distressed Sellers Found", value: "1,420" },
       { label: "Phone Match Rate", value: "94%" },
@@ -76,7 +76,7 @@ const IndustriesSection = () => {
         <div>
           <h2 className="text-3xl md:text-5xl font-bold text-white mb-8 tracking-tight">
             Tailored for Every <br />
-            <span className="bg-gradient-to-r from-red-500 to-red-800 bg-clip-text text-transparent italic">Market Role</span>
+            <span className="bg-gradient-to-r from-brand-red to-brand-red-dark bg-clip-text text-transparent italic">Market Role</span>
           </h2>
           <p className="text-text-secondry mb-12 text-lg">Whether you are sourcing your first deal or managing a major portfolio, Skipscope provides the intelligence you need.</p>
           <div className="space-y-4">
@@ -89,16 +89,16 @@ const IndustriesSection = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ delay: idx * 0.1 }}
                 className={`flex items-start gap-4 p-6 rounded-2xl border transition-all duration-500 cursor-pointer ${hoveredRole === useCase.role
-                  ? "border-red-600/40 bg-red-600/5 shadow-[0_0_30px_rgba(220,38,38,0.05)]"
-                  : "border-white/5 bg-white/[0.02]"
+                  ? "border-brand-red-strong/40 bg-brand-red-strong/5 shadow-[0_0_30px_rgba(220,38,38,0.05)]"
+                  : "border-border-muted bg-white/[0.02]"
                   }`}
               >
-                <div className={`p-3 rounded-xl border transition-colors duration-500 ${hoveredRole === useCase.role ? "bg-red-600/20 border-red-600/40" : "bg-white/5 border-white/10"
+                <div className={`p-3 rounded-xl border transition-colors duration-500 ${hoveredRole === useCase.role ? "bg-brand-red-strong/20 border-brand-red-strong/40" : "bg-white/5 border-border-light"
                   }`}>
                   {useCase.icon}
                 </div>
                 <div>
-                  <h4 className="font-bold text-white text-lg mb-1">{useCase.role}</h4>
+                  <h4 className="font-bold text-text-primary text-lg mb-1">{useCase.role}</h4>
                   <p className="text-text-secondry text-sm font-medium leading-relaxed">{useCase.benefit}</p>
                 </div>
               </motion.div>
@@ -107,7 +107,7 @@ const IndustriesSection = () => {
         </div>
 
         <div className="relative aspect-square w-full">
-          <div className="absolute inset-0 bg-red-600/5 blur-[120px] -z-10 rounded-full"></div>
+          <div className="absolute inset-0 bg-brand-red-strong/5 blur-[120px] -z-10 rounded-full"></div>
 
           <AnimatePresence mode="wait">
             <motion.div
@@ -116,18 +116,18 @@ const IndustriesSection = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 1.05, y: -20 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className="h-full w-full bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[3rem] p-12 flex flex-col justify-center items-center text-center relative overflow-hidden group shadow-2xl"
+              className="h-full w-full bg-white/[0.03] backdrop-blur-3xl border border-border-light rounded-[3rem] p-12 flex flex-col justify-center items-center text-center relative overflow-hidden group shadow-2xl"
             >
               {/* Visual Scanning Effect */}
-              <div className="absolute top-0 left-0 w-full h-1 bg-red-600/50 blur-[2px] animate-[scan_4s_infinite]"></div>
+              <div className="absolute top-0 left-0 w-full h-1 bg-brand-red-strong/50 blur-[2px] animate-[scan_4s_infinite]"></div>
 
               {hoveredRole ? (
                 <div className="w-full space-y-12 relative z-10">
                   <div className="space-y-4">
-                    <div className="w-24 h-24 rounded-3xl bg-red-600/10 border border-red-600/20 flex items-center justify-center text-5xl mx-auto shadow-2xl shadow-red-600/10 group-hover:scale-110 transition-transform duration-500">
+                    <div className="w-24 h-24 rounded-3xl bg-brand-red-strong/10 border border-brand-red-strong/20 flex items-center justify-center text-5xl mx-auto shadow-2xl shadow-brand-red-strong/10 group-hover:scale-110 transition-transform duration-500">
                       {useCases.find(u => u.role === hoveredRole)?.icon}
                     </div>
-                    <div className="inline-block px-4 py-1.2 rounded-full bg-red-600/10 border border-red-600/20 text-xs font-black text-red-500 uppercase tracking-[0.2em]">
+                    <div className="inline-block px-4 py-1.2 rounded-full bg-brand-red-strong/10 border border-brand-red-strong/20 text-xs font-black text-brand-red uppercase tracking-[0.2em]">
                       {useCases.find(u => u.role === hoveredRole)?.metric}
                     </div>
                   </div>
@@ -139,37 +139,37 @@ const IndustriesSection = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 + i * 0.1 }}
-                        className="p-6 bg-white/5 rounded-2xl border border-white/10 text-left"
+                        className="p-6 bg-white/5 rounded-2xl border border-border-light text-left"
                       >
-                        <div className="text-3xl font-black text-white mb-2 tracking-tight">{res.value}</div>
+                        <div className="text-3xl font-black text-text-primary mb-2 tracking-tight">{res.value}</div>
                         <div className="text-[10px] text-text-secondry font-bold uppercase tracking-widest">{res.label}</div>
                       </motion.div>
                     ))}
                   </div>
 
-                  <div className="pt-8 border-t border-white/10">
+                  <div className="pt-8 border-t border-border-light">
                     <p className="text-text-secondry text-lg italic font-medium">"Skipscope delivered more results in 10 minutes than our previous provider did in a month."</p>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-6 opacity-40">
-                  <div className="w-32 h-32 rounded-full border-2 border-dashed border-white/20 flex items-center justify-center mx-auto text-white/20 text-6xl">
+                  <div className="w-32 h-32 rounded-full border-2 border-dashed border-border-light flex items-center justify-center mx-auto text-text-primary/20 text-6xl">
                     ?
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold text-white mb-2">Select a Market Role</h3>
+                    <h3 className="text-2xl font-bold text-text-primary mb-2">Select a Market Role</h3>
                     <p className="text-text-secondry max-w-xs mx-auto">Hover over the roles on the left to see live intelligence metrics and found data examples.</p>
                   </div>
                 </div>
               )}
 
-              <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-red-600/10 blur-[100px] rounded-full"></div>
+              <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-brand-red-strong/10 blur-[100px] rounded-full"></div>
             </motion.div>
           </AnimatePresence>
         </div>
       </div>
       <div className="mt-24 text-center opacity-40">
-        <p className="text-lg text-text-secondry italic font-medium italic underline decoration-red-600/50 underline-offset-8">Precision Intelligence tailored for high-stakes markets.</p>
+        <p className="text-lg text-text-secondry italic font-medium italic underline decoration-brand-red-strong/50 underline-offset-8">Precision Intelligence tailored for high-stakes markets.</p>
       </div>
     </section>
   );

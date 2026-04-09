@@ -42,7 +42,7 @@ const ProductShowcase = () => {
   return (
     <section id="showcase" ref={showcaseRef} onMouseMove={handleMouseMove} className="w-full max-w-7xl py-32 px-6 overflow-hidden">
       <div className="mb-20 text-center">
-        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 italic">Product Showcase</h2>
+        <h2 className="text-3xl md:text-5xl font-bold text-text-primary mb-4 italic">Product Showcase</h2>
         <p className="text-text-secondry">Experience the most powerful real estate lead management interface.</p>
       </div>
 
@@ -54,29 +54,29 @@ const ProductShowcase = () => {
         }}
         className="relative w-full max-w-5xl mx-auto perspective-1000"
       >
-        <div className="bg-gradient-to-br from-gray-900 to-black p-1 rounded-[24px] md:rounded-[40px] border border-white/20 shadow-2xl shadow-red-600/10 h-[350px] md:h-[600px]">
-          <div className="bg-[#050505] rounded-[22px] md:rounded-[38px] h-full overflow-hidden border border-white/10 relative shadow-inner ">
+        <div className="bg-gradient-to-br from-background-third to-background-main p-1 rounded-[24px] md:rounded-[40px] border border-border-light shadow-2xl shadow-brand-glow h-[350px] md:h-[600px]">
+          <div className="bg-background-secondry rounded-[22px] md:rounded-[38px] h-full overflow-hidden border border-border-light relative shadow-inner ">
             
-            <div className="h-12 border-b border-white/10 flex items-center justify-between px-6 bg-white/[0.02]">
+            <div className="h-12 border-b border-border-light flex items-center justify-between px-6 bg-white/[0.02]">
               <div className="flex gap-2">
-                <div className="w-32 h-2 bg-white/10 rounded-full"></div>
+                <div className="w-32 h-2 bg-border-light rounded-full"></div>
               </div>
               <div className="flex gap-3">
-                <div className="w-3 h-3 rounded-full bg-white/10"></div>
-                <div className="w-3 h-3 rounded-full bg-white/10"></div>
+                <div className="w-3 h-3 rounded-full bg-border-light"></div>
+                <div className="w-3 h-3 rounded-full bg-border-light"></div>
               </div>
             </div>
 
             <div className="p-4 md:p-8 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 opacity-20">
               {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
                 <div key={i} className="space-y-4">
-                  <div className="w-full h-3 bg-white/10 rounded-full"></div>
-                  <div className="w-full h-24 bg-white/[0.05] rounded-2xl border border-white/5"></div>
+                  <div className="w-full h-3 bg-border-light rounded-full"></div>
+                  <div className="w-full h-24 bg-white/[0.05] rounded-2xl border border-border-muted"></div>
                 </div>
               ))}
             </div>
 
-            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-red-600/10 to-transparent pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-brand-red-strong/10 to-transparent pointer-events-none"></div>
 
             <div className="absolute inset-0 flex items-center justify-center p-4 md:p-6">
               <motion.div
@@ -85,11 +85,11 @@ const ProductShowcase = () => {
                   y: cardY,
                 }}
                 whileHover={{ scale: 1.02 }}
-                className="p-6 md:p-12 bg-white/[0.03] backdrop-blur-3xl border border-white/20 rounded-3xl md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-10 text-center max-w-sm md:max-w-md relative overflow-hidden group"
+                className="p-6 md:p-12 bg-white/[0.03] backdrop-blur-3xl border border-border-light rounded-3xl md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-10 text-center max-w-sm md:max-w-md relative overflow-hidden group"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
 
-                <h4 className="text-xl md:text-3xl font-bold text-white mb-2 md:mb-4 tracking-tight">Lead Intelligence</h4>
+                <h4 className="text-xl md:text-3xl font-bold text-text-primary mb-2 md:mb-4 tracking-tight">Lead Intelligence</h4>
                 <p className="text-text-secondry text-xs md:text-lg font-medium leading-relaxed opacity-90">
                   Get a complete view of your property owners, verified contacts, and deal status in only one place.
                 </p>
@@ -97,7 +97,7 @@ const ProductShowcase = () => {
             </div>
           </div>
         </div>
-        <div className="absolute -inset-10 bg-red-600/5 blur-[100px] -z-10 rounded-[50px]"></div>
+        <div className="absolute -inset-10 bg-brand-red-strong/5 blur-[100px] -z-10 rounded-[50px]"></div>
       </motion.div>
     </section>
   );

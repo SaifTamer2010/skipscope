@@ -93,7 +93,7 @@ const MarketingNavbar = () => {
       top: 0,
       borderRadius: 0,
       backgroundColor: "rgba(0, 0, 0, 0.8)",
-      borderColor: "rgba(255, 255, 255, 0.05)",
+      borderColor: "var(--color-border-muted)",
       height: 80,
       paddingLeft: "2rem",
       paddingRight: "2rem",
@@ -105,11 +105,11 @@ const MarketingNavbar = () => {
       top: 16,
       borderRadius: 100,
       backgroundColor: "rgba(0, 0, 0, 0.7)",
-      borderColor: "rgba(220, 38, 38, 0.3)",
+      borderColor: "var(--color-brand-glow-strong)",
       height: 64,
       paddingLeft: "1.5rem",
       paddingRight: "1.5rem",
-      boxShadow: "0 25px 50px -12px rgba(220, 38, 38, 0.15)",
+      boxShadow: "0 25px 50px -12px var(--color-brand-glow)",
     }
   };
 
@@ -174,12 +174,12 @@ const MarketingNavbar = () => {
         <div className="hidden md:flex items-center gap-8 z-10">
           <Link
             href="/app/auth/login"
-            className="text-sm font-bold text-white/50 hover:text-white transition-colors uppercase tracking-widest italic"
+            className="text-sm font-bold text-text-secondry hover:text-text-primary transition-colors uppercase tracking-widest italic"
           >
             Login
           </Link>
           <MainButton Goto="/app/auth/register">
-            <p className="text-white font-black italic uppercase tracking-widest text-xs">
+            <p className="text-text-primary font-black italic uppercase tracking-widest text-xs">
               Join Skipscope
             </p>
           </MainButton>
@@ -249,12 +249,12 @@ const MarketingNavbar = () => {
                 transition={{ delay: 0.5 }}
                 className="mt-auto flex flex-col gap-4 "
               >
-                <button
+                  <button
                   onClick={() => {
                     setIsMenuOpen(false);
                     router.push("/app/auth/login");
                   }}
-                  className="w-full py-5 rounded-2xl bg-white/5 border border-white/10 text-white font-bold tracking-tighter text-2xl hover:bg-white/10 transition-colors mt-8 uppercase italic"
+                  className="w-full py-5 rounded-2xl bg-white/5 border border-border-light text-text-primary font-bold tracking-tighter text-2xl hover:bg-white/10 transition-colors mt-8 uppercase italic"
                 >
                   LOG IN
                 </button>
@@ -263,7 +263,7 @@ const MarketingNavbar = () => {
                     setIsMenuOpen(false);
                     router.push("/app/auth/register");
                   }}
-                  className="w-full py-5 rounded-2xl bg-[#c91e1e] text-white font-black italic uppercase tracking-widest text-xl shadow-lg shadow-[#c91e1e]/20"
+                  className="w-full py-5 rounded-2xl bg-brand-red-strong text-text-primary font-black italic uppercase tracking-widest text-xl shadow-lg shadow-brand-red-strong/20"
                 >
                   Join Skipscope
                 </button>

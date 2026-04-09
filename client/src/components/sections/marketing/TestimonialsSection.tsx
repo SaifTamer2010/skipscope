@@ -56,18 +56,18 @@ const TestimonialMarquee = ({ testimonials, baseVelocity = -10 }: { testimonials
         {[...testimonials, ...testimonials, ...testimonials, ...testimonials].map((t, idx) => (
           <div
             key={idx}
-            className="w-[350px] md:w-[550px] p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 flex flex-col gap-4 flex-shrink-0"
+            className="w-[350px] md:w-[550px] p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-border-light flex flex-col gap-4 flex-shrink-0"
           >
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-gray-800/50 border border-white/10 flex items-center justify-center text-[10px] text-gray-500 uppercase tracking-tighter italic">
+              <div className="w-12 h-12 rounded-full bg-background-third/50 border border-border-light flex items-center justify-center text-[10px] text-text-secondry uppercase tracking-tighter italic">
                 Image
               </div>
               <div>
-                <div className="font-bold text-white text-sm">{t.name}</div>
-                <div className="text-xs text-red-500 opacity-80">{t.role}</div>
+                <div className="font-bold text-text-primary text-sm">{t.name}</div>
+                <div className="text-xs text-brand-red opacity-80">{t.role}</div>
               </div>
             </div>
-            <p className="text-gray-300 italic text-sm leading-relaxed whitespace-normal text-wrap">"{t.quote}"</p>
+            <p className="text-text-secondry italic text-sm leading-relaxed whitespace-normal text-wrap">"{t.quote}"</p>
           </div>
         ))}
       </motion.div>
@@ -77,10 +77,10 @@ const TestimonialMarquee = ({ testimonials, baseVelocity = -10 }: { testimonials
 
 const TestimonialsSection = () => {
   return (
-    <section id="testimonials" className="w-full py-32 overflow-hidden bg-gradient-to-b from-transparent via-red-600/5 to-transparent">
+    <section id="testimonials" className="w-full py-32 overflow-hidden bg-gradient-to-b from-transparent via-brand-red-strong/5 to-transparent">
       <div className="max-w-7xl mx-auto px-6 mb-20 text-center">
-        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 italic">Voices from the Field</h2>
-        <div className="h-1 w-24 bg-red-600 mx-auto rounded-full"></div>
+        <h2 className="text-3xl md:text-5xl font-bold text-text-primary mb-4 italic">Voices from the Field</h2>
+        <div className="h-1 w-24 bg-brand-red-strong mx-auto rounded-full"></div>
       </div>
 
       <TestimonialMarquee testimonials={testimonials} baseVelocity={-1} />

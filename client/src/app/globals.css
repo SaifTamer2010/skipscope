@@ -3,14 +3,38 @@ html {
 }
 
 @import "tailwindcss";
+@config "../../tailwind.config.js";
 
-@theme {
+:root {
   --color-background-main: #000000;
   --color-background-secondry: #0d0d0d;
   --color-background-third: #191919;
 
   --color-text-primary: #f2f2f2;
   --color-text-secondry: #b3b3b3;
+
+  --color-brand-red: #ef4444;
+  --color-brand-red-strong: #dc2626;
+  --color-brand-red-dark: #991b1b;
+  
+  --color-brand-glow: rgba(239, 68, 68, 0.15);
+  --color-brand-glow-strong: rgba(220, 38, 38, 0.4);
+
+  --color-border-muted: rgba(255, 255, 255, 0.05);
+  --color-border-light: rgba(255, 255, 255, 0.1);
+}
+
+@theme {
+  --color-background-main: var(--color-background-main);
+  --color-background-secondry: var(--color-background-secondry);
+  --color-background-third: var(--color-background-third);
+
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondry: var(--color-text-secondry);
+
+  --color-brand-red: var(--color-brand-red);
+  --color-brand-red-strong: var(--color-brand-red-strong);
+  --color-brand-red-dark: var(--color-brand-red-dark);
 }
 
 body {

@@ -10,9 +10,9 @@ const stats = [
 
 const StatsBar = () => {
   return (
-    <section id="stats" className="w-full bg-background-secondry border-b border-white/5 py-12 px-6">
-      <h2 className="text-3xl md:text-5xl font-bold text-white mb-12 text-center ">
-        Why <span className="bg-gradient-to-r from-red-500 to-red-800 bg-clip-text text-transparent italic">Skipscope?</span>
+    <section id="stats" className="w-full bg-background-secondry border-b border-border-muted py-12 px-6">
+      <h2 className="text-3xl md:text-5xl font-bold text-text-primary mb-12 text-center ">
+        Why <span className="bg-gradient-to-r from-brand-red to-brand-red-dark bg-clip-text text-transparent italic">Skipscope?</span>
       </h2>
       <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-12 md:gap-24">
         {stats.map((stat, idx) => (
@@ -24,7 +24,7 @@ const StatsBar = () => {
             viewport={{ once: true }}
             className="text-center"
           >
-            <div className="text-4xl md:text-5xl font-bold text-white mb-2">{stat.value}</div>
+            <div className="text-4xl md:text-5xl font-bold text-text-primary mb-2">{stat.value}</div>
             <div className="text-text-secondry text-sm font-medium uppercase tracking-widest">{stat.label}</div>
           </motion.div>
         ))}

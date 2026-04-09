@@ -24,9 +24,9 @@ export default function LandingPage() {
       <CTASection />
 
       {/* Footer */}
-      <footer className="w-full py-12 px-6 border-t border-white/5 mt-auto">
+      <footer className="w-full py-12 px-6 border-t border-border-muted mt-auto">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 opacity-50 hover:opacity-100 transition-opacity">
-          <div className="text-xl font-black text-white tracking-tighter uppercase italic">SKIPSCOPE<span className="text-red-500">.</span></div>
+          <div className="text-xl font-black text-text-primary tracking-tighter uppercase italic">SKIPSCOPE<span className="text-brand-red">.</span></div>
           <div className="flex gap-8 text-sm text-text-secondry font-medium">
             <span className="cursor-pointer hover:text-white transition-colors uppercase italic">Privacy</span>
             <span className="cursor-pointer hover:text-white transition-colors uppercase italic">Terms</span>
