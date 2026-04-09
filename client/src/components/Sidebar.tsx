@@ -58,7 +58,7 @@ export default function Sidebar() {
       console.error("Error logging out:", error);
     } else {
       logout();
-      router.push("auth/login");
+      router.push("/app/auth/login");
     }
   };
 

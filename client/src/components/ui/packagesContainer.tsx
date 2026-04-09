@@ -36,7 +36,7 @@ const PackagesContainer = ({
       </div>
       <p className="text-sm text-text-secondry">{description}</p>
       <footer className="flex justify-center items-center">
-        <MainButton Goto="/login">Get Started</MainButton>
+        <MainButton Goto="/app/auth/login">Get Started</MainButton>
       </footer>
     </div>
   );

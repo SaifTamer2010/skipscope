@@ -164,7 +164,10 @@ const page = () => {
             >
               {loading ? "Logging in..." : "Login"}
             </button>
-            <p className="text-right text-xs w-full text-white/40 mb-2 cursor-pointer hover:text-white/60 transition-colors uppercase italic font-medium">
+            <p 
+              onClick={() => router.push("/app/auth/forgot-password")}
+              className="text-right text-xs w-full text-white/40 mb-2 cursor-pointer hover:text-white/60 transition-colors uppercase italic font-medium"
+            >
               Forgot Password?
             </p>
           </form>
