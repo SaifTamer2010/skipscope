@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/shadcn/dropdown-menu";
 
-import Image from "next/image";
+import { Menu } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 
@@ -31,7 +31,7 @@ const AdminNavbar = () => {
   };
 
   return (
-    <div className="h-[80px] w-[98.8vw] border-b border-gray-800 bg-black backdrop-blur-sm sticky top-0 z-10 ">
+    <div className="h-[80px] w-full border-b border-border-light bg-background-main/40 backdrop-blur-xl sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between ">
           <div>
@@ -43,13 +43,8 @@ const AdminNavbar = () => {
             {/* shadcn dropdown button */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" suppressHydrationWarning>
-                  <Image
-                    src={"/menu.svg"}
-                    alt={"menu"}
-                    height={25}
-                    width={25}
-                  />
+                <Button variant="outline" className="border-border-light bg-background-third/50 hover:bg-background-third transition-colors">
+                  <Menu className="w-5 h-5 text-text-primary" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-40" align="start">

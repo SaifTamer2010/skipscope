@@ -1,39 +1,60 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Sun, Moon } from "lucide-react";
 
 export default function ThemeToggle() {
+  const [mounted, setMounted] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
 
   useEffect(() => {
-    const savedTheme =
-      (localStorage.getItem("theme") as "dark" | "light") || "dark";
+    setMounted(true);
+    const savedTheme = (localStorage.getItem("theme") as "dark" | "light") || "dark";
     setTheme(savedTheme);
-    document.documentElement.classList.toggle("dark", savedTheme === "dark");
+    document.body.classList.toggle("light", savedTheme === "light");
   }, []);
+
+  if (!mounted) return <div className="w-14 h-7" />; // Prevent hydration mismatch
 
   const toggleTheme = () => {
     const newTheme = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
+    document.body.classList.toggle("light", newTheme === "light");
   };
 
   return (
     <button
       onClick={toggleTheme}
-      className="relative w-16 h-8 bg-background-third border border-white/10 rounded-full transition-colors hover:border-purple-500/50"
+      aria-label="Toggle Theme"
+      className={`
+        relative w-14 h-7 bg-background-main/50 border border-border-muted rounded-full 
+        transition-all duration-300 hover:border-brand-primary/50 shadow-inner shadow-black/20
+        ${theme === "dark" ? "border-brand-primary/30" : ""}
+      `}
     >
+      {/* Icon Track */}
+      <div className="absolute inset-0 flex items-center justify-between px-2 text-text-secondry/30">
+        <Sun size={12} />
+        <Moon size={12} />
+      </div>
+
+      {/* Slider Handle */}
       <div
         className={`
-          absolute top-1 w-6 h-6 bg-linear-to-r from-purple-500 to-pink-500 rounded-full
-          transition-all duration-300 ease-in-out
-          ${theme === "dark" ? "left-1" : "left-9"}
+          absolute top-[3.5px] left-[3.5px] w-[21px] h-[21px] rounded-full 
+          transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]
+          flex items-center justify-center shadow-lg
+          ${theme === "dark" 
+            ? "translate-x-7 bg-brand-primary shadow-brand-primary/40 ring-4 ring-brand-primary/10" 
+            : "translate-x-0 bg-text-secondry shadow-black/20"}
         `}
       >
-        <span className="flex items-center justify-center h-full text-xs">
-          {theme === "dark" ? "🌙" : "☀️"}
-        </span>
+        {theme === "dark" ? (
+          <Moon size={10} className="text-white fill-white" />
+        ) : (
+          <Sun size={10} className="text-white fill-current" />
+        )}
       </div>
     </button>
   );

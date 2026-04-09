@@ -1,7 +1,7 @@
-"use client";
-
 import { useState } from "react";
 import ViewDetailsModal from "@/components/ui/modals/viewDetailsModal";
+import { Eye, Calendar, MapPin, Hash, Activity } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface Request {
   id: string;
@@ -22,16 +22,25 @@ interface RequestTableProps {
   requests: Request[];
 }
 
-const statusColors = {
-  Pending: "bg-yellow-500/20 text-yellow-400 border-yellow-500/50",
-  "Waiting Confirmation": "bg-blue-500/20 text-blue-400 border-blue-500/50",
-  Finished: "bg-green-500/20 text-green-400 border-green-500/50",
-};
-
-const rowAccents = {
-  Pending: "border-l-4 border-l-yellow-500 hover:bg-yellow-500/5",
-  "Waiting Confirmation": "border-l-4 border-l-blue-500 hover:bg-blue-500/5",
-  Finished: "border-l-4 border-l-green-500 hover:bg-green-500/5",
+const statusConfig = {
+  Pending: {
+    color: "text-amber-500",
+    bg: "bg-amber-500/10",
+    border: "border-amber-500/20",
+    glow: "shadow-amber-500/5",
+  },
+  "Waiting Confirmation": {
+    color: "text-brand-primary",
+    bg: "bg-brand-primary/10",
+    border: "border-brand-primary/20",
+    glow: "shadow-brand-primary/5",
+  },
+  Finished: {
+    color: "text-emerald-500",
+    bg: "bg-emerald-500/10",
+    border: "border-emerald-500/20",
+    glow: "shadow-emerald-500/5",
+  },
 };
 
 export default function RequestTable({ requests }: RequestTableProps) {
@@ -46,23 +55,39 @@ export default function RequestTable({ requests }: RequestTableProps) {
   };
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-white/10">
+    <div className="overflow-x-auto rounded-[2rem] border border-border-light bg-background-secondry/20 backdrop-blur-xl shadow-2xl">
       <table className="w-full border-collapse">
         <thead>
-          <tr className="bg-background-third border-b border-white/10">
-            <th className="px-6 py-4 text-left text-sm font-semibold">
-              Request ID
+          <tr className="bg-background-third/40 border-b border-border-light">
+            <th className="px-8 py-5 text-left text-[10px] font-black text-text-secondry uppercase tracking-[0.2em] whitespace-nowrap">
+              <div className="flex items-center gap-2">
+                <Hash size={12} className="text-brand-primary/50" />
+                Index Reference
+              </div>
             </th>
-            <th className="px-6 py-4 text-left text-sm font-semibold">
-              County
+            <th className="px-8 py-5 text-left text-[10px] font-black text-text-secondry uppercase tracking-[0.2em] whitespace-nowrap">
+              <div className="flex items-center gap-2">
+                <MapPin size={12} className="text-brand-primary/50" />
+                Region
+              </div>
             </th>
-            <th className="px-6 py-4 text-left text-sm font-semibold">Rows</th>
-            <th className="px-6 py-4 text-left text-sm font-semibold">
-              Status
+            <th className="px-8 py-5 text-left text-[10px] font-black text-text-secondry uppercase tracking-[0.2em] whitespace-nowrap">
+              Volume
             </th>
-            <th className="px-6 py-4 text-left text-sm font-semibold">Date</th>
-            <th className="px-6 py-4 text-left text-sm font-semibold">
-              Actions
+            <th className="px-8 py-5 text-left text-[10px] font-black text-text-secondry uppercase tracking-[0.2em] whitespace-nowrap">
+              <div className="flex items-center gap-2">
+                <Activity size={12} className="text-brand-primary/50" />
+                Status
+              </div>
+            </th>
+            <th className="px-8 py-5 text-left text-[10px] font-black text-text-secondry uppercase tracking-[0.2em] whitespace-nowrap">
+              <div className="flex items-center gap-2">
+                <Calendar size={12} className="text-brand-primary/50" />
+                Timestamp
+              </div>
+            </th>
+            <th className="px-8 py-5 text-right text-[10px] font-black text-text-secondry uppercase tracking-[0.2em] whitespace-nowrap">
+              Operations
             </th>
           </tr>
         </thead>
@@ -71,45 +96,55 @@ export default function RequestTable({ requests }: RequestTableProps) {
             <tr>
               <td
                 colSpan={6}
-                className="px-6 py-12 text-center text-text-secondry"
+                className="px-8 py-20 text-center text-text-secondry font-medium italic"
               >
-                No requests found
+                No historical records found.
               </td>
             </tr>
           ) : (
             requests.map((request) => (
               <tr
                 key={request.id}
-                className={`border-b border-white/10 transition-colors ${rowAccents[request.status]}`}
+                className="border-b border-border-muted transition-all duration-300 hover:bg-background-third/30 group"
               >
-                <td className="px-6 py-4">
-                  <span className="font-mono text-sm text-text-secondry">
-                    {request.id.slice(0, 8)}...
+                <td className="px-8 py-6">
+                  <span className="font-mono text-xs text-text-primary/60 bg-background-main/30 px-3 py-1 rounded-lg border border-border-muted">
+                    {request.id.slice(0, 8)}
                   </span>
                 </td>
-                <td className="px-6 py-4 font-medium">{request.county}</td>
-                <td className="px-6 py-4 text-text-secondry">
-                  {(request.rows / 1000).toFixed(1)}k
+                <td className="px-8 py-6 font-bold text-text-primary">
+                  {request.county || "Multiple Regions"}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-8 py-6">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-black text-text-primary">{(request.rows / 1000).toFixed(1)}k</span>
+                    <span className="text-[10px] font-bold text-text-secondry uppercase">Records</span>
+                  </div>
+                </td>
+                <td className="px-8 py-6">
                   <span
-                    className={`
-                      inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border
-                      ${statusColors[request.status]}
-                    `}
+                    className={cn(
+                      "inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border shadow-lg",
+                      statusConfig[request.status].bg,
+                      statusConfig[request.status].color,
+                      statusConfig[request.status].border,
+                      statusConfig[request.status].glow
+                    )}
                   >
+                    <span className={cn("w-1.5 h-1.5 rounded-full mr-2", statusConfig[request.status].color.replace('text-', 'bg-'))} />
                     {request.status}
                   </span>
                 </td>
-                <td className="px-6 py-4 text-text-secondry text-sm">
+                <td className="px-8 py-6 text-text-secondry/80 text-xs font-medium">
                   {formatDate(request.created_at)}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-8 py-6 text-right">
                   <button
                     onClick={() => setSelectedRequest(request)}
-                    className="px-4 py-2 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/50 rounded-lg text-sm transition-colors"
+                    className="inline-flex items-center gap-2.5 px-5 py-2 bg-brand-primary/10 hover:bg-brand-primary border border-brand-primary/20 hover:border-brand-primary rounded-xl text-brand-primary hover:text-text-button text-xs font-bold transition-all duration-300 group/btn shadow-lg shadow-brand-primary/5"
                   >
-                    View Details
+                    <Eye size={14} className="transition-transform group-hover/btn:scale-110" />
+                    Details
                   </button>
                 </td>
               </tr>

@@ -5,6 +5,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { useUserStore } from "@/store/userStore";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
+import { User, Bell, Palette, AlertTriangle, ShieldCheck, Mail, Save } from "lucide-react";
 
 export default function SettingsPage() {
   const user = useUserStore((state) => state.user);
@@ -54,25 +55,35 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-3xl">
+    <div className="max-w-4xl mx-auto space-y-12 pb-20 px-4">
       {/* Header */}
-      <div>
-        <h1 className="text-4xl font-bold mb-2 bg-linear-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
-          Settings
+      <div className="flex flex-col gap-3">
+        <h1 className="text-4xl font-bold text-text-primary uppercase tracking-tight">
+          System Preferences
         </h1>
-        <p className="text-text-secondry">
-          Manage your account settings and preferences.
+        <p className="text-text-secondry font-medium flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-brand-primary/40" />
+          Manage your operational identity and communication protocols.
         </p>
       </div>
 
       {/* Profile Settings */}
-      <div className="bg-background-secondry border border-white/10 rounded-xl p-6">
-        <h2 className="text-2xl font-bold mb-6">Profile Information</h2>
-        <form onSubmit={handleSave} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                First Name
+      <div className="bg-background-secondry/40 backdrop-blur-xl border border-border-light rounded-[2.5rem] p-8 md:p-10 shadow-2xl">
+        <div className="flex items-center gap-4 mb-10">
+          <div className="w-12 h-12 rounded-2xl bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20">
+            <User size={24} className="text-brand-primary" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-text-primary tracking-tight">Operational Profile</h2>
+            <p className="text-[10px] font-bold text-text-secondry uppercase tracking-widest">Personal identification data</p>
+          </div>
+        </div>
+
+        <form onSubmit={handleSave} className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-text-secondry uppercase tracking-widest ml-1">
+                Forename
               </label>
               <input
                 type="text"
@@ -80,13 +91,13 @@ export default function SettingsPage() {
                 onChange={(e) =>
                   setSettings({ ...settings, firstName: e.target.value })
                 }
-                placeholder="John"
-                className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 transition-colors"
+                placeholder="Ex: John"
+                className="w-full px-5 py-4 bg-background-main/30 border border-border-muted rounded-2xl focus:outline-none focus:border-brand-primary/50 text-text-primary font-medium transition-all transition-duration-300"
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Last Name
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-text-secondry uppercase tracking-widest ml-1">
+                Surname
               </label>
               <input
                 type="text"
@@ -94,58 +105,79 @@ export default function SettingsPage() {
                 onChange={(e) =>
                   setSettings({ ...settings, lastName: e.target.value })
                 }
-                placeholder="Doe"
-                className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 transition-colors"
+                placeholder="Ex: Doe"
+                className="w-full px-5 py-4 bg-background-main/30 border border-border-muted rounded-2xl focus:outline-none focus:border-brand-primary/50 text-text-primary font-medium transition-all transition-duration-300"
               />
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Email</label>
-            <input
-              type="email"
-              value={settings.email}
-              onChange={(e) =>
-                setSettings({ ...settings, email: e.target.value })
-              }
-              placeholder="john@example.com"
-              className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 transition-colors"
-            />
+          <div className="space-y-3">
+            <label className="text-[10px] font-black text-text-secondry uppercase tracking-widest ml-1">Communication Endpoint (Email)</label>
+            <div className="relative">
+              <input
+                type="email"
+                value={settings.email}
+                onChange={(e) =>
+                  setSettings({ ...settings, email: e.target.value })
+                }
+                placeholder="john@example.com"
+                className="w-full px-5 py-4 bg-background-main/30 border border-border-muted rounded-2xl focus:outline-none focus:border-brand-primary/50 text-text-primary font-medium transition-all transition-duration-300 pl-12"
+              />
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondry opacity-40" size={18} />
+            </div>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-3 bg-linear-to-r from-purple-500 to-pink-500 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="group flex items-center justify-center gap-3 px-8 py-4 bg-brand-primary hover:bg-brand-primary-strong text-text-button rounded-2xl font-bold transition-all transition-duration-300 shadow-xl shadow-brand-primary/20 disabled:opacity-50"
           >
-            {loading ? "Saving..." : "Save Changes"}
+            {loading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <>
+                <Save size={18} className="transition-transform group-hover:scale-110" />
+                Commit Changes
+              </>
+            )}
           </button>
         </form>
       </div>
 
       {/* Appearance Settings */}
-      <div className="bg-background-secondry border border-white/10 rounded-xl p-6">
-        <h2 className="text-2xl font-bold mb-6">Appearance</h2>
+      <div className="bg-background-secondry/40 backdrop-blur-xl border border-border-light rounded-[2.5rem] p-8 md:p-10 shadow-2xl">
         <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-semibold mb-1">Theme</h3>
-            <p className="text-sm text-text-secondry">
-              Choose your preferred theme
-            </p>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20">
+              <Palette size={24} className="text-brand-primary" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-text-primary tracking-tight">Interface Theme</h2>
+              <p className="text-[10px] font-bold text-text-secondry uppercase tracking-widest">Visual system core</p>
+            </div>
           </div>
           <ThemeToggle />
         </div>
       </div>
 
       {/* Notification Settings */}
-      <div className="bg-background-secondry border border-white/10 rounded-xl p-6">
-        <h2 className="text-2xl font-bold mb-6">Notifications</h2>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold mb-1">Push Notifications</h3>
-              <p className="text-sm text-text-secondry">
-                Receive push notifications for updates
+      <div className="bg-background-secondry/40 backdrop-blur-xl border border-border-light rounded-[2.5rem] p-8 md:p-10 shadow-2xl">
+        <div className="flex items-center gap-4 mb-10">
+          <div className="w-12 h-12 rounded-2xl bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20">
+            <Bell size={24} className="text-brand-primary" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-text-primary tracking-tight">Signal Protocols</h2>
+            <p className="text-[10px] font-bold text-text-secondry uppercase tracking-widest">Automated alerting system</p>
+          </div>
+        </div>
+
+        <div className="space-y-8">
+          <div className="flex items-center justify-between group">
+            <div className="space-y-1">
+              <h3 className="font-bold text-text-primary group-hover:text-brand-primary transition-colors">Operational Alerts</h3>
+              <p className="text-xs text-text-secondry font-medium">
+                High-priority signals for task completion and system events.
               </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
@@ -157,15 +189,15 @@ export default function SettingsPage() {
                 }
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-background-main border border-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500"></div>
+              <div className="w-14 h-7 bg-background-main/50 border border-border-muted rounded-full peer peer-checked:bg-brand-primary/20 peer-checked:border-brand-primary/50 transition-all duration-300 after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-text-secondry after:rounded-full after:h-[21px] after:w-[21px] after:transition-all peer-checked:after:translate-x-7 peer-checked:after:bg-brand-primary shadow-inner shadow-black/20"></div>
             </label>
           </div>
 
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-semibold mb-1">Email Updates</h3>
-              <p className="text-sm text-text-secondry">
-                Receive email updates about your requests
+          <div className="flex items-center justify-between group">
+            <div className="space-y-1">
+              <h3 className="font-bold text-text-primary group-hover:text-brand-primary transition-colors">Digest Updates (Email)</h3>
+              <p className="text-xs text-text-secondry font-medium">
+                Asynchronous reporting delivered to your primary endpoint.
               </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
@@ -177,22 +209,37 @@ export default function SettingsPage() {
                 }
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-background-main border border-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500"></div>
+              <div className="w-14 h-7 bg-background-main/50 border border-border-muted rounded-full peer peer-checked:bg-brand-primary/20 peer-checked:border-brand-primary/50 transition-all duration-300 after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-text-secondry after:rounded-full after:h-[21px] after:w-[21px] after:transition-all peer-checked:after:translate-x-7 peer-checked:after:bg-brand-primary shadow-inner shadow-black/20"></div>
             </label>
           </div>
         </div>
       </div>
 
       {/* Danger Zone */}
-      <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6">
-        <h2 className="text-2xl font-bold mb-4 text-red-400">Danger Zone</h2>
-        <p className="text-sm text-text-secondry mb-4">
-          Once you delete your account, there is no going back. Please be
-          certain.
-        </p>
-        <button className="px-6 py-3 bg-red-500/20 border border-red-500/50 rounded-lg font-semibold hover:bg-red-500/30 transition-colors text-red-400">
-          Delete Account
-        </button>
+      <div className="relative overflow-hidden bg-red-500/5 backdrop-blur-xl border border-red-500/20 rounded-[2.5rem] p-8 md:p-10 shadow-2xl">
+        <div className="absolute top-0 right-0 p-8 opacity-5">
+          <AlertTriangle size={150} className="text-red-500" />
+        </div>
+        
+        <div className="relative space-y-6">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center border border-red-500/20">
+              <ShieldCheck size={24} className="text-red-500" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-red-500 tracking-tight text-shadow-red">Termination Protocols</h2>
+              <p className="text-[10px] font-bold text-red-500/60 uppercase tracking-widest">Permanent account erasure</p>
+            </div>
+          </div>
+          
+          <p className="text-xs text-text-secondry font-medium max-w-md leading-relaxed">
+            Termination of this account will result in permanent loss of all operational history, active requests, and generated assets. Data recovery is not possible after execution.
+          </p>
+          
+          <button className="px-8 py-3.5 bg-red-500/10 hover:bg-red-500 border border-red-500/30 hover:border-red-500 rounded-2xl font-bold transition-all duration-300 text-red-500 hover:text-white shadow-lg shadow-red-500/5">
+            Execute Account Erasure
+          </button>
+        </div>
       </div>
     </div>
   );

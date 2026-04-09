@@ -50,14 +50,10 @@ export default function RootLayout({
               (function() {
                 try {
                   const theme = localStorage.getItem('theme');
-                  const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  if (theme === 'light') {
+                  if (theme === 'dark') {
+                    document.body.classList.remove('light');
+                  } else {
                     document.body.classList.add('light');
-                  } else if (theme === 'dark') {
-                    document.body.classList.remove('light');
-                  } else if (supportDarkMode) {
-                    // Default to dark if no preference, but could change if needed
-                    document.body.classList.remove('light');
                   }
                 } catch (e) {}
               })();
@@ -65,15 +61,15 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body>
+      <body className="light">
         <Toaster
           position="top-right"
           toastOptions={{
             duration: 4000,
             style: {
-              background: "#0d0d0d",
-              color: "#f2f2f2",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
+              background: "var(--color-background-third)",
+              color: "var(--color-text-primary)",
+              border: "1px solid var(--color-border-light)",
             },
             success: {
               iconTheme: {

@@ -27,6 +27,22 @@ export default {
           muted: "var(--color-border-muted)",
           light: "var(--color-border-light)",
         },
+        brandGlow: {
+          DEFAULT: "var(--color-brand-glow)",
+          strong: "var(--color-brand-glow-strong)",
+        },
+        popover: {
+          DEFAULT: "var(--popover)",
+          foreground: "var(--popover-foreground)",
+        },
+        accent: {
+          DEFAULT: "var(--accent)",
+          foreground: "var(--accent-foreground)",
+        },
+        muted: {
+          DEFAULT: "var(--muted)",
+          foreground: "var(--muted-foreground)",
+        },
       },
       boxShadow: {
         "brand-glow": "0 0 20px var(--color-brand-glow)",

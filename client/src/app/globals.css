@@ -23,6 +23,13 @@ html {
   --color-border-muted: rgba(255, 255, 255, 0.05);
   --color-border-light: rgba(255, 255, 255, 0.1);
   --color-text-button: #ffffff;
+
+  --popover: var(--color-background-third);
+  --popover-foreground: var(--color-text-primary);
+  --accent: var(--color-brand-primary);
+  --accent-foreground: var(--color-text-button);
+  --muted: var(--color-background-secondry);
+  --muted-foreground: var(--color-text-secondry);
 }
 
 @theme {
@@ -37,6 +44,13 @@ html {
   --color-brand-primary-strong: var(--color-brand-primary-strong);
   --color-brand-primary-dark: var(--color-brand-primary-dark);
   --color-text-button: var(--color-text-button);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
 }
 
 body {

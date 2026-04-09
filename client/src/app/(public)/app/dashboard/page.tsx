@@ -7,6 +7,16 @@ import DashboardCard from "@/components/DashboardCard";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
 import LoadingScreen from "@/src/components/LoadingScreen";
+import { 
+  Activity, 
+  Clock, 
+  RotateCcw, 
+  CheckCircle2, 
+  PlusCircle, 
+  History, 
+  Bell,
+  ArrowRight
+} from "lucide-react";
 
 interface Stats {
   total: number;
@@ -46,12 +56,12 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8 ">
       {/* Header */}
-      <div>
-        <h1 className="text-4xl font-bold mb-2 text-text-primary ">
-          Dashboard
+      <div className="flex flex-col gap-2">
+        <h1 className="text-4xl font-bold text-text-primary uppercase tracking-tight">
+          Account Dashboard
         </h1>
-        <p className="text-text-secondry">
-          Welcome back! Here's your overview.
+        <p className="text-text-secondry font-medium">
+          Welcome back. Here is a summary of your recent request activity.
         </p>
       </div>
 
@@ -60,63 +70,77 @@ export default function DashboardPage() {
         <DashboardCard
           title="Total Requests"
           value={stats.total}
-          icon="/form.svg"
-          alt={"form"}
+          icon={Activity}
         />
         <DashboardCard
-          title="Waiting Confirmation"
+          title="Pending Confirmation"
           value={stats.waiting}
-          icon="/watch.svg"
-          alt={"form"}
+          icon={Clock}
         />
         <DashboardCard
-          title="Pending"
+          title="In Progress"
           value={stats.pending}
-          icon="/pending.svg"
-          alt={"form"}
+          icon={RotateCcw}
         />
         <DashboardCard
-          title="Finished"
+          title="Completed"
           value={stats.finished}
-          icon="/check.svg"
-          alt={"form"}
+          icon={CheckCircle2}
         />
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-background-secondry border border-white/10 rounded-xl p-6">
-        <h2 className="text-2xl font-bold mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <a
-            href="/dashboard/submit-request"
-            className="p-4 bg-linear-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/50 rounded-lg hover:scale-105 transition-transform"
-          >
-            <div className="text-3xl mb-2">📝</div>
-            <h3 className="font-semibold mb-1">Submit New Request</h3>
-            <p className="text-sm text-text-secondry">
-              Create a new data request
-            </p>
-          </a>
-          <a
-            href="/dashboard/history"
-            className="p-4 bg-linear-to-r from-blue-500/20 to-cyan-500/20 border border-blue-500/50 rounded-lg hover:scale-105 transition-transform"
-          >
-            <div className="text-3xl mb-2">📜</div>
-            <h3 className="font-semibold mb-1">View History</h3>
-            <p className="text-sm text-text-secondry">
-              Check your past requests
-            </p>
-          </a>
-          <a
-            href="/dashboard/notifications"
-            className="p-4 bg-linear-to-r from-green-500/20 to-emerald-500/20 border border-green-500/50 rounded-lg hover:scale-105 transition-transform"
-          >
-            <div className="text-3xl mb-2">🔔</div>
-            <h3 className="font-semibold mb-1">Notifications</h3>
-            <p className="text-sm text-text-secondry">
-              View your notifications
-            </p>
-          </a>
+      <div className="space-y-6">
+        <h2 className="text-xl font-bold text-text-primary uppercase tracking-wider flex items-center gap-3">
+          <span className="w-8 h-[1px] bg-brand-primary"></span>
+          Quick Actions
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {[
+            {
+              title: "Submit New Request",
+              desc: "Create a new lead generation request",
+              icon: PlusCircle,
+              path: "/app/submit-request",
+              color: "brand-primary"
+            },
+            {
+              title: "Request History",
+              desc: "View and management your past requests",
+              icon: History,
+              path: "/app/history",
+              color: "text-text-secondry"
+            },
+            {
+              title: "Recent Notifications",
+              desc: "Stay updated on your request status",
+              icon: Bell,
+              path: "/app/notifications",
+              color: "text-text-secondry"
+            }
+          ].map((action, i) => (
+            <a
+              key={i}
+              href={action.path}
+              className="group relative p-8 bg-background-secondry/40 backdrop-blur-xl border border-border-light rounded-[2rem] transition-all duration-500 hover:scale-[1.02] hover:border-brand-primary/40 overflow-hidden"
+            >
+              <div className="relative z-10">
+                <div className={`w-12 h-12 rounded-2xl bg-brand-primary/10 border border-brand-primary/20 flex items-center justify-center mb-6 text-brand-primary group-hover:bg-brand-primary group-hover:text-text-button transition-all duration-500 shadow-lg shadow-brand-primary/10`}>
+                  <action.icon size={24} />
+                </div>
+                <h3 className="text-lg font-bold text-text-primary uppercase tracking-tight mb-2 flex items-center gap-2">
+                  {action.title}
+                  <ArrowRight size={16} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                </h3>
+                <p className="text-sm text-text-secondry/80 font-medium leading-relaxed">
+                  {action.desc}
+                </p>
+              </div>
+
+              {/* Decorative side accent */}
+              <div className="absolute top-0 right-0 w-1 h-full bg-brand-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+            </a>
+          ))}
         </div>
       </div>
     </div>

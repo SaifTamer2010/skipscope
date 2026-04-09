@@ -5,7 +5,7 @@ import RequestTable from "@/components/RequestTable";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
 import BillingSection from "@/components/BillingSection";
-import Image from "next/image";
+import { Download, History, Clock, CheckCircle2, ChevronRight } from "lucide-react";
 import LoadingScreen from "@/src/components/LoadingScreen";
 
 interface Request {
@@ -67,54 +67,95 @@ export default function HistoryPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-6xl mx-auto space-y-12 pb-20">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-4xl font-bold mb-2 text-text-primary">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
+        <div className="flex flex-col gap-3">
+          <h1 className="text-4xl font-bold text-text-primary uppercase tracking-tight flex items-center gap-4">
             Request History
           </h1>
-          <p className="text-text-secondry">
-            View all your past requests and payments.
+          <p className="text-text-secondry font-medium flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-primary/40" />
+            Comprehensive log of your skip tracing operations and data exports.
           </p>
         </div>
+        
         <button
           onClick={handleDownloadCSV}
-          className="px-6 py-3 bg-background-secondry rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center gap-2"
+          className="group flex items-center gap-3 px-8 py-3.5 bg-background-secondry/40 border border-border-light rounded-2xl text-text-primary font-bold hover:bg-background-secondry hover:border-brand-primary/50 transition-all duration-300 shadow-xl"
         >
-          <Image
-            src={"/download.svg"}
-            alt={"Download"}
-            height={25}
-            width={25}
-          />
-          <span>Download CSV</span>
+          <Download size={18} className="text-brand-primary group-hover:-translate-y-0.5 transition-transform" />
+          Download Data
         </button>
       </div>
       {/* Stats Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-background-secondry border border-white/10 rounded-xl p-4">
-          <p className="text-text-secondry text-sm mb-1">Total Requests</p>
-          <p className="text-3xl font-bold">{requests.length}</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Total Requests */}
+        <div className="relative group overflow-hidden bg-background-secondry/40 backdrop-blur-xl border border-border-light rounded-[2rem] p-8 transition-all duration-300 hover:border-brand-primary/30">
+          <div className="absolute top-0 right-0 p-8 opacity-5">
+            <History size={80} />
+          </div>
+          <div className="relative space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20">
+                <History size={20} className="text-brand-primary" />
+              </div>
+              <p className="text-xs font-black text-text-secondry uppercase tracking-widest">Aggregate Tasks</p>
+            </div>
+            <p className="text-5xl font-bold tracking-tight text-text-primary">{requests.length}</p>
+          </div>
         </div>
-        <div className="bg-background-secondry border border-white/10 rounded-xl p-4">
-          <p className="text-text-secondry text-sm mb-1">Pending</p>
-          <p className="text-3xl font-bold text-yellow-400">
-            {requests.filter((r) => r.status === "Pending").length}
-          </p>
+
+        {/* Pending */}
+        <div className="relative group overflow-hidden bg-background-secondry/40 backdrop-blur-xl border border-border-light rounded-[2rem] p-8 transition-all duration-300 hover:border-yellow-500/30">
+          <div className="absolute top-0 right-0 p-8 opacity-5">
+            <Clock size={80} />
+          </div>
+          <div className="relative space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center border border-yellow-500/20">
+                <Clock size={20} className="text-yellow-500" />
+              </div>
+              <p className="text-xs font-black text-text-secondry uppercase tracking-widest">Pending Processing</p>
+            </div>
+            <p className="text-5xl font-bold tracking-tight text-text-primary">
+              {requests.filter((r) => r.status === "Pending").length}
+            </p>
+          </div>
         </div>
-        <div className="bg-background-secondry border border-white/10 rounded-xl p-4">
-          <p className="text-text-secondry text-sm mb-1">Completed</p>
-          <p className="text-3xl font-bold text-green-400">
-            {requests.filter((r) => r.status === "Finished").length}
-          </p>
+
+        {/* Completed */}
+        <div className="relative group overflow-hidden bg-background-secondry/40 backdrop-blur-xl border border-border-light rounded-[2rem] p-8 transition-all duration-300 hover:border-green-500/30">
+          <div className="absolute top-0 right-0 p-8 opacity-5">
+            <CheckCircle2 size={80} />
+          </div>
+          <div className="relative space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center border border-green-500/20">
+                <CheckCircle2 size={20} className="text-green-500" />
+              </div>
+              <p className="text-xs font-black text-text-secondry uppercase tracking-widest">Enriched Assets</p>
+            </div>
+            <p className="text-5xl font-bold tracking-tight text-text-primary">
+              {requests.filter((r) => r.status === "Finished").length}
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Stripe Billing Placeholder
       <BillingSection /> */}
-      {/* Request Table */}
-      <RequestTable requests={requests} />
+      {/* Request Table wrapper */}
+      <div className="pt-4">
+        <div className="flex items-center justify-between mb-8 px-2">
+          <h2 className="text-xs font-black text-text-secondry uppercase tracking-[0.3em] flex items-center gap-3">
+            <div className="w-1.5 h-1.5 rounded-full bg-brand-primary" />
+            Detailed Record Set
+          </h2>
+          <div className="h-[1px] flex-1 bg-border-muted mx-8" />
+        </div>
+        <RequestTable requests={requests} />
+      </div>
     </div>
   );
 }

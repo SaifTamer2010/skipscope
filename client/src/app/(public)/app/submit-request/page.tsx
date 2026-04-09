@@ -8,6 +8,13 @@ import Image from "next/image";
 import statesCounties from "@/public/data/states+counties/data.json";
 import statesZips from "@/public/data/states+zipcode/data.json";
 import ownerShipCriterias from "@/public/data/ownershipCriteria/data.json";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/shadcn/select";
 
 const motivations: string[] = [
   "Active Foreclosures",
@@ -115,111 +122,94 @@ export default function SubmitRequestPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-4xl mx-auto space-y-12 pb-20">
       {/* Header */}
-      <div>
-        <h1 className="text-4xl font-bold mb-2 text-text-primary">
-          Submit a Request
+      <div className="flex flex-col gap-3">
+        <h1 className="text-4xl font-bold text-text-primary uppercase tracking-tight">
+          Submit New Request
         </h1>
-        <p className="text-text-secondry">Create a new List Request.</p>
+        <p className="text-text-secondry font-medium">
+          Specify your lead criteria and market parameters to initiate a new data extraction.
+        </p>
       </div>
 
-      {/* Submit Modal */}
-      <div title="Submit Request">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">Market *</label>
-            <select
-              className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 text-white"
-              value={market}
-              onChange={(e) => setMarket(e.target.value)}
-            >
-              <option disabled value={""}>
-                Choose Market
-              </option>
+      {/* Form Container */}
+      <div className="bg-background-secondry/40 backdrop-blur-xl border border-border-light rounded-[2rem] p-10 shadow-2xl shadow-black/20">
+        <form onSubmit={handleSubmit} className="space-y-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-text-secondry uppercase tracking-wider ml-1">Market Selection *</label>
+              <Select value={market} onValueChange={(value) => setMarket(value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose Market" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={"state"}>Entire State</SelectItem>
+                  <SelectItem value={"county"}>Specific County</SelectItem>
+                  <SelectItem value={"zipcode"}>Zip Code Range</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-              <option value={"state"}>State</option>
-              <option value={"county"}>County</option>
-              <option value={"zipcode"}>Zip Code</option>
-            </select>
+            {market && (
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-text-secondry uppercase tracking-wider ml-1">State *</label>
+                <Select value={usState} onValueChange={(value) => setUsState(value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose State" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {states.map((item: string) => (
+                      <SelectItem value={item} key={item}>{item}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
 
-          {market && (
-            <div>
-              <label className="block text-sm font-medium mb-2">State *</label>
-              <select
-                className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 text-white"
-                value={usState}
-                onChange={(e) => {
-                  setUsState(e.target.value);
-                }}
-              >
-                <option disabled value={""}>
-                  Choose State
-                </option>
-                {states.map((item: string) => (
-                  <option value={item} key={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {usState && market == "county" && (
-            <div>
-              <label className="block text-sm font-medium mb-2">County *</label>
-              <select
-                className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 text-white"
-                value={county}
-                onChange={(e) => setCounty(e.target.value)}
-              >
-                <option disabled value={""}>
-                  Choose County
-                </option>
-                {data[usState].map((item: string) => (
-                  <option value={item} key={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {market == "zipcode" && usState && (
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Zip Code *
-              </label>
-              <input
-                type="text"
-                value={zipCode}
-                onChange={(e) => setZipCode(e.target.value)}
-                placeholder="Enter Zip Code"
-                className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 transition-colors appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-              />
-              <div className="my-4 ml-4 font-medium">
-                <span>Zip Codes can be entered in 2 formats:</span>
-                <ul>
-                  <li>
-                    Separated by <b>comma (,)</b>
-                  </li>
-                  <li>
-                    Range - <b>Start</b> and <b>End</b> values must be separated
-                    by <b>dash (-)</b>
-                  </li>
-                </ul>
-                <span>
-                  {" "}
-                  Allowed Zip Codes range for the selected state:&nbsp;{" "}
-                  <b>
-                    {" "}
-                    {zip[usState].min} : {zip[usState].max}
-                  </b>
-                </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {usState && market == "county" && (
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-text-secondry uppercase tracking-wider ml-1">County *</label>
+                <Select value={county} onValueChange={(value) => setCounty(value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose County" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {data[usState].map((item: string) => (
+                      <SelectItem value={item} key={item}>{item}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-            </div>
-          )}
+            )}
+
+            {market == "zipcode" && usState && (
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-xs font-bold text-text-secondry uppercase tracking-wider ml-1">Zip Code *</label>
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    value={zipCode}
+                    onChange={(e) => setZipCode(e.target.value)}
+                    placeholder="e.g., 90210 or 90210-90215"
+                    className="w-full px-5 py-3.5 bg-background-main/50 border border-border-light rounded-2xl focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-text-primary font-medium placeholder:text-text-secondry/30"
+                  />
+                  <div className="p-4 bg-brand-primary/5 border border-brand-primary/20 rounded-2xl">
+                    <p className="text-xs font-bold text-brand-primary uppercase tracking-wider mb-2">Format Guidelines</p>
+                    <ul className="text-sm text-text-secondry font-medium space-y-1">
+                      <li>• Separate multiple codes with a <span className="text-text-primary font-bold">comma (,)</span></li>
+                      <li>• Define ranges using a <span className="text-text-primary font-bold">dash (-)</span></li>
+                      <li>• Valid range for {usState}: <span className="text-text-primary font-bold">{zip[usState].min} - {zip[usState].max}</span></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="w-full h-[1px] bg-border-light ml-[-2.5rem] w-[calc(100%+5rem)]" />
 
           {/* <div>
             <label className="block text-sm font-medium mb-2">
@@ -239,237 +229,196 @@ export default function SubmitRequestPage() {
             </select>
           </div> */}
 
-          <div>
-            <label className="block text-sm font-medium mb-2">
+          <div className="space-y-6">
+            <h3 className="text-sm font-bold text-text-primary uppercase tracking-widest flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-primary" />
               Ownership Criteria
-            </label>
+            </h3>
 
-            <select
-              className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 text-white"
-              value={ownershipCriteria}
-              onChange={(e) => {
-                setOwnershipCriteria(e.target.value);
-              }}
-            >
-              <option disabled value={""}>
-                Choose Ownership Criteria
-              </option>
-              {ownerCriteriaValues.map((item: string) => (
-                <option value={item} key={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-text-secondry uppercase tracking-wider ml-1">Parameter Selection</label>
+                <Select value={ownershipCriteria} onValueChange={(value) => setOwnershipCriteria(value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose Parameter" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {ownerCriteriaValues.map((item: string) => (
+                      <SelectItem value={item} key={item}>{item}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-          {ownershipCriteria && (
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                {ownershipCriteria}
-              </label>
-
-              <select
-                className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 text-white"
-                value={ownershipCriteriaOption}
-                onChange={(e) => {
-                  if (e.target.value === "manualInput") {
-                    setCustomOwnershipCriteria(true);
-                    setOwnershipCriteriaOption("manualInput");
-                  } else {
-                    setCustomOwnershipCriteria(false);
-                    setOwnershipCriteriaOption(e.target.value);
-                    setOwnershipCriteriaFinale((prev) => {
-                      // Check if this key already exists
-                      const exists = prev.some(
-                        (item) => item.key === ownershipCriteria,
-                      );
-
-                      if (exists) {
-                        // Update existing
-                        return prev.map((item) =>
-                          item.key === ownershipCriteria
-                            ? { ...item, value: e.target.value }
-                            : item,
-                        );
+              {ownershipCriteria && (
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-text-secondry uppercase tracking-wider ml-1">{ownershipCriteria} Options</label>
+                  <Select
+                    value={ownershipCriteriaOption}
+                    onValueChange={(value) => {
+                      if (value === "manualInput") {
+                        setCustomOwnershipCriteria(true);
+                        setOwnershipCriteriaOption("manualInput");
                       } else {
-                        // Add new
-                        return [
-                          ...prev,
-                          { key: ownershipCriteria, value: e.target.value },
-                        ];
+                        setCustomOwnershipCriteria(false);
+                        setOwnershipCriteriaOption(value);
+                        setOwnershipCriteriaFinale((prev) => {
+                          const exists = prev.some((item) => item.key === ownershipCriteria);
+                          if (exists) {
+                            return prev.map((item) => item.key === ownershipCriteria ? { ...item, value: value } : item);
+                          } else {
+                            return [...prev, { key: ownershipCriteria, value: value }];
+                          }
+                        });
                       }
-                    });
-                  }
-                }}
-              >
-                <option disabled value={""}>
-                  Choose {ownershipCriteria}
-                </option>
-                {ownerCriteria[ownershipCriteria].map((item: string) => (
-                  <option value={item} key={item}>
-                    {item}
-                  </option>
-                ))}
-                <option value={"manualInput"}>Manual Input</option>
-              </select>
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={`Choose ${ownershipCriteria}`} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ownerCriteria[ownershipCriteria].map((item: string) => (
+                        <SelectItem value={item} key={item}>{item}</SelectItem>
+                      ))}
+                      <SelectItem value={"manualInput"}>Custom Input...</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
-          )}
 
-          {ownershipCriteria && customOwnershipCriteria && (
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Manual Input
-              </label>
-              <div className="grid grid-cols-[1fr_10rem] gap-4">
-                <input
-                  type="text"
-                  value={customOwnershipCriteriaFinale}
-                  onChange={(e) =>
-                    setCustomOwnershipCriteriaFinale(e.target.value)
-                  }
-                  placeholder="How Many Rows you need"
-                  className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 transition-colors appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                />
-                <button
-                  type="button"
-                  className="w-full py-3 bg-background-third rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer"
-                  onClick={() => {
-                    setOwnershipCriteriaFinale((prev) => {
-                      // Check if this key already exists
-                      const exists = prev.some(
-                        (item) => item.key === ownershipCriteria,
-                      );
+            {ownershipCriteria && customOwnershipCriteria && (
+              <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                <label className="text-xs font-bold text-text-secondry uppercase tracking-wider ml-1">Custom Value for {ownershipCriteria}</label>
+                <div className="flex gap-4">
+                  <input
+                    type="text"
+                    value={customOwnershipCriteriaFinale}
+                    onChange={(e) => setCustomOwnershipCriteriaFinale(e.target.value)}
+                    placeholder="Enter custom value"
+                    className="flex-1 px-5 py-3.5 bg-background-main/50 border border-border-light rounded-2xl focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-text-primary font-medium"
+                  />
+                  <button
+                    type="button"
+                    className="px-8 py-3.5 bg-brand-primary text-text-button rounded-2xl font-bold hover:bg-brand-primary-strong transition-all shadow-lg shadow-brand-primary/20"
+                    onClick={() => {
+                      setOwnershipCriteriaFinale((prev) => {
+                        const exists = prev.some((item) => item.key === ownershipCriteria);
+                        if (exists) {
+                          return prev.map((item) => item.key === ownershipCriteria ? { ...item, value: customOwnershipCriteriaFinale } : item);
+                        } else {
+                          return [...prev, { key: ownershipCriteria, value: customOwnershipCriteriaFinale }];
+                        }
+                      });
+                    }}
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+            )}
 
-                      if (exists) {
-                        // Update existing
-                        return prev.map((item) =>
-                          item.key === ownershipCriteria
-                            ? { ...item, value: customOwnershipCriteriaFinale }
-                            : item,
-                        );
-                      } else {
-                        // Add new
-                        return [
-                          ...prev,
-                          {
-                            key: ownershipCriteria,
-                            value: customOwnershipCriteriaFinale,
-                          },
-                        ];
-                      }
-                    });
-                  }}
+            <div className="flex flex-wrap gap-3">
+              {ownershipCriteriaFinale.map((item) => (
+                <div
+                  className="bg-background-third/80 border border-border-light rounded-xl px-4 py-2.5 flex items-center gap-4 group transition-all hover:border-brand-primary/40"
+                  key={item.value}
                 >
-                  Add
-                </button>
-              </div>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] font-black text-brand-primary uppercase tracking-[0.1em]">{item.key}</span>
+                    <span className="text-sm font-bold text-text-primary">{item.value}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setOwnershipCriteriaFinale((prev) => prev.filter((i) => i.value !== item.value))}
+                    className="text-text-secondry hover:text-rose-500 transition-colors"
+                  >
+                    <Image src={"/x.svg"} alt={"remove"} width={12} height={12} className="opacity-40 group-hover:opacity-100" />
+                  </button>
+                </div>
+              ))}
             </div>
-          )}
-
-          <div className="grid grid-cols-4 gap-6">
-            {ownershipCriteriaFinale.map((item) => (
-              <div
-                className="bg-background-third rounded-xl w-50 p-3 inline-flex justify-between "
-                key={item.value}
-              >
-                <p className="text-sm">
-                  <span className="text-text-primary font-semibold">
-                    {item.key} :
-                  </span>
-                </p>
-
-                <span className="text-text-secondry text-sm">
-                  {" "}
-                  {item.value}
-                </span>
-                <Image
-                  src={"/x.svg"}
-                  alt={"close"}
-                  width={15}
-                  height={15}
-                  className="opacity-0 cursor-pointer mt-1 hover:opacity-100 transition-all"
-                  onClick={() => {
-                    setOwnershipCriteriaFinale((prev) =>
-                      prev.filter((i) => i.value !== item.value),
-                    );
-                  }}
-                />
-              </div>
-            ))}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Total Leads *
-            </label>
-            <input
-              type="number"
-              value={rows}
-              onChange={(e) => setRows(e.target.value)}
-              placeholder="How Many Rows you need"
-              className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 transition-colors appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-            />
+          <div className="w-full h-[1px] bg-border-light ml-[-2.5rem] w-[calc(100%+5rem)]" />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-text-secondry uppercase tracking-wider ml-1">Volume Requirement *</label>
+              <input
+                type="number"
+                value={rows}
+                onChange={(e) => setRows(e.target.value)}
+                placeholder="Number of leads needed"
+                className="w-full px-5 py-3.5 bg-background-main/50 border border-border-light rounded-2xl focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-text-primary font-medium"
+              />
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Motivation</label>
-            <div className="grid grid-cols-3 max-w-full gap-2">
+          <div className="space-y-6">
+            <h3 className="text-sm font-bold text-text-primary uppercase tracking-widest flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-primary" />
+              Motivations
+            </h3>
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
               {motivations.map((item: string) => (
-                <div key={item} className="inline-flex items-center gap-2">
+                <div key={item} className="group">
                   <input
                     type="checkbox"
                     id={item}
                     name={item}
                     value={item}
                     checked={motivation.includes(item)}
-                    className="relative hidden peer"
+                    className="hidden"
                     onChange={(e) => {
                       const value = e.target.value;
                       setMotivation((prev) =>
-                        prev.includes(value)
-                          ? prev.filter((m) => m !== value)
-                          : [...prev, value],
+                        prev.includes(value) ? prev.filter((m) => m !== value) : [...prev, value],
                       );
                     }}
                   />
                   <label
                     htmlFor={item}
-                    className="w-5 h-5 rounded-md bg-background-third border-slate-800 border cursor-pointer hover:bg-slate-900 peer-checked:bg-purple-500 peer-checked:border-purple-800 relative flex items-center justify-center"
-                  ></label>
-                  <Image
-                    src={"/tick.svg"}
-                    alt="tick"
-                    width={20}
-                    height={20}
-                    className="absolute hidden peer-checked:block pointer-events-none"
-                  />
-                  <label htmlFor={item} className="cursor-pointer select-none">
-                    {item}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all cursor-pointer ${motivation.includes(item)
+                        ? "bg-brand-primary/10 border-brand-primary/50 text-text-primary shadow-sm"
+                        : "bg-background-main/30 border-border-light text-text-secondry hover:border-text-secondry/30"
+                      }`}
+                  >
+                    <div className={`w-4 h-4 rounded-md border flex items-center justify-center transition-all ${motivation.includes(item) ? "bg-brand-primary border-brand-primary" : "border-text-secondry/40"
+                      }`}>
+                      {motivation.includes(item) && <Image src="/tick.svg" alt="tick" width={10} height={10} />}
+                    </div>
+                    <span className="text-sm font-medium">{item}</span>
                   </label>
                 </div>
               ))}
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Custom Notes
-            </label>
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-text-secondry uppercase tracking-wider ml-1">Additional Specifications</label>
             <textarea
               value={customNotes}
               onChange={(e) => setCustomNotes(e.target.value)}
-              placeholder="Enter custom notes"
-              className="w-full px-4 py-3 bg-background-main border border-white/10 rounded-lg focus:outline-none focus:border-purple-500 transition-colors"
+              placeholder="Provide any additional context or specific requirements..."
+              rows={4}
+              className="w-full px-5 py-3.5 bg-background-main/50 border border-border-light rounded-2xl focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-text-primary font-medium resize-none"
             />
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-background-third rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer"
+            className="w-full py-4 bg-brand-primary text-text-button rounded-2xl font-bold text-lg hover:bg-brand-primary-strong transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-brand-primary/20 flex items-center justify-center gap-3"
           >
-            {loading ? "Submitting..." : "Submit Request"}
+            {loading ? (
+              <>
+                <div className="w-5 h-5 border-2 border-text-button/30 border-t-text-button rounded-full animate-spin" />
+                Processing...
+              </>
+            ) : (
+              "Complete Request Submission"
+            )}
           </button>
         </form>
       </div>

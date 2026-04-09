@@ -25,7 +25,7 @@ export default function DashboardLayout({
     <AuthProvider>
       <NotificationToastProvider />
       <div
-        className={`bg-background-main ${!isAuthRoute && "grid grid-cols-[auto_1fr]"} `}
+        className={`bg-transparent ${!isAuthRoute && "grid grid-cols-[auto_1fr]"} `}
       >
         {!isAuthRoute && <Sidebar />}
         <div className="p-6">{children}</div>

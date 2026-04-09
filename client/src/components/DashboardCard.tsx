@@ -1,54 +1,52 @@
 "use client";
-import Image from "next/image";
+import { LucideIcon } from "lucide-react";
 
 interface DashboardCardProps {
   title: string;
   value: number | string;
-  icon: string;
-
+  icon: LucideIcon;
   trend?: {
     value: number;
     isPositive: boolean;
   };
-  alt: string;
 }
 
 export default function DashboardCard({
   title,
   value,
-  icon,
+  icon: Icon,
   trend,
-  alt,
 }: DashboardCardProps) {
   return (
     <div
-      className={`
-        relative overflow-hidden rounded-xl p-6 shadow-xl shadow-black
-        transition-all duration-300 hover:scale-105 hover:shadow-2xl bg-background-secondry
-       
-      `}
+      className="relative overflow-hidden rounded-[2rem] p-8 border border-border-light bg-background-secondry/40 backdrop-blur-xl shadow-2xl shadow-black/5 transition-all duration-500 hover:scale-[1.02] hover:border-brand-primary/40 group"
     >
-      {/* Background Pattern */}
-      <div className="absolute top-2 -right-4 w-32 h-32 opacity-10">
-        <Image src={icon} height={100} width={100} alt={alt} />
+      {/* Background Decorative Icon */}
+      <div className="absolute top-2 -right-4 w-32 h-32 opacity-[0.03] text-text-primary transition-transform duration-700 group-hover:rotate-12 group-hover:scale-110">
+        <Icon size={120} />
       </div>
 
       {/* Content */}
-      <div className="relative z-10">
-        <div className="flex items-center gap-3 mb-2">
-          <Image src={icon} height={35} width={35} alt={alt} className="" />
-          <h3 className="text-text-primary text-md font-bold">{title}</h3>
-        </div>
-        <p className="text-4xl font-bold mb-2 ">{value}</p>
-        {trend && (
-          <div
-            className={`flex items-center gap-1 text-sm ${trend.isPositive ? "text-green-400" : "text-red-400"}`}
-          >
-            <span>{trend.isPositive ? "↑" : "↓"}</span>
-            <span>{Math.abs(trend.value)}%</span>
-            <span className="text-text-secondry">vs last month</span>
+      <div className="relative z-10 flex flex-col gap-4">
+        <div className="flex items-center gap-4">
+          <div className="p-3 rounded-2xl bg-brand-primary/10 border border-brand-primary/20 text-brand-primary">
+            <Icon size={24} />
           </div>
-        )}
+          <h3 className="text-text-secondry text-xs font-bold uppercase tracking-wider">{title}</h3>
+        </div>
+        
+        <div>
+          <p className="text-5xl font-bold text-text-primary tracking-tighter">{value}</p>
+          {trend && (
+            <div
+              className={`flex items-center gap-1 mt-2 text-xs font-bold ${trend.isPositive ? "text-emerald-500" : "text-rose-500"}`}
+            >
+              <span>{trend.isPositive ? "↑" : "↓"}</span>
+              <span>{Math.abs(trend.value)}%</span>
+              <span className="text-text-secondry/60 ml-1 font-medium">vs last month</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

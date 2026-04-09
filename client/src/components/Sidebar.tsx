@@ -5,42 +5,45 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { useUserStore } from "@/store/userStore";
 import { useNotificationStore } from "@/store/notificationStore";
-import { motion } from "framer-motion";
-import Image from "next/image";
-
 import Logo from "@/components/ui/logo/logo";
 import { supabase } from "@/lib/supabase";
+import {
+  LayoutDashboard,
+  Send,
+  Bell,
+  History,
+  Settings,
+  LogOut,
+  Menu,
+  X
+} from "lucide-react";
+import { motion } from "framer-motion";
 
 const menuItems = [
   {
     name: "Dashboard",
     path: "/app/dashboard",
-    icon: "/dashboard.svg",
-    alt: "Dashboard",
+    icon: LayoutDashboard,
   },
   {
     name: "Submit a Request",
     path: "/app/submit-request",
-    icon: "/form.svg",
-    alt: "submit a request",
+    icon: Send,
   },
   {
     name: "Notifications",
     path: "/app/notifications",
-    icon: "/notifications.svg",
-    alt: "Notifications",
+    icon: Bell,
   },
   {
     name: "History",
     path: "/app/history",
-    icon: "/history.svg",
-    alt: "History",
+    icon: History,
   },
   {
     name: "Settings",
     path: "/app/settings",
-    icon: "/settings.svg",
-    alt: "Settings",
+    icon: Settings,
   },
 ];
 
@@ -87,14 +90,14 @@ export default function Sidebar() {
       {/* Sidebar */}
       <aside
         className={`
-          fixed lg:sticky top-0 left-0 h-screen bg-background-secondry border-r border-white/10
+          fixed lg:sticky top-0 left-0 h-screen bg-background-main/40 backdrop-blur-xl border-r border-border-light
           transition-all duration-300 ease-in-out z-40
           ${isCollapsed ? "-translate-x-full lg:translate-x-0 lg:w-20" : "translate-x-0 w-64"}
         `}
       >
         <div className="flex flex-col h-full p-4">
           {/* Logo */}
-          <div className="mb-8 pb-4 border-b border-white/10">
+          <div className="mb-8 pb-4 border-b border-border-light">
             <h1
               className={`text-2xl font-bold text-text-primary text-center ${isCollapsed ? "lg:text-center lg:text-xl" : ""}`}
             >
@@ -103,72 +106,59 @@ export default function Sidebar() {
           </div>
 
           {/* Menu Items */}
-          <nav className="flex-1 space-y-2 flex flex-col items-start gap-4">
+          <nav className="flex-1 space-y-2 flex flex-col items-start gap-1">
             {menuItems.map((item) => {
               const isActive = pathname === item.path;
               const showBadge =
                 item.name === "Notifications" && unreadCount > 0;
+              const Icon = item.icon;
 
               return (
-                <div key={item.name}>
-                  <section className="inline-flex gap-4">
-                    <Image
-                      key={item.name}
-                      src={item.icon}
-                      alt={item.alt}
-                      height={25}
-                      width={25}
-                      className="mb-1"
+                <Link
+                  key={item.path}
+                  href={item.path}
+                  className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 group
+                    ${isActive
+                      ? "bg-brand-primary/10 text-brand-primary border border-brand-primary/20"
+                      : "text-text-secondry hover:bg-background-third border border-transparent hover:border-border-light"
+                    }
+                  `}
+                >
+                  <Icon className={`w-5 h-5 transition-transform duration-300 group-hover:scale-110 ${isActive ? "text-brand-primary" : "text-text-secondry"}`} />
+
+                  {!isCollapsed && (
+                    <div className="flex-1 flex justify-between items-center overflow-hidden">
+                      <span className="font-bold uppercase tracking-tight text-sm whitespace-nowrap">{item.name}</span>
+                      {showBadge && (
+                        <span className="px-2 py-0.5 text-[10px] font-black bg-brand-primary rounded-full text-text-button">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  {isActive && !isCollapsed && (
+                    <motion.div
+                      layoutId="sidebar-active"
+                      className="absolute left-0 w-1 h-6 bg-brand-primary rounded-r-full"
                     />
-                    <Link
-                      key={item.path}
-                      href={item.path}
-                      className={`relative text-sm sm:text-xl font-semibold text-center
-              ${isActive ? "text-text-primary" : "text-text-secondry"}
-            `}
-                    >
-                      {isActive && (
-                        <motion.div
-                          layoutId="navbar-indicator"
-                          className="absolute -bottom-2 left-0 right-0 h-0.5 bg-white"
-                          transition={{
-                            type: "spring",
-                            stiffness: 500,
-                            damping: 30,
-                          }}
-                        />
-                      )}
-                      {!isCollapsed && (
-                        <>
-                          <span className="flex-1">{item.name}</span>
-                          {showBadge && (
-                            <span className="px-3 py-1 text-xs font-extrabold text-center bg-red-500 rounded-full ml-2 text-text-primary">
-                              {unreadCount}
-                            </span>
-                          )}
-                        </>
-                      )}
-                    </Link>
-                  </section>
-                </div>
+                  )}
+                </Link>
               );
             })}
           </nav>
 
-          {/* Logout Button */}
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-500/10 border border-transparent hover:border-red-500/50 transition-all duration-200 text-red-500"
-          >
-            <Image
-              src={"/logout.svg"}
-              height={25}
-              width={25}
-              alt={"Logout"}
-              className="mt-0.5"
-            />
-            {!isCollapsed && <span className="font-semibold">Logout</span>}
-          </button>
+          {/* Logout */}
+          <div className="pt-4 mt-4 border-t border-border-light space-y-2">
+
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 text-red-500 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 group"
+            >
+              <LogOut className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              {!isCollapsed && <span className="font-bold uppercase tracking-tight text-sm">Logout</span>}
+            </button>
+          </div>
         </div>
       </aside>
 
