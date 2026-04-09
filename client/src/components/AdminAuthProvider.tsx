@@ -15,7 +15,11 @@ export default function AdminAuthProvideradm({
 
   useEffect(() => {
     // Check active session on mount
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error("Admin Session error:", error.message);
+        supabase.auth.signOut();
+      }
       setUser(session?.user ?? null);
     });
 

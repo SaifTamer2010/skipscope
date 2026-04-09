@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useUserStore } from "@/store/userStore";
 import { supabase } from "@/lib/supabase";
 import toast, { Toaster } from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 const page = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -31,6 +32,7 @@ const page = () => {
 
     try {
       // Set persistence based on checkbox
+      window.localStorage.setItem("ss-persist", keepLoggedIn.toString());
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -61,15 +63,15 @@ const page = () => {
 
   return (
     <>
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-screen bg-black">
         <AuthContainer>
           <header className="flex justify-center items-center flex-col gap-4">
             <Logo />
-            <h1 className="text-2xl font-bold text-text-primary">Login</h1>
+            <h1 className="text-3xl font-black text-text-primary uppercase italic tracking-tighter">Login</h1>
           </header>
           <form
             onSubmit={handleLogin}
-            className="flex justify-center items-center flex-col gap-6 w-full border-b border-slate-800"
+            className="flex justify-center items-center flex-col gap-6 w-full border-b border-white/5 pb-8"
           >
             <label htmlFor="email" className="relative">
               <input
@@ -77,7 +79,7 @@ const page = () => {
                 placeholder="Email"
                 id="email"
                 value={email}
-                className="relative bg-background-main w-80 h-10 rounded-xl p-6 px-15 active:bg-background-main focus:bg-background-main text-text-primary"
+                className="relative bg-black border border-white/10 w-80 h-10 rounded-xl p-6 px-15 focus:border-red-500/50 focus:bg-black outline-none text-text-primary transition-all"
                 onChange={(e) => setEmail(e.target.value)}
               />
               <Image
@@ -94,7 +96,7 @@ const page = () => {
                 placeholder="Password"
                 id="password"
                 value={password}
-                className="relative bg-background-main w-80 h-10 rounded-xl p-6 px-15 text-text-primary"
+                className="relative bg-black border border-white/10 w-80 h-10 rounded-xl p-6 px-15 focus:border-red-500/50 focus:bg-black outline-none text-text-primary transition-all"
                 onChange={(e) => setPassword(e.target.value)}
               />
               <Image
@@ -114,30 +116,42 @@ const page = () => {
               />
             </label>
 
-            <div className="flex items-center w-80 gap-2">
-              <input
-                type="checkbox"
-                id="keepLoggedIn"
-                checked={keepLoggedIn}
-                onChange={(e) => {
-                  setKeepLoggedIn(e.target.checked);
-                }}
-                className="hidden relative peer"
-              />
+            <div className="flex items-center w-80 gap-3">
+              <div className="relative flex items-center">
+                <input
+                  type="checkbox"
+                  id="keepLoggedIn"
+                  checked={keepLoggedIn}
+                  onChange={(e) => setKeepLoggedIn(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <label
+                  htmlFor="keepLoggedIn"
+                  className="w-5 h-5 rounded-md bg-background-third border-white/10 border cursor-pointer hover:bg-white/5 peer-checked:bg-red-600 peer-checked:border-red-700 peer-focus-visible:ring-2 peer-focus-visible:ring-red-500/50 shadow-inner transition-all flex items-center justify-center overflow-hidden"
+                >
+                  <AnimatePresence>
+                    {keepLoggedIn && (
+                      <motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0, opacity: 0 }}
+                        transition={{ duration: 0.15, ease: "backOut" }}
+                      >
+                        <Image
+                          src={"/tick.svg"}
+                          alt="tick"
+                          width={14}
+                          height={14}
+                          className="pointer-events-none"
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </label>
+              </div>
               <label
                 htmlFor="keepLoggedIn"
-                className="w-5 h-5 rounded-md bg-background-third border-slate-800 border cursor-pointer hover:bg-slate-900 peer-checked:bg-purple-500 peer-checked:border-purple-800 relative flex items-center justify-center ml-2"
-              ></label>
-              <Image
-                src={"/tick.svg"}
-                alt="tick"
-                width={20}
-                height={20}
-                className="absolute hidden peer-checked:block pointer-events-none ml-2"
-              />
-              <label
-                htmlFor="keepLoggedIn"
-                className="text-sm text-text-secondry cursor-pointer select-none"
+                className="text-sm text-text-secondry cursor-pointer select-none peer-focus-visible:text-white transition-colors"
               >
                 Keep me logged in
               </label>
@@ -146,19 +160,19 @@ const page = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-50 h-12 rounded-xl bg-background-third shadow-black shadow-md p-2 cursor-pointer hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-text-primary font-semibold"
+              className="w-80 h-12 rounded-xl bg-red-600 shadow-lg shadow-red-900/20 p-2 cursor-pointer hover:bg-red-700 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold uppercase italic tracking-tight mt-4"
             >
               {loading ? "Logging in..." : "Login"}
             </button>
-            <p className="text-right text-sm w-full text-slate-200 mb-2">
-              Forget Password?
+            <p className="text-right text-xs w-full text-white/40 mb-2 cursor-pointer hover:text-white/60 transition-colors uppercase italic font-medium">
+              Forgot Password?
             </p>
           </form>
           <footer className="">
             <button
               type="button"
               onClick={handleRegister}
-              className="w-50 h-12 rounded-xl p-2 cursor-pointer transition-all bg-transparent border border-slate-800 hover:bg-background-third text-text-primary"
+              className="w-80 h-12 rounded-xl p-2 cursor-pointer transition-all bg-transparent border border-white/10 hover:bg-white/5 text-text-primary font-bold uppercase italic tracking-tight"
             >
               Create New Account
             </button>

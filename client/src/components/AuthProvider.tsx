@@ -19,6 +19,12 @@ export default function AuthProvider({
     const getSession: any = async () => {
       const { data, error } = await supabase.auth.getSession();
 
+      if (error) {
+        console.error("Session error:", error.message);
+        await supabase.auth.signOut();
+        setUser(null);
+      }
+
       if (
         data.session &&
         (pathname === "/app/auth/login" || pathname === "/app/auth/register")

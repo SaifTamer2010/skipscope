@@ -23,9 +23,6 @@ const MarketingNavbar = () => {
   const [activeSection, setActiveSection] = useState("home");
   const isProgrammaticScroll = useRef(false);
 
-
-
-
   const pathname = usePathname();
   const router = useRouter();
 
