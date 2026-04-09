@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import toast, { Toaster } from "react-hot-toast";
 import { motion } from "framer-motion";
+import { Mail } from "lucide-react";
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
@@ -43,7 +44,7 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-black">
+    <div className="flex justify-center items-center h-screen bg-transparent">
       <Toaster
         position="top-right"
         toastOptions={{
@@ -79,23 +80,17 @@ const ForgotPasswordPage = () => {
                 placeholder="Email"
                 id="email"
                 value={email}
-                className="relative bg-black border border-white/10 w-80 h-10 rounded-xl p-6 px-15 focus:border-red-500/50 focus:bg-black outline-none text-text-primary transition-all"
+                className="relative bg-background-third border border-border-light w-80 h-10 rounded-xl p-6 px-15 focus:border-brand-primary/50 focus:bg-background-main outline-none text-text-primary transition-all"
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
               />
-              <Image
-                src={"/email.svg"}
-                height={30}
-                width={30}
-                alt={"email"}
-                className="absolute top-3.5 left-5 z-50 opacity-60 border-r border-white/10 pr-2"
-              />
+              <Mail className="absolute top-3.5 left-5 z-50 opacity-60 border-r border-border-muted pr-2" size={20} />
             </label>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-80 h-12 rounded-xl bg-red-600 shadow-lg shadow-red-900/20 p-2 cursor-pointer hover:bg-red-700 hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold uppercase italic tracking-tight mt-4"
+              className="w-80 h-12 rounded-xl bg-brand-primary shadow-lg shadow-brand-glow-strong p-2 cursor-pointer hover:bg-brand-primary-strong hover:scale-[1.02] transition-all disabled:opacity-50 disabled:cursor-not-allowed text-text-button font-bold uppercase italic tracking-tight mt-4"
             >
               {loading ? "Sending..." : "Send Reset Link"}
             </button>

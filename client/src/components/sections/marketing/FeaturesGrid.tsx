@@ -12,12 +12,12 @@ const features = [
   {
     title: "Bulk Portfolio Processing",
     description: "Submit thousands of property records and receive enriched data in minutes.",
-    icon: <Zap className="w-8 h-8 text-yellow-500" />,
+    icon: <Zap className="w-8 h-8 text-yellow-600" />,
   },
   {
     title: "Real Estate Focus",
     description: "Tailored algorithms specifically designed for the real estate market.",
-    icon: <Target className="w-8 h-8 text-blue-500" />,
+    icon: <Target className="w-8 h-8 text-blue-600" />,
   },
 ];
 

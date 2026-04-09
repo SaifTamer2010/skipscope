@@ -18,7 +18,7 @@ const useCases = [
   {
     role: "Solar Companies",
     benefit: "Clean, targeted homeowner data that boosts appointment rates and drives solar adoption.",
-    icon: <Sun className="w-6 h-6 text-cyan-400" />,
+    icon: <Sun className="w-6 h-6 text-cyan-600" />,
     results: [
       { label: "Tier-1 Homeowners", value: "812" },
       { label: "Roof-Type Verified", value: "Verified" },
@@ -28,7 +28,7 @@ const useCases = [
   {
     role: "Roofing Companies",
     benefit: "Reach the right homeowners in need of roofing services with high-quality lists.",
-    icon: <Hammer className="w-6 h-6 text-blue-400" />,
+    icon: <Hammer className="w-6 h-6 text-blue-600" />,
     results: [
       { label: "Storm-Impacted Areas", value: "64 Zones" },
       { label: "Verified Homeowners", value: "1,200+" },
@@ -38,7 +38,7 @@ const useCases = [
   {
     role: "Home Improvement Businesses",
     benefit: "From contractors to remodelers, we provide leads that turn into booked projects.",
-    icon: <Wrench className="w-6 h-6 text-teal-400" />,
+    icon: <Wrench className="w-6 h-6 text-teal-600" />,
     results: [
       { label: "Project-Ready Leads", value: "450" },
       { label: "Income Verified", value: "Top 20%" },
@@ -48,7 +48,7 @@ const useCases = [
   {
     role: "Health Insurance Providers",
     benefit: "Connect with prospects in your target markets with accuracy and compliance in mind.",
-    icon: <Shield className="w-6 h-6 text-indigo-400" />,
+    icon: <Shield className="w-6 h-6 text-indigo-600" />,
     results: [
       { label: "Aged Leads Enriched", value: "2,100" },
       { label: "TCPA Compliant", value: "100%" },
@@ -58,7 +58,7 @@ const useCases = [
   {
     role: "Debt Collection Agencies",
     benefit: "Data that ensures higher contact rates and greater recovery success.",
-    icon: <DollarSign className="w-6 h-6 text-purple-400" />,
+    icon: <DollarSign className="w-6 h-6 text-purple-600" />,
     results: [
       { label: "Valid Contact Info Found", value: "98%" },
       { label: "Recovery Rate Boost", value: "+30%" },
