@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import LoadingScreen from "@/src/components/LoadingScreen";
 
-export default function AuthCallbackPage() {
+function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -38,3 +38,12 @@ export default function AuthCallbackPage() {
 
   return <LoadingScreen />;
 }
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense fallback={<LoadingScreen />}>
+      <AuthCallbackContent />
+    </Suspense>
+  );
+}
+
