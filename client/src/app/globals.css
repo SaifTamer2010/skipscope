@@ -2,6 +2,34 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-background-main);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(18, 130, 146, 0.3);
+  border-radius: 20px;
+  border: 3px solid var(--color-background-main);
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-primary);
+}
+
+/* Firefox Support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(18, 130, 146, 0.3) var(--color-background-main);
+}
+
+
 @import "tailwindcss";
 @config "../../tailwind.config.js";
 

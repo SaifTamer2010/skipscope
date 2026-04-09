@@ -6,7 +6,7 @@ const getUser = async (req: AuthRequest, res: Response) => {
   try {
     const { data: user, error } = await supabase
       .from("users")
-      .select("id, email, created_at")
+      .select("id, email, username, created_at")
       .eq("id", req.userId)
       .single();
 

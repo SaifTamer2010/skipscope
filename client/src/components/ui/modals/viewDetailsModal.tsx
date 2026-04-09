@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+
 import api from "@/lib/api";
-import { X, FileText, Download } from "lucide-react";
+import { X, FileText, Download, Hash, Zap, MapPin, Layers } from "lucide-react";
+
 import toast from "react-hot-toast";
 
 interface RequestDetails {
@@ -89,8 +92,11 @@ const ViewDetailsModal = ({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background-main/40 backdrop-blur-md animate-in fade-in duration-300">
+  if (typeof document === "undefined") return null;
+
+  return createPortal(
+
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-background-main/40 backdrop-blur-md animate-in fade-in duration-300">
       <div
         className="w-full max-w-2xl bg-background-secondry/80 backdrop-blur-2xl border border-border-light rounded-[2.5rem] shadow-2xl flex flex-col max-h-[90vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
@@ -98,8 +104,9 @@ const ViewDetailsModal = ({
         {/* Header */}
         <div className="flex items-center justify-between p-8 border-b border-border-muted bg-background-third/20">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold text-text-primary uppercase tracking-tight">Request Intelligence</h2>
+            <h2 className="text-2xl font-bold text-text-primary uppercase tracking-tight">Request Details</h2>
             <p className="text-[10px] font-bold text-text-secondry uppercase tracking-widest flex items-center gap-2">
+
               <span className="w-1 h-1 rounded-full bg-brand-primary" />
               Detailed operational metrics and assets
             </p>
@@ -154,12 +161,24 @@ const ViewDetailsModal = ({
                   <p className="text-text-primary font-bold">{details.county || "Global"}</p>
                 </div>
 
+                {details.zipCode && details.zipCode !== "N/A" && (
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-text-secondry uppercase tracking-widest opacity-60">
+                      Zip Code Filter
+                    </label>
+                    <p className="text-brand-primary font-bold flex items-center gap-2">
+                      <Hash size={12} className="opacity-50" />
+                      {details.zipCode}
+                    </p>
+                  </div>
+                )}
+
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-text-secondry uppercase tracking-widest opacity-60">
                     Records Scoped
                   </label>
                   <p className="text-text-primary font-bold">
-                    {(details.rows / 1000).toFixed(1)}k <span className="text-[10px] uppercase text-text-secondry">leads</span>
+                    {details.rows ? (details.rows / 1000).toFixed(1) : "0"}k <span className="text-[10px] uppercase text-text-secondry font-medium">leads</span>
                   </p>
                 </div>
 
@@ -195,26 +214,37 @@ const ViewDetailsModal = ({
 
               {/* Advanced Intelligence Section */}
               <div className="grid grid-cols-1 gap-8 pt-4">
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <label className="text-[10px] font-black text-text-secondry uppercase tracking-widest flex items-center gap-2">
-                    <div className="w-1 h-1 rounded-full bg-brand-primary" />
+                    <Zap size={10} className="text-brand-primary" />
                     Strategic Motivations
                   </label>
-                  <div className="p-5 bg-background-third/40 rounded-2xl border border-border-muted text-sm text-text-secondry leading-relaxed italic">
-                    "{details.motivations}"
+                  <div className="flex flex-wrap gap-2">
+                    {details.motivations && details.motivations !== "N/A" ? (
+                      details.motivations.split(",").map((motivation: string, index: number) => (
+                        <span 
+                          key={index}
+                          className="px-3 py-1.5 bg-brand-primary/10 border border-brand-primary/20 rounded-xl text-[10px] font-bold text-brand-primary uppercase tracking-wider"
+                        >
+                          {motivation.trim()}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-xs text-text-secondry italic opacity-40">No specific motivations specified</span>
+                    )}
                   </div>
                 </div>
 
-                {details.ownershipCriteriaFinale && details.ownershipCriteriaFinale.length > 0 && (
-                  <div className="space-y-3">
+                {details.ownershipCriteriaFinale && Array.isArray(details.ownershipCriteriaFinale) && details.ownershipCriteriaFinale.length > 0 && (
+                  <div className="space-y-4 pt-2">
                     <label className="text-[10px] font-black text-text-secondry uppercase tracking-widest flex items-center gap-2">
-                      <div className="w-1 h-1 rounded-full bg-brand-primary" />
+                      <Layers size={10} className="text-brand-primary" />
                       Ownership Parameters
                     </label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {details.ownershipCriteriaFinale.map((item) => (
-                        <div key={item.key} className="p-3 bg-background-main/30 rounded-xl border border-border-muted">
-                          <p className="text-[9px] font-black text-text-secondry uppercase tracking-tighter opacity-60">{item.key}</p>
+                      {details.ownershipCriteriaFinale.map((item: any, idx: number) => (
+                        <div key={idx} className="p-3 bg-background-main/30 rounded-xl border border-border-muted group hover:border-brand-primary/30 transition-colors">
+                          <p className="text-[9px] font-black text-text-secondry uppercase tracking-tighter opacity-60 group-hover:text-brand-primary transition-colors">{item.key}</p>
                           <p className="text-xs font-bold text-text-primary truncate">{item.value}</p>
                         </div>
                       ))}
@@ -321,8 +351,10 @@ const ViewDetailsModal = ({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
+
 
 export default ViewDetailsModal;

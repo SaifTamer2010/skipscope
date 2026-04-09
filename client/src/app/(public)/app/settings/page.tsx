@@ -5,18 +5,34 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { useUserStore } from "@/store/userStore";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
-import { User, Bell, Palette, AlertTriangle, ShieldCheck, Mail, Save } from "lucide-react";
+import { User, Bell, Palette, AlertTriangle, ShieldCheck, Mail, Save, Building2, Phone, Hash, Trash2 } from "lucide-react";
+import DeleteAccountModal from "@/components/ui/modals/DeleteAccountModal";
+import { supabase } from "@/lib/supabase";
+import { useRouter } from "next/navigation";
+
+
+
 
 export default function SettingsPage() {
   const user = useUserStore((state) => state.user);
   const [settings, setSettings] = useState({
-    firstName: "",
-    lastName: "",
+    username: "",
     email: user?.email || "",
+    company: "",
+    phone: "",
+    age: "",
     notifications: true,
     emailUpdates: true,
   });
+
+
   const [loading, setLoading] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  
+  const router = useRouter();
+  const logout = useUserStore((state) => state.logout);
+
 
   useEffect(() => {
     fetchSettings();
@@ -26,15 +42,20 @@ export default function SettingsPage() {
     try {
       const response = await api.get("/user/settings");
       if (response.data) {
+        const userData = response.data;
         setSettings((prev) => ({
           ...prev,
-          ...response.data,
-          firstName: response.data.firstName || "",
-          lastName: response.data.lastName || "",
-          notifications: response.data.notifications ?? true,
-          emailUpdates: response.data.emailUpdates ?? true,
+          username: userData.username || "",
+          email: userData.email || "",
+          company: userData.company || "",
+          phone: userData.phone || "",
+          age: userData.age?.toString() || "",
+          notifications: userData.settings?.notifications ?? true,
+          emailUpdates: userData.settings?.emailUpdates ?? true,
         }));
+
       }
+
     } catch (error) {
       console.error("Failed to load settings", error);
     }
@@ -53,6 +74,26 @@ export default function SettingsPage() {
       setLoading(false);
     }
   };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      await api.delete("/user/account");
+      toast.success("Account successfully deleted");
+      
+      // Clear store, sign out and redirect
+      logout();
+      await supabase.auth.signOut();
+      router.push("/");
+    } catch (error: any) {
+      console.error("Failed to delete account", error);
+      toast.error(error.response?.data?.error || "Failed to delete account");
+      setIsDeleteModalOpen(false);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
 
   return (
     <div className="max-w-4xl mx-auto space-y-12 pb-20 px-4">
@@ -80,52 +121,96 @@ export default function SettingsPage() {
         </div>
 
         <form onSubmit={handleSave} className="space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-3">
-              <label className="text-[10px] font-black text-text-secondry uppercase tracking-widest ml-1">
-                Forename
-              </label>
+          <div className="space-y-3 md:col-span-2">
+            <label className="text-[10px] font-black text-text-secondry uppercase tracking-widest ml-1">
+              Operational Callsign (Username)
+            </label>
+            <div className="relative">
               <input
                 type="text"
-                value={settings.firstName}
+                value={settings.username}
                 onChange={(e) =>
-                  setSettings({ ...settings, firstName: e.target.value })
+                  setSettings({ ...settings, username: e.target.value })
                 }
-                placeholder="Ex: John"
-                className="w-full px-5 py-4 bg-background-main/30 border border-border-muted rounded-2xl focus:outline-none focus:border-brand-primary/50 text-text-primary font-medium transition-all transition-duration-300"
+                placeholder="Ex: Maverick"
+                className="w-full px-5 py-4 bg-background-main/30 border border-border-muted rounded-2xl focus:outline-none focus:border-brand-primary/50 text-text-primary font-medium transition-all transition-duration-300 pl-12"
               />
-            </div>
-            <div className="space-y-3">
-              <label className="text-[10px] font-black text-text-secondry uppercase tracking-widest ml-1">
-                Surname
-              </label>
-              <input
-                type="text"
-                value={settings.lastName}
-                onChange={(e) =>
-                  setSettings({ ...settings, lastName: e.target.value })
-                }
-                placeholder="Ex: Doe"
-                className="w-full px-5 py-4 bg-background-main/30 border border-border-muted rounded-2xl focus:outline-none focus:border-brand-primary/50 text-text-primary font-medium transition-all transition-duration-300"
-              />
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondry opacity-40" size={18} />
             </div>
           </div>
 
-          <div className="space-y-3">
-            <label className="text-[10px] font-black text-text-secondry uppercase tracking-widest ml-1">Communication Endpoint (Email)</label>
-            <div className="relative">
-              <input
-                type="email"
-                value={settings.email}
-                onChange={(e) =>
-                  setSettings({ ...settings, email: e.target.value })
-                }
-                placeholder="john@example.com"
-                className="w-full px-5 py-4 bg-background-main/30 border border-border-muted rounded-2xl focus:outline-none focus:border-brand-primary/50 text-text-primary font-medium transition-all transition-duration-300 pl-12"
-              />
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondry opacity-40" size={18} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:col-span-2">
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-text-secondry uppercase tracking-widest ml-1">
+                Organization / Company
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={settings.company}
+                  onChange={(e) =>
+                    setSettings({ ...settings, company: e.target.value })
+                  }
+                  placeholder="Ex: Skynet Systems"
+                  className="w-full px-5 py-4 bg-background-main/30 border border-border-muted rounded-2xl focus:outline-none focus:border-brand-primary/50 text-text-primary font-medium transition-all transition-duration-300 pl-12"
+                />
+                <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondry opacity-40" size={18} />
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-text-secondry uppercase tracking-widest ml-1">
+                Contact Frequency (Phone)
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={settings.phone}
+                  onChange={(e) =>
+                    setSettings({ ...settings, phone: e.target.value })
+                  }
+                  placeholder="Ex: +1 (555) 000-0000"
+                  className="w-full px-5 py-4 bg-background-main/30 border border-border-muted rounded-2xl focus:outline-none focus:border-brand-primary/50 text-text-primary font-medium transition-all transition-duration-300 pl-12"
+                />
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondry opacity-40" size={18} />
+              </div>
             </div>
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:col-span-2">
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-text-secondry uppercase tracking-widest ml-1">
+                Service Duration (Age)
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  value={settings.age}
+                  onChange={(e) =>
+                    setSettings({ ...settings, age: e.target.value })
+                  }
+                  placeholder="Ex: 28"
+                  className="w-full px-5 py-4 bg-background-main/30 border border-border-muted rounded-2xl focus:outline-none focus:border-brand-primary/50 text-text-primary font-medium transition-all transition-duration-300 pl-12"
+                />
+                <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondry opacity-40" size={18} />
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <label className="text-[10px] font-black text-text-secondry uppercase tracking-widest ml-1">Communication Endpoint (Email)</label>
+              <div className="relative">
+                <input
+                  type="email"
+                  value={settings.email}
+                  disabled
+                  title="Email cannot be changed"
+                  className="w-full px-5 py-4 bg-background-main/10 border border-border-muted rounded-2xl text-text-secondry font-medium transition-all cursor-not-allowed pl-12 opacity-60"
+                />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondry opacity-40" size={18} />
+              </div>
+            </div>
+          </div>
+
 
           <button
             type="submit"
@@ -218,29 +303,42 @@ export default function SettingsPage() {
       {/* Danger Zone */}
       <div className="relative overflow-hidden bg-red-500/5 backdrop-blur-xl border border-red-500/20 rounded-[2.5rem] p-8 md:p-10 shadow-2xl">
         <div className="absolute top-0 right-0 p-8 opacity-5">
-          <AlertTriangle size={150} className="text-red-500" />
+          <Trash2 size={150} className="text-red-500" />
         </div>
         
         <div className="relative space-y-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center border border-red-500/20">
-              <ShieldCheck size={24} className="text-red-500" />
+              <Trash2 size={24} className="text-red-500" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-red-500 tracking-tight text-shadow-red">Termination Protocols</h2>
-              <p className="text-[10px] font-bold text-red-500/60 uppercase tracking-widest">Permanent account erasure</p>
+              <h2 className="text-xl font-bold text-red-500 tracking-tight text-shadow-red uppercase">Delete Account</h2>
+              <p className="text-[10px] font-bold text-red-500/60 uppercase tracking-widest">Permanent operational erasure</p>
             </div>
           </div>
           
           <p className="text-xs text-text-secondry font-medium max-w-md leading-relaxed">
-            Termination of this account will result in permanent loss of all operational history, active requests, and generated assets. Data recovery is not possible after execution.
+            Deleting your account will result in permanent loss of all operational history, active requests, and generated assets. Data recovery is not possible after execution.
           </p>
           
-          <button className="px-8 py-3.5 bg-red-500/10 hover:bg-red-500 border border-red-500/30 hover:border-red-500 rounded-2xl font-bold transition-all duration-300 text-red-500 hover:text-white shadow-lg shadow-red-500/5">
-            Execute Account Erasure
+          <button 
+            onClick={() => setIsDeleteModalOpen(true)}
+            className="px-8 py-3.5 bg-red-500/10 hover:bg-red-500 border border-red-500/30 hover:border-red-500 rounded-2xl font-bold transition-all duration-300 text-red-500 hover:text-white shadow-lg shadow-red-500/5"
+          >
+            Permanently Delete Account
           </button>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <DeleteAccountModal 
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={handleDeleteAccount}
+          loading={isDeleting}
+        />
+      )}
+
     </div>
   );
 }
