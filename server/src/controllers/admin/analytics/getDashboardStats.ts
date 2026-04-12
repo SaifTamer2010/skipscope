@@ -17,8 +17,9 @@ const getDashboardStats = async (
     const oneWeekAgo = new Date(
       now.getTime() - 7 * 24 * 60 * 60 * 1000,
     ).toISOString();
-    const thirtyDaysAgo = new Date(
-      now.getTime() - 30 * 24 * 60 * 60 * 1000,
+    const daysParam = parseInt(req.query.days as string) || 30;
+    const rangeAgo = new Date(
+      now.getTime() - daysParam * 24 * 60 * 60 * 1000,
     ).toISOString();
 
     // Parallelize independent queries
@@ -34,7 +35,7 @@ const getDashboardStats = async (
       supabase
         .from("users")
         .select("*", { count: "exact", head: true })
-        .gte("created_at", thirtyDaysAgo), // Approximation of active
+        .gte("created_at", rangeAgo), // Approximation of active
       supabase.from("requests").select("*", { count: "exact", head: true }),
       supabase
         .from("requests")
@@ -85,11 +86,11 @@ const getDashboardStats = async (
       total_profit,
     };
 
-    // 2. Get requests over time (last 30 days)
+    // 2. Get requests over time (range)
     const { data: requestsOverTime } = await supabase
       .from("requests")
       .select("created_at")
-      .gte("created_at", thirtyDaysAgo)
+      .gte("created_at", rangeAgo)
       .order("created_at", { ascending: true });
 
     // Group by date
@@ -135,35 +136,34 @@ const getDashboardStats = async (
 
     const statusData = Object.values(statusGroups);
 
-    // 4. Get top performing admins
-    const { data: adminPerformance } = await supabase
+    // 4. Get top clients
+    const { data: clientPerformance } = await supabase
       .from("requests")
       .select(
         `
-        assigned_admin_id,
-        admin_users (
-          username,
-          display_name
+        user_id,
+        users (
+          email
         )
       `,
       )
-      .not("assigned_admin_id", "is", null);
+      .not("user_id", "is", null);
 
-    const adminGroups: Record<string, { name: string; count: number }> = {};
-    adminPerformance?.forEach((r: any) => {
-      const key = r.assigned_admin_id;
-      if (key && r.admin_users) {
-        if (!adminGroups[key]) {
-          adminGroups[key] = {
-            name: r.admin_users.display_name,
+    const clientGroups: Record<string, { name: string; count: number }> = {};
+    clientPerformance?.forEach((r: any) => {
+      const key = r.user_id;
+      if (key && r.users) {
+        if (!clientGroups[key]) {
+          clientGroups[key] = {
+            name: r.users.email,
             count: 0,
           };
         }
-        adminGroups[key].count++;
+        clientGroups[key].count++;
       }
     });
 
-    const topAdmins = Object.values(adminGroups)
+    const topClients = Object.values(clientGroups)
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
 
@@ -193,7 +193,7 @@ const getDashboardStats = async (
       stats,
       requestsTimeSeries,
       statusData,
-      topAdmins,
+      topClients,
       packageData,
       recentActivity: recentActivity || [],
     });
