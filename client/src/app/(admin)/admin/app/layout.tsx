@@ -1,12 +1,18 @@
-import AdminNavbar from "@/src/components/layouts/AdminNavbar";
+"use client";
 
-const layout = ({ children }: { children: React.ReactNode }) => {
+import AdminNavbar from "@/src/components/layouts/AdminNavbar";
+import { usePathname } from "next/navigation";
+
+const Layout = ({ children }: { children: React.ReactNode }) => {
+  const pathname = usePathname();
+  const isEnrollPage = pathname === "/admin/app/enroll";
+
   return (
     <div className="grid grid-rows-[auto_1fr]">
-      <AdminNavbar />
+      {!isEnrollPage && <AdminNavbar />}
       {children}
     </div>
   );
 };
 
-export default layout;
+export default Layout;

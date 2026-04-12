@@ -12,7 +12,7 @@ import ThemeToggle from "@/src/components/ui/ThemeToggle";
 
 export default function LandingPage() {
   return (
-    <div className="flex flex-col items-center w-full min-h-screen bg-transparent overflow-x-hidden">
+    <div className="flex flex-col items-center w-full min-h-screen bg-transparent overflow-x-hidden mt-10">
       <HeroSection />
       <StatsBar />
       <ProductShowcase />

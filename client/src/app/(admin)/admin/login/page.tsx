@@ -80,44 +80,39 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Background Effects */}
-      <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]"></div>
-
-      <div className="relative z-10 w-full max-w-md p-8">
+    <div className="min-h-screen flex items-center justify-center bg-white font-sans">
+      <div className="relative w-full max-w-md p-8">
         {/* Logo/Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl mb-4">
-            <svg
-              className="w-8 h-8 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-              />
-            </svg>
+        <div className="flex items-center justify-center gap-3 mb-10">
+          <div className="relative w-10 h-10">
+            <Image
+              src="/scope.svg"
+              alt="SkipScope Logo"
+              fill
+              className="object-contain"
+              priority
+            />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Admin Control Panel
+          <h1 className="text-2xl font-bold text-black tracking-tighter">
+            adminpanel
           </h1>
-          <p className="text-gray-400">Secure OTP-only authentication</p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-8">
+        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-10">
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold text-gray-900">Welcome Back</h2>
+            <p className="text-sm text-gray-500 mt-1">Please enter your credentials to access the panel.</p>
+          </div>
+
           <form onSubmit={handleLogin} className="space-y-6">
             {/* Username Input */}
             <div>
               <label
                 htmlFor="username"
-                className="block text-sm font-medium text-gray-200 mb-2"
+                className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
               >
-                Admin Username
+                Username
               </label>
               <input
                 id="username"
@@ -125,8 +120,8 @@ export default function AdminLoginPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 onBlur={handleCheckEnrollment}
-                className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                placeholder="Enter your username"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
+                placeholder="admin_id"
                 disabled={loading}
                 autoComplete="username"
               />
@@ -137,9 +132,9 @@ export default function AdminLoginPage() {
               <div>
                 <label
                   htmlFor="otp"
-                  className="block text-sm font-medium text-gray-200 mb-2"
+                  className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2"
                 >
-                  One-Time Password
+                  Authenticator Code
                 </label>
                 <input
                   id="otp"
@@ -147,13 +142,16 @@ export default function AdminLoginPage() {
                   maxLength={6}
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white text-center text-2xl tracking-widest font-mono placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-black text-center text-2xl tracking-[0.5em] font-mono placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
                   placeholder="000000"
                   disabled={loading || !username}
                   autoComplete="one-time-code"
                 />
-                <p className="mt-2 text-xs text-gray-400">
-                  Enter the 6-digit code from your authenticator app
+                <p className="mt-3 text-[11px] text-gray-400 flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Enter the 6-digit code from your app
                 </p>
               </div>
             )}
@@ -162,12 +160,12 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading || !username || !otp}
-              className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-lg shadow-lg transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full py-4 px-4 bg-black hover:bg-zinc-800 text-white font-bold rounded-xl shadow-lg transform transition-all duration-200 active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed disabled:transform-none"
             >
               {loading ? (
                 <div className="flex items-center justify-center">
                   <svg
-                    className="animate-spin h-5 w-5 mr-2"
+                    className="animate-spin h-5 w-5 mr-2 text-white"
                     viewBox="0 0 24 24"
                   >
                     <circle
@@ -185,37 +183,25 @@ export default function AdminLoginPage() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Authenticating...
+                  Verifying...
                 </div>
               ) : (
-                "Login"
+                "Access Dashboard"
               )}
             </button>
           </form>
-
-          {/* Footer */}
-          <div className="mt-6 text-center">
-            <p className="text-xs text-gray-400">
-              <svg
-                className="inline w-4 h-4 mr-1"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              No passwords. OTP authentication only.
-            </p>
-          </div>
         </div>
 
-        {/* Security Notice */}
-        <div className="mt-6 text-center text-xs text-gray-500">
-          <p>🔒 This is a secure admin area</p>
-          <p>All login attempts are logged and monitored</p>
+        {/* Footer */}
+        <div className="mt-10 text-center space-y-2">
+          <p className="text-[10px] text-gray-400 font-medium uppercase tracking-[0.2em]">
+            Secure Infrastructure • SkipScope OS
+          </p>
+          <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
+            <span className="flex items-center gap-1 underline underline-offset-4 decoration-gray-200">Help Center</span>
+            <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+            <span className="flex items-center gap-1 underline underline-offset-4 decoration-gray-200">Security Policy</span>
+          </div>
         </div>
       </div>
     </div>
