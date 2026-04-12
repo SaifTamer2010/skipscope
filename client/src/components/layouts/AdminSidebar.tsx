@@ -11,10 +11,13 @@ import {
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { ChevronDown, ChevronRight, List as ListIcon, History } from "lucide-react";
 
 const AdminSidebar = ({ isOpen }: { isOpen: boolean }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const [requestsOpen, setRequestsOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("admin_token");
@@ -25,7 +28,16 @@ const AdminSidebar = ({ isOpen }: { isOpen: boolean }) => {
 
   const menuItems = [
     { name: "Dashboard", icon: LayoutDashboard, path: "/admin/app/dashboard" },
-    { name: "Board", icon: Kanban, path: "/admin/app/kanban" },
+    { 
+      name: "Requests", 
+      icon: Kanban, 
+      isAccordion: true,
+      subItems: [
+        { name: "List", icon: ListIcon, path: "/admin/app/requests/list" },
+        { name: "Board", icon: Kanban, path: "/admin/app/kanban" },
+        { name: "Timeline", icon: History, path: "/admin/app/requests/timeline" }
+      ]
+    },
     { name: "Users", icon: Users, path: "/admin/app/users" },
     { name: "Providers", icon: Database, path: "/admin/app/providers" },
   ];
@@ -53,11 +65,61 @@ const AdminSidebar = ({ isOpen }: { isOpen: boolean }) => {
         {/* Navigation */}
         <nav className="flex-1 px-4 space-y-1">
           {menuItems.map((item) => {
+            if (item.isAccordion) {
+              const isAnyChildActive = item.subItems?.some(sub => pathname === sub.path);
+              return (
+                <div key={item.name} className="flex flex-col gap-1">
+                  <button
+                    onClick={() => setRequestsOpen(!requestsOpen)}
+                    className={cn(
+                      "w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all",
+                      isAnyChildActive || requestsOpen
+                        ? "bg-gray-50 text-black"
+                        : "text-gray-500 hover:bg-gray-50 hover:text-black"
+                    )}
+                  >
+                    <div className="flex items-center gap-4">
+                      <item.icon size={20} className={cn("flex-shrink-0", (isAnyChildActive || requestsOpen) ? "text-black" : "text-gray-500")} />
+                      <span className="text-sm font-semibold tracking-tight whitespace-nowrap">
+                        {item.name}
+                      </span>
+                    </div>
+                    {requestsOpen ? <ChevronDown size={16} className="text-gray-500" /> : <ChevronRight size={16} className="text-gray-500" />}
+                  </button>
+                  
+                  {requestsOpen && (
+                    <div className="flex flex-col gap-1 pl-11 pr-2 mt-1">
+                      {item.subItems?.map((sub) => {
+                        const isChildActive = pathname === sub.path;
+                        return (
+                          <button
+                            key={sub.name}
+                            onClick={() => router.push(sub.path)}
+                            className={cn(
+                              "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all",
+                              isChildActive
+                                ? "bg-black text-white"
+                                : "text-gray-500 hover:bg-gray-50 hover:text-black"
+                            )}
+                          >
+                            <sub.icon size={16} className={cn("flex-shrink-0", isChildActive ? "text-white" : "text-gray-500")} />
+                            <span className="text-xs font-bold tracking-tight whitespace-nowrap uppercase">
+                              {sub.name}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
             const isActive = pathname === item.path;
             return (
               <button
                 key={item.name}
-                onClick={() => router.push(item.path)}
+                onClick={() => router.push(item.path!)}
                 className={cn(
                   "w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all",
                   isActive

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import KanbanRequestModal from "@/components/ui/modals/kanbanRequestModal";
 import adminApi from "@/lib/adminApi";
+import { motion, AnimatePresence } from "motion/react";
 
 interface Admin {
   id: string;
@@ -146,13 +147,13 @@ export default function KanbanPage() {
     e.preventDefault();
   };
 
-  const handleDrop = async (targetColumnId: string) => {
+  const handleDrop = async (targetColumnId: string, dropIndex?: number) => {
     if (!draggedRequest) return;
 
     const sourceColumnId = draggedRequest.kanban_column_id || board[0].id; // Fallback to first column if null
 
-    // Don't do anything if dropped in same column
-    if (sourceColumnId === targetColumnId) return;
+    // Don't do anything if dropped in same position identical
+    if (sourceColumnId === targetColumnId && dropIndex === undefined) return;
 
     // Optimistic Update
     const previousBoard = [...board];
@@ -164,30 +165,50 @@ export default function KanbanPage() {
           requests: column.requests.filter((r) => r.id !== draggedRequest.id),
         };
       }
-      // Add to target column
-      if (column.id === targetColumnId) {
-        return {
-          ...column,
-          requests: [
-            ...column.requests,
-            { ...draggedRequest, kanban_column_id: targetColumnId },
-          ],
-        };
-      }
-      return column;
+      return { ...column, requests: [...column.requests] }; // shallow copy requests for target column safety
     });
+
+    const targetColumnIndex = newBoard.findIndex((c) => c.id === targetColumnId);
+    if (targetColumnIndex === -1) return;
+    
+    const targetColumn = newBoard[targetColumnIndex];
+    let insertIndex = dropIndex !== undefined ? dropIndex : targetColumn.requests.length;
+    
+    // Safety boundaries for insertIndex
+    if (insertIndex < 0) insertIndex = 0;
+    if (insertIndex > targetColumn.requests.length) insertIndex = targetColumn.requests.length;
+
+    const requestToInsert = { ...draggedRequest, kanban_column_id: targetColumnId };
+    
+    // Splice in the item precisely
+    targetColumn.requests.splice(insertIndex, 0, requestToInsert);
 
     setBoard(newBoard);
     setDraggedRequest(null); // Clear drag state immediately
 
     try {
-      const targetColumn = board.find((c) => c.id === targetColumnId);
-      const newOrder = targetColumn ? targetColumn.requests.length : 0;
+      let newOrderVal = 0;
+      const prevTargetColumn = previousBoard.find(c => c.id === targetColumnId);
+      
+      if (dropIndex !== undefined && prevTargetColumn && prevTargetColumn.requests.length > 0) {
+        // If placing at a specific index, take the kanban_order of the item currently sitting there.
+        // If placing at the very bottom, just increment max.
+        if (dropIndex < prevTargetColumn.requests.length) {
+           newOrderVal = prevTargetColumn.requests[dropIndex].kanban_order;
+        } else {
+           const maxOrder = prevTargetColumn.requests.reduce((max, r) => Math.max(max, r.kanban_order || 0), 0);
+           newOrderVal = maxOrder + 1;
+        }
+      } else {
+        // Dropped at bottom of an empty or unindexed column
+        const maxOrder = targetColumn.requests.reduce((max, r) => Math.max(max, r.kanban_order || 0), 0);
+        newOrderVal = maxOrder + 1;
+      }
 
       await adminApi.patch("/admin/kanban/move", {
         requestId: draggedRequest.id,
         targetColumnId,
-        newOrder,
+        newOrder: newOrderVal,
       });
 
     } catch (error) {
@@ -221,9 +242,9 @@ export default function KanbanPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-gray-50 text-black w-full overflow-hidden flex flex-col font-sans">
+    <div className="h-[calc(100vh-4rem)] bg-gray-50 text-black w-full overflow-hidden flex flex-col font-sans">
       <div className="max-w-full p-8 flex-1 overflow-hidden flex flex-col m-6 bg-white border border-gray-200 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-        <div className="flex gap-6 overflow-x-auto overflow-y-hidden pb-8 flex-1 items-start max-w-full">
+        <div className="flex gap-6 overflow-x-auto overflow-y-hidden pb-8 flex-1 items-stretch max-w-full h-full">
           {board.map((column) => (
             <div
               key={column.id}
@@ -248,61 +269,81 @@ export default function KanbanPage() {
 
               {/* Requests */}
               <div className="space-y-4 flex-1 overflow-y-auto min-h-[50px] px-4 -mx-4 pt-2 -mt-2 pb-10">
-                {column.requests.map((request) => (
-                  <div
-                    key={request.id}
-                    draggable
-                    onDragStart={() => handleDragStart(request)}
-                    onClick={() => setSelectedRequest(request)}
-                    onDragEnd={() => setDraggedRequest(null)}
-                    className={`bg-white border rounded-xl p-5 cursor-move transition-all duration-200 group ${draggedRequest?.id === request.id
-                      ? "shadow-2xl scale-[1.02] border-black opacity-60 z-50 relative"
-                      : "border-gray-200 hover:border-black hover:shadow-md"
-                      }`}
-                  >
-                    {/* Request Header */}
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <h3 className="font-bold text-gray-900 text-sm mb-1 group-hover:text-black transition-colors">
-                          {request.county}
-                        </h3>
-                        <p className="text-xs font-medium text-gray-500">
-                          {request.users.email}
-                        </p>
-                        {request.providers && (
-                          <div className="mt-3 inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-gray-100 text-black border border-gray-200">
-                            🏢 {request.providers.name}
+                <AnimatePresence>
+                  {column.requests.map((request, index) => (
+                    <motion.div
+                      layout
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      key={request.id}
+                      draggable
+                      onDragStart={() => handleDragStart(request)}
+                      onClick={() => setSelectedRequest(request)}
+                      onDragEnd={() => setDraggedRequest(null)}
+                      onDragOver={(e: any) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      onDrop={(e: any) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const y = e.clientY - rect.top;
+                        const placeIndex = y < rect.height / 2 ? index : index + 1;
+                        handleDrop(column.id, placeIndex);
+                      }}
+                      className={`bg-white border rounded-xl p-5 cursor-move transition-colors duration-200 group ${draggedRequest?.id === request.id
+                        ? "shadow-2xl scale-[1.02] border-black opacity-60 z-50 relative"
+                        : "border-gray-200 hover:border-black hover:shadow-md"
+                        }`}
+                    >
+                      {/* Request Header */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-bold text-gray-900 text-sm uppercase tracking-wider group-hover:text-black transition-colors line-clamp-1 break-all">
+                              {request.market || "No Market"}
+                            </h3>
+                          </div>
+                          <p className="text-xs font-medium text-gray-500 truncate mb-1">
+                            {request.users?.email}
+                          </p>
+                          
+                          <div className="flex flex-wrap items-center gap-2 mt-3">
+                            <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-black text-white">
+                              {request.rows?.toLocaleString()} Leads
+                            </span>
+                            
+                            {request.providers && (
+                              <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-gray-100 text-black border border-gray-200">
+                                🏢 {request.providers.name}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {request.admin_users && (
+                          <div
+                            className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm shrink-0 ml-2"
+                            title={`Assigned to ${request.admin_users.display_name}`}
+                          >
+                            {request.admin_users.display_name
+                              .charAt(0)
+                              .toUpperCase()}
                           </div>
                         )}
                       </div>
-                      {request.admin_users && (
-                        <div
-                          className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm shrink-0 ml-2"
-                          title={`Assigned to ${request.admin_users.display_name}`}
-                        >
-                          {request.admin_users.display_name
-                            .charAt(0)
-                            .toUpperCase()}
-                        </div>
-                      )}
-                    </div>
 
-                    {/* Files & Date */}
-                    <div className="flex items-center justify-between text-xs font-semibold text-gray-400 uppercase tracking-wider pt-3 border-t border-gray-100">
-                      <div className="flex items-center gap-4">
-                        <span title="Admin files" className="flex items-center gap-1">
-                          📁 <span className="text-gray-600">{request.adminFileCount}</span>
-                        </span>
-                        <span title="Client files" className="flex items-center gap-1">
-                          📄 <span className="text-gray-600">{request.clientFileCount}</span>
-                        </span>
+                      {/* Footer Date & ID */}
+                      <div className="flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-wider pt-3 border-t border-gray-100 mt-auto">
+                        <span>{new Date(request.created_at).toLocaleDateString()}</span>
+                        <span className="text-gray-300 ml-auto">ID: {request.id.substring(0, 6)}</span>
                       </div>
-                      <span className="text-gray-500">
-                        {new Date(request.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
 
                 {column.requests.length === 0 && (
                   <div className="text-center py-10 bg-white border border-dashed border-gray-200 rounded-xl mt-2">

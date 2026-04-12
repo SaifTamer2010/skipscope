@@ -12,6 +12,7 @@ import getColumns from "../controllers/admin/kanban/getColumns";
 import updateFinancials from "../controllers/admin/kanban/updateFinancials";
 import updateStatus from "../controllers/admin/kanban/updateStatus";
 import hardDeleteRequest from "../controllers/admin/kanban/hardDeleteRequest";
+import getActivities from "../controllers/admin/kanban/getActivities";
 
 const router = express.Router();
 
@@ -77,5 +78,11 @@ router.patch("/financials", updateFinancials);
  * Manually update the status of a request
  */
 router.patch("/status", updateStatus);
+
+/**
+ * GET /api/admin/kanban/activities
+ * Get activity log entries for the timeline
+ */
+router.get("/activities", getActivities);
 
 export default router;

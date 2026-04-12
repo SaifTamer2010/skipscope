@@ -40,7 +40,8 @@ const getBoard = async (req: AdminRequest, res: Response): Promise<void> => {
         )
       `,
       )
-      .order("kanban_order", { ascending: true });
+      .order("kanban_order", { ascending: true })
+      .order("updated_at", { ascending: false });
 
     if (requestsError) throw requestsError;
 
