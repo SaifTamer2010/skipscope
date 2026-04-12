@@ -61,6 +61,80 @@ const submitNewRequest = async (req: AuthRequest, res: Response) => {
       metadata: { action: "request_submitted", county, state }
     });
 
+    // Send Slack Notification
+    const slackUrl = process.env.SLACK_WEBHOOK_URL_REQUESTS;
+    if (slackUrl) {
+      try {
+        const { data: user } = await supabase
+          .from("users")
+          .select("username, email, company")
+          .eq("id", req.userId)
+          .single();
+
+        const criteriaText = ownershipCriteriaFinale && Array.isArray(ownershipCriteriaFinale)
+          ? ownershipCriteriaFinale.map((c: any) => `${c.key}: ${c.value}`).join(", ")
+          : "N/A";
+
+        const response = await fetch(slackUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            blocks: [
+              {
+                type: "header",
+                text: {
+                  type: "plain_text",
+                  text: "NEW REQUEST"
+                }
+              },
+              {
+                type: "section",
+                fields: [
+                  { type: "mrkdwn", text: `*ID:*\n${newRequest.id.substring(0, 8)}` },
+                  { type: "mrkdwn", text: `*Username:*\n${user?.username || "N/A"}` },
+                  { type: "mrkdwn", text: `*Email:*\n${user?.email || "N/A"}` },
+                  { type: "mrkdwn", text: `*Company:*\n${user?.company || "N/A"}` },
+                  { type: "mrkdwn", text: `*Market:*\n${market || "N/A"}` },
+                  { type: "mrkdwn", text: `*State:*\n${state || "N/A"}` },
+                  { type: "mrkdwn", text: `*County:*\n${county || "All"}` },
+                  { type: "mrkdwn", text: `*Zip Code:*\n${zipCode || "All"}` },
+                  { type: "mrkdwn", text: `*Leads:*\n${rows || "0"}` }
+                ]
+              },
+              {
+                type: "section",
+                text: {
+                  type: "mrkdwn",
+                  text: `*Motivations:*\n${motivations || "None"}`
+                }
+              },
+              {
+                type: "section",
+                text: {
+                  type: "mrkdwn",
+                  text: `*Ownership Criteria:*\n${criteriaText || "None"}`
+                }
+              },
+              {
+                type: "section",
+                text: {
+                  type: "mrkdwn",
+                  text: `*Custom Notes:*\n${customNotes || "No notes provided"}`
+                }
+              }
+            ]
+          })
+        });
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Slack rejected message:", errorText);
+        }
+      } catch (err) {
+        console.error("Slack webhook failed:", err);
+      }
+    }
+
     res.status(201).json({
       request: newRequest,
       message: "Request submitted successfully",
