@@ -26,6 +26,15 @@ const updateFinancials = async (
 
     if (updateError) throw updateError;
 
+    // Log activity
+    await supabase.from("activity_log").insert({
+      request_id: requestId,
+      admin_id: req.admin!.id,
+      action_type: "financials_updated",
+      action_description: `Updated financials (Invoice: $${invoiceAmount}, Expenses: $${expenses}, Profit: $${profit})`,
+      metadata: { invoiceAmount, expenses, profit }
+    });
+
     res.json({ success: true, message: "Financials updated successfully" });
   } catch (error: any) {
     console.error("Update financials error:", error);

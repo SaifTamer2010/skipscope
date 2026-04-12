@@ -13,6 +13,7 @@ import updateFinancials from "../controllers/admin/kanban/updateFinancials";
 import updateStatus from "../controllers/admin/kanban/updateStatus";
 import hardDeleteRequest from "../controllers/admin/kanban/hardDeleteRequest";
 import getActivities from "../controllers/admin/kanban/getActivities";
+import updatePaymentStatus from "../controllers/admin/kanban/updatePaymentStatus";
 
 const router = express.Router();
 
@@ -72,6 +73,12 @@ router.get("/columns", getColumns);
  * Update financials (invoice, expenses, profit)
  */
 router.patch("/financials", updateFinancials);
+
+/**
+ * PATCH /api/admin/kanban/payment-status
+ * Update payment completed boolean
+ */
+router.patch("/payment-status", updatePaymentStatus);
 
 /**
  * PATCH /api/admin/kanban/status

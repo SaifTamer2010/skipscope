@@ -161,6 +161,14 @@ export default function RequestsTimelinePage() {
         return <UserPlus size={12} className="text-green-500" />;
       case "file_uploaded":
         return <FileUp size={12} className="text-orange-500" />;
+      case "file_delete":
+      case "request_deleted":
+        return <Activity size={12} className="text-red-500" />;
+      case "financials_updated":
+      case "payment_status_updated":
+        return <Activity size={12} className="text-emerald-500" />;
+      case "column_move":
+        return <Activity size={12} className="text-indigo-500" />;
       default:
         return <Activity size={12} className="text-gray-500" />;
     }
@@ -177,6 +185,14 @@ export default function RequestsTimelinePage() {
         return "border-green-200 bg-green-50 text-green-700";
       case "file_uploaded":
         return "border-orange-200 bg-orange-50 text-orange-700";
+      case "file_delete":
+      case "request_deleted":
+        return "border-red-200 bg-red-50 text-red-700";
+      case "financials_updated":
+      case "payment_status_updated":
+        return "border-emerald-200 bg-emerald-50 text-emerald-700";
+      case "column_move":
+        return "border-indigo-200 bg-indigo-50 text-indigo-700";
       default:
         return "border-gray-200 bg-gray-50 text-gray-700";
     }

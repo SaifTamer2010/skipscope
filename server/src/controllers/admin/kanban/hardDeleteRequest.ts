@@ -48,6 +48,15 @@ const hardDeleteRequest = async (
 
     if (deleteError) throw deleteError;
 
+    // Log the deletion itself with null request_id since the record is completely gone
+    await supabase.from("activity_log").insert({
+      request_id: null,
+      admin_id: req.admin!.id,
+      action_type: "request_deleted",
+      action_description: `Permanently deleted request ${id}`,
+      metadata: { deleted_request_id: id }
+    });
+
     res.json({ success: true, message: "Request permanently deleted" });
   } catch (error: any) {
     console.error("Hard delete request error:", error);

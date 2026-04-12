@@ -41,6 +41,7 @@ const KanbanRequestModal = ({
   const [isAssigningProvider, setIsAssigningProvider] = useState(false);
   const [isSavingFinancials, setIsSavingFinancials] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [isUpdatingPayment, setIsUpdatingPayment] = useState(false);
   const [isMovingColumn, setIsMovingColumn] = useState(false);
   const [columns, setColumns] = useState<Column[]>([]);
   const [files, setFiles] = useState<FilesState>({
@@ -152,6 +153,30 @@ const KanbanRequestModal = ({
       toast.error(errorMsg);
     } finally {
       setIsUpdatingStatus(false);
+    }
+  };
+
+  const handlePaymentUpdate = async (paymentCompleted: boolean) => {
+    if (!selectedRequest) return;
+    setIsUpdatingPayment(true);
+
+    try {
+      await adminApi.patch(`/admin/kanban/payment-status`, {
+        requestId: selectedRequest.id,
+        paymentCompleted,
+      });
+
+      toast.success("Payment status updated successfully");
+      fetchBoard();
+      setSelectedRequest({
+        ...selectedRequest,
+        payment_completed: paymentCompleted,
+      });
+    } catch (error: any) {
+      console.error("Update payment error:", error);
+      toast.error(error.response?.data?.error || "Failed to update payment status");
+    } finally {
+      setIsUpdatingPayment(false);
     }
   };
 
@@ -318,7 +343,7 @@ const KanbanRequestModal = ({
 
   const handleSoftDelete = async () => {
     if (!selectedRequest || !columns.length) return;
-    
+
     const deletedColumn = columns.find(c => c.name.toLowerCase() === "deleted");
     if (!deletedColumn) {
       toast.error("No 'Deleted' column found. Please contact an admin to create one.");
@@ -348,7 +373,7 @@ const KanbanRequestModal = ({
 
   const handleHardDelete = async () => {
     if (!selectedRequest) return;
-    
+
     if (!confirm("⚠️ WARNING: This will PERMANENTLY delete this request and all associated files/logs. This action cannot be undone. Are you absolutely sure?")) return;
 
     setIsHardDeleting(true);
@@ -378,7 +403,7 @@ const KanbanRequestModal = ({
         <div className="flex items-start justify-between mb-8 border-b border-gray-100 pb-4">
           <div>
             <h2 className="text-2xl font-bold text-black tracking-tight mb-1">
-              Req #{selectedRequest.id?.slice(0,8)}... - {selectedRequest.county}
+              Req #{selectedRequest.id?.slice(0, 8)}... - {selectedRequest.county}
             </h2>
             <p className="text-sm text-gray-500 font-medium">{selectedRequest.id}</p>
           </div>
@@ -461,9 +486,10 @@ const KanbanRequestModal = ({
 
         <h3 className="text-xl font-bold text-black mb-4">Workflow & Status</h3>
 
-        {/* Status Selector */}
-        <div className="bg-gray-50 p-5 rounded-xl border border-gray-200 mb-6 flex flex-col md:flex-row gap-6">
-          <div className="flex-1">
+        {/* Status Area Container */}
+        <div className="bg-gray-50 p-5 rounded-xl border border-gray-200 mb-6 flex flex-col gap-6">
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="flex-1">
             <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">
               Request Status
             </label>
@@ -497,6 +523,28 @@ const KanbanRequestModal = ({
                 </option>
               ))}
             </select>
+          </div>
+        </div>
+
+          {/* Payment Status */}
+          <div className="border-t border-gray-200/60 pt-6 flex flex-col">
+            <label className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">
+              Payment Status
+            </label>
+            <div className="flex items-center gap-3 bg-white border border-gray-300 rounded-lg px-4 py-2.5">
+              <input
+                type="checkbox"
+                id="paymentCompleteCheckbox"
+                className="w-5 h-5 rounded border-gray-300 text-black focus:ring-black transition-colors"
+                checked={!!selectedRequest.payment_completed}
+                onChange={(e) => handlePaymentUpdate(e.target.checked)}
+                disabled={isUpdatingPayment}
+              />
+              <label htmlFor="paymentCompleteCheckbox" className="text-sm font-bold text-black cursor-pointer select-none">
+                Payment Completed
+              </label>
+              {isUpdatingPayment && <span className="w-4 h-4 rounded-full border-2 border-gray-200 border-t-black animate-spin ml-auto"></span>}
+            </div>
           </div>
         </div>
         {/* Invoice and Profit Calculator */}
@@ -636,14 +684,14 @@ const KanbanRequestModal = ({
                             className="p-1.5 hover:bg-gray-100 rounded text-black transition-colors"
                             title="Download"
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" /><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" /></svg>
                           </button>
                           <button
                             onClick={() => handleDeleteFile(file.id, "admin")}
                             className="p-1.5 hover:bg-red-50 text-red-600 rounded transition-colors"
                             title="Delete"
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" /><path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" /></svg>
                           </button>
                         </div>
                       </div>
@@ -745,7 +793,7 @@ const KanbanRequestModal = ({
                             className="p-1.5 hover:bg-gray-100 rounded text-black transition-colors"
                             title="Download"
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" /><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" /></svg>
                           </button>
                           <button
                             onClick={() =>
@@ -754,7 +802,7 @@ const KanbanRequestModal = ({
                             className="p-1.5 hover:bg-red-50 text-red-600 rounded transition-colors"
                             title="Delete"
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/><path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" /><path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" /></svg>
                           </button>
                         </div>
                       </div>
@@ -804,7 +852,7 @@ const KanbanRequestModal = ({
           >
             Move to Deleted
           </button>
-          
+
           {admin?.isSuperAdmin && (
             <button
               onClick={handleHardDelete}

@@ -25,7 +25,18 @@ const assignProviderRequest = async (
 
     if (updateError) throw updateError;
 
-    // Optional: Log activity if there is an activity log constraint for providers later
+    // Log activity
+    const actionDesc = providerId 
+      ? `Assigned provider to request` 
+      : `Unassigned provider from request`;
+      
+    await supabase.from("activity_log").insert({
+      request_id: requestId,
+      admin_id: req.admin!.id,
+      action_type: "provider_assigned",
+      action_description: actionDesc,
+      metadata: { provider_id: providerId }
+    });
 
     res.json({ success: true });
   } catch (error: any) {

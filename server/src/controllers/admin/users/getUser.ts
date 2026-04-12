@@ -19,7 +19,9 @@ const getUser = async (req: Request, res: Response): Promise<any> => {
       .select(
         `
         id,
-        title,
+        county,
+        state,
+        market,
         status,
         created_at,
         kanban_columns ( name, color )
