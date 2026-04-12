@@ -11,11 +11,18 @@ router.get("/", async (req, res) => {
   try {
     const { data: providers, error } = await supabase
       .from("providers")
-      .select("*")
+      .select("*, requests(id)")
       .order("created_at", { ascending: false });
 
     if (error) throw error;
-    res.json({ providers });
+    
+    // Map requests array to just a count number
+    const providersWithCount = providers.map(p => ({
+      ...p,
+      requests_count: (p.requests || []).length
+    }));
+    
+    res.json({ providers: providersWithCount });
   } catch (error) {
     console.error("GET /providers error:", error);
     res.status(500).json({ error: "Failed to fetch providers" });
