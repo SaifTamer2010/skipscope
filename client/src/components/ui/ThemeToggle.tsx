@@ -10,7 +10,7 @@ const ThemeToggle = () => {
 
   useEffect(() => {
     // Check initial theme from body class
-    const isLight = document.body.classList.contains("light");
+    const isLight = document.documentElement.classList.contains("light");
     setTheme(isLight ? "light" : "dark");
     setMounted(true);
   }, []);
@@ -18,7 +18,7 @@ const ThemeToggle = () => {
   const toggleTheme = () => {
     const newTheme = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
-    
+
     if (newTheme === "light") {
       document.body.classList.add("light");
       localStorage.setItem("theme", "light");
@@ -37,7 +37,7 @@ const ThemeToggle = () => {
       aria-label="Toggle Theme"
     >
       <div className="absolute inset-0 bg-brand-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      
+
       <AnimatePresence mode="wait">
         {theme === "dark" ? (
           <motion.div
