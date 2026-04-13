@@ -9,6 +9,32 @@ import toast, { Toaster } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, Mail, Phone, Briefcase, Calendar, Lock, Eye, EyeOff } from "lucide-react";
 
+const getPasswordStrength = (pass: string) => {
+  if (!pass) return 0;
+  let score = 0;
+  if (pass.length > 5) score += 1;
+  if (pass.length >= 8) score += 1;
+  if (/[A-Za-z]/.test(pass) && /[0-9]/.test(pass)) score += 1;
+  if (/[^A-Za-z0-9]/.test(pass)) score += 1;
+  return Math.min(score, 4);
+};
+
+const getStrengthColor = (score: number) => {
+  if (score === 0) return "bg-white/10";
+  if (score === 1) return "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]";
+  if (score === 2) return "bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.6)]";
+  if (score === 3) return "bg-yellow-400 shadow-[0_0_8px_rgba(250,204,21,0.6)]";
+  if (score >= 4) return "bg-brand-primary shadow-[0_0_8px_rgba(182,36,36,0.6)]";
+};
+
+const getStrengthText = (score: number) => {
+  if (score === 0) return "None";
+  if (score === 1) return "Weak";
+  if (score === 2) return "Fair";
+  if (score === 3) return "Good";
+  if (score >= 4) return "Strong";
+};
+
 const RegisterPage = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [direction, setDirection] = useState(1); // 1 for next, -1 for back
@@ -18,7 +44,9 @@ const RegisterPage = () => {
   // Registration states
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState("+20 ");
+  const [countryCode, setCountryCode] = useState("EG");
+  const [errors, setErrors] = useState({ username: "", email: "", phone: "" });
 
   const [role, setRole] = useState("CEO");
   const [age, setAge] = useState("");
@@ -28,14 +56,70 @@ const RegisterPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep === 1) {
-      if (!username || !email || !phone) {
-        toast.error("Please fill in identity fields");
+      setErrors({ username: "", email: "", phone: "" });
+      let hasError = false;
+      const newErrors = { username: "", email: "", phone: "" };
+
+      if (!username) {
+        newErrors.username = "Username is required";
+        hasError = true;
+      }
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email) {
+        newErrors.email = "Email is required";
+        hasError = true;
+      } else if (!emailRegex.test(email)) {
+        newErrors.email = "Invalid email format";
+        hasError = true;
+      }
+
+      const rawPhone = phone.replace(/\D/g, "");
+      if (!phone || (countryCode === "EG" && rawPhone === "20")) {
+        newErrors.phone = "Phone is required";
+        hasError = true;
+      } else if (countryCode === "US" && rawPhone.length < 10) {
+        newErrors.phone = "Invalid US phone format";
+        hasError = true;
+      } else if (countryCode === "EG" && rawPhone.length < 12) {
+        newErrors.phone = "Invalid Egypt phone format";
+        hasError = true;
+      }
+
+      if (hasError) {
+        setErrors(newErrors);
         return;
       }
-    }
-    setDirection(1);
+
+      setLoading(true);
+      try {
+        const { data, error } = await supabase.rpc('check_email_exists', { p_email: email });
+
+        if (error) throw error;
+
+        if (data) {
+          newErrors.email = "Email already registered";
+          setErrors(newErrors);
+          setLoading(false);
+          return;
+        }
+
+        // No duplicates, safe to go to next step
+        setLoading(false);
+        setDirection(1);
+        setCurrentStep(2);
+        return;
+      } catch (err: any) {
+        console.error("Duplicate check error:", err);
+        // Supabase sign-up will still catch it natively on step 3 if this fails
+        setLoading(false);
+        setDirection(1);
+        setCurrentStep(2);
+        return;
+      }
+    }    setDirection(1);
     setCurrentStep(currentStep + 1);
   };
 
@@ -55,6 +139,12 @@ const RegisterPage = () => {
 
     if (password !== confirmPassword) {
       toast.error("Passwords do not match");
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      toast.error("Password must be at least 8 chars, with letter and number");
       return;
     }
 
@@ -93,7 +183,7 @@ const RegisterPage = () => {
         if (dbError) console.error("DB Sync error:", dbError);
 
         toast.success("Account Sealed. Welcome to Skipscope!");
-        
+
         // Short delay for the feeling of "processing"
         setTimeout(() => {
           router.push("/app/dashboard");
@@ -103,6 +193,34 @@ const RegisterPage = () => {
       toast.error(error.message || "Signup failed");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+
+    if (countryCode === "EG") {
+      if (!value.startsWith("+20")) {
+        value = "+20 " + value.replace(/^\+?2?0?/, "");
+      }
+      const raw = value.slice(3).replace(/\D/g, "").slice(0, 10);
+      if (raw.length === 0) setPhone("+20 ");
+      else if (raw.length <= 3) setPhone(`+20 ${raw}`);
+      else setPhone(`+20 ${raw.slice(0, 3)} ${raw.slice(3, 10)}`);
+    } else {
+      const p = value.replace(/\D/g, "").slice(0, 10);
+      if (p.length === 0) setPhone("");
+      else if (p.length <= 3) setPhone(`(${p}`);
+      else if (p.length <= 6) setPhone(`(${p.slice(0, 3)}) ${p.slice(3)}`);
+      else setPhone(`(${p.slice(0, 3)}) ${p.slice(3, 6)}-${p.slice(6)}`);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (currentStep === 1 || currentStep === 2) handleNext();
+      else if (currentStep === 3) handleRegister();
     }
   };
 
@@ -133,7 +251,10 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-transparent overflow-hidden px-4">
+    <div
+      className="flex justify-center items-center h-screen bg-transparent overflow-hidden px-4"
+      onKeyDown={handleKeyDown}
+    >
       <Toaster position="top-right" toastOptions={{ style: { background: "#0d0d0d", color: "#f2f2f2", border: "1px solid rgba(255, 255, 255, 0.1)" } }} />
 
       <AuthContainer>
@@ -171,41 +292,60 @@ const RegisterPage = () => {
             >
               {currentStep === 1 && (
                 <div className="flex flex-col gap-5">
-                  <label className="relative block">
+                  <div className="relative block">
                     <input
                       type="text"
                       placeholder="Username"
-                      className="bg-background-third border border-border-light w-full h-12 rounded-xl px-14 focus:border-brand-primary/50 outline-none text-text-primary transition-all"
+                      className={`bg-background-third border ${errors.username ? "border-red-500/50" : "border-border-light"} w-full h-12 rounded-xl px-14 focus:border-brand-primary/50 outline-none text-text-primary transition-all`}
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                     />
-                    <User className="absolute top-3.5 left-5 opacity-40 border-r border-border-muted pr-2" size={20} />
-                  </label>
-                  <label className="relative block">
+                    <User className={`absolute top-3.5 left-5 opacity-40 border-r border-border-muted pr-2 ${errors.username && "text-red-500"}`} size={20} />
+                    {errors.username && <p className="text-red-500 text-xs mt-1 absolute -bottom-4 left-2">{errors.username}</p>}
+                  </div>
+                  <div className="relative block mt-2">
                     <input
                       type="email"
                       placeholder="Email Address"
-                      className="bg-background-third border border-border-light w-full h-12 rounded-xl px-14 focus:border-brand-primary/50 outline-none text-text-primary transition-all"
+                      className={`bg-background-third border ${errors.email ? "border-red-500/50" : "border-border-light"} w-full h-12 rounded-xl px-14 focus:border-brand-primary/50 outline-none text-text-primary transition-all`}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
-                    <Mail className="absolute top-3.5 left-5 opacity-40 border-r border-border-muted pr-2" size={20} />
-                  </label>
-                  <label className="relative block">
-                    <input
-                      type="tel"
-                      placeholder="Phone Number"
-                      className="bg-background-third border border-border-light w-full h-12 rounded-xl px-14 focus:border-brand-primary/50 outline-none text-text-primary transition-all"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                    />
-                    <Phone className="absolute top-3.5 left-5 opacity-40 border-r border-border-muted pr-2" size={20} />
-                  </label>
+                    <Mail className={`absolute top-3.5 left-5 opacity-40 border-r border-border-muted pr-2 ${errors.email && "text-red-500"}`} size={20} />
+                    {errors.email && <p className="text-red-500 text-xs mt-1 absolute -bottom-4 left-2">{errors.email}</p>}
+                  </div>
+                  <div className="relative block mt-2">
+                    <div className="flex gap-2 w-full">
+                      <select
+                        className={`bg-background-third border ${errors.phone ? "border-red-500/50" : "border-border-light"} w-[70px] shrink-0 h-12 rounded-xl px-2 focus:border-brand-primary/50 outline-none text-text-primary transition-all appearance-none cursor-pointer text-[11px] font-bold`}
+                        value={countryCode}
+                        onChange={(e) => {
+                          setCountryCode(e.target.value);
+                          setPhone(e.target.value === "EG" ? "+20 " : "");
+                        }}
+                      >
+                        <option value="EG">EG (+20)</option>
+                        <option value="US">US (+1)</option>
+                      </select>
+                      <div className="relative flex-1 min-w-0">
+                        <input
+                          type="tel"
+                          placeholder={countryCode === "EG" ? "+20 XXX XXXXXXX" : "(XXX) XXX-XXXX"}
+                          className={`bg-background-third border ${errors.phone ? "border-red-500/50" : "border-border-light"} w-full h-12 rounded-xl pl-10 pr-4 focus:border-brand-primary/50 outline-none text-text-primary transition-all text-sm`}
+                          value={phone}
+                          onChange={handlePhoneChange}
+                        />
+                        <Phone className={`absolute top-3.5 left-3 opacity-40 border-r border-border-muted pr-2 ${errors.phone && "text-red-500"}`} size={20} />
+                      </div>
+                    </div>
+                    {errors.phone && <p className="text-red-500 text-xs mt-1 absolute -bottom-4 left-2">{errors.phone}</p>}
+                  </div>
                   <button
                     onClick={handleNext}
-                    className="w-full h-14 rounded-xl bg-brand-primary shadow-lg shadow-brand-glow-strong text-text-button font-black uppercase italic tracking-widest mt-4 hover:bg-brand-primary-strong transition-all"
+                    disabled={loading}
+                    className="w-full h-14 rounded-xl bg-brand-primary shadow-lg shadow-brand-glow-strong text-text-button font-black uppercase italic tracking-widest mt-6 hover:bg-brand-primary-strong transition-all disabled:opacity-50"
                   >
-                    Next
+                    {loading ? "Checking..." : "Next"}
                   </button>
                 </div>
               )}
@@ -256,7 +396,7 @@ const RegisterPage = () => {
 
               {currentStep === 3 && (
                 <div className="flex flex-col gap-5">
-                  <label className="relative block">
+                  <div className="relative block">
                     <input
                       type={passwordVisible ? "text" : "password"}
                       placeholder="Global Password"
@@ -266,19 +406,34 @@ const RegisterPage = () => {
                     />
                     <Lock className="absolute top-4 left-5 opacity-40 border-r border-border-muted pr-2" size={20} />
                     {passwordVisible ? (
-                      <EyeOff 
-                        size={20} 
+                      <EyeOff
+                        size={20}
                         className="absolute top-4.5 right-5 opacity-40 cursor-pointer"
                         onClick={() => setPasswordVisible(!passwordVisible)}
                       />
                     ) : (
-                      <Eye 
-                        size={20} 
+                      <Eye
+                        size={20}
                         className="absolute top-4.5 right-5 opacity-40 cursor-pointer"
                         onClick={() => setPasswordVisible(!passwordVisible)}
                       />
                     )}
-                  </label>
+                    {password && (
+                      <div className="mt-3 flex items-center justify-between px-2">
+                        <div className="flex gap-1 w-full mr-4">
+                          {[1, 2, 3, 4].map((level) => (
+                            <div
+                              key={level}
+                              className={`h-1 flex-1 rounded-full transition-all duration-300 ${getPasswordStrength(password) >= level ? getStrengthColor(getPasswordStrength(password)) : 'bg-white/10'}`}
+                            />
+                          ))}
+                        </div>
+                        <span className="text-[9px] uppercase font-bold text-text-secondry italic tracking-widest min-w-[50px] text-right">
+                          {getStrengthText(getPasswordStrength(password))}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                   <label className="relative block">
                     <input
                       type={passwordVisible ? "text" : "password"}
@@ -291,7 +446,7 @@ const RegisterPage = () => {
                   </label>
 
                   <div className="flex gap-2 mt-4">
-                   <button onClick={handleBack} className="flex-1 h-14 rounded-xl border border-border-light text-text-secondry font-bold uppercase italic text-xs hover:bg-black/5 dark:hover:bg-white/5">Back</button>
+                    <button onClick={handleBack} className="flex-1 h-14 rounded-xl border border-border-light text-text-secondry font-bold uppercase italic text-xs hover:bg-black/5 dark:hover:bg-white/5">Back</button>
                     <button
                       onClick={handleRegister}
                       disabled={loading}
