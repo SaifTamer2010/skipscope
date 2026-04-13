@@ -16,16 +16,18 @@ const page = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [keepLoggedIn, setKeepLoggedIn] = useState(false); // Default to session only
+  const [loginError, setLoginError] = useState("");
+  const [keepLoggedIn, setKeepLoggedIn] = useState(false);
 
   const router = useRouter();
   const setUser = useUserStore((state) => state.setUser);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoginError("");
 
     if (!email || !password) {
-      toast.error("Please fill in all fields");
+      setLoginError("Please fill in all fields");
       return;
     }
 
@@ -52,7 +54,7 @@ const page = () => {
       }
     } catch (error: any) {
       console.error(error);
-      toast.error(error.message || "Login failed");
+      setLoginError(error.message || "Invalid login credentials");
     } finally {
       setLoading(false);
     }
@@ -80,10 +82,13 @@ const page = () => {
                 placeholder="Email"
                 id="email"
                 value={email}
-                className="relative bg-background-third border border-border-light w-80 h-10 rounded-xl p-6 px-15 focus:border-brand-primary/50 focus:bg-background-main outline-none text-text-primary transition-all"
-                onChange={(e) => setEmail(e.target.value)}
+                className={`relative bg-background-third border ${loginError ? "border-red-500/50" : "border-border-light"} w-80 h-10 rounded-xl p-6 px-15 focus:border-brand-primary/50 focus:bg-background-main outline-none text-text-primary transition-all`}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (loginError) setLoginError("");
+                }}
               />
-              <Mail className="absolute top-3.5 left-5 z-50 opacity-60 border-r border-border-muted pr-2" size={20} />
+              <Mail className={`absolute top-3.5 left-5 z-50 opacity-60 border-r border-border-muted pr-2 ${loginError ? "text-red-500" : ""}`} size={20} />
             </label>
             <label htmlFor="password" className="relative">
               <input
@@ -91,10 +96,13 @@ const page = () => {
                 placeholder="Password"
                 id="password"
                 value={password}
-                className="relative bg-background-third border border-border-light w-80 h-10 rounded-xl p-6 px-15 focus:border-brand-primary/50 focus:bg-background-main outline-none text-text-primary transition-all"
-                onChange={(e) => setPassword(e.target.value)}
+                className={`relative bg-background-third border ${loginError ? "border-red-500/50" : "border-border-light"} w-80 h-10 rounded-xl p-6 px-15 focus:border-brand-primary/50 focus:bg-background-main outline-none text-text-primary transition-all`}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (loginError) setLoginError("");
+                }}
               />
-              <Lock className="absolute top-3.5 left-5 z-50 opacity-60 border-r border-border-muted pr-2" size={20} />
+              <Lock className={`absolute top-3.5 left-5 z-50 opacity-60 border-r border-border-muted pr-2 ${loginError ? "text-red-500" : ""}`} size={20} />
               {passwordVisible ? (
                 <EyeOff
                   size={20}
@@ -108,9 +116,10 @@ const page = () => {
                   onClick={() => setPasswordVisible(!passwordVisible)}
                 />
               )}
+              {loginError && <p className="text-red-500 text-xs mt-1 absolute -bottom-5 left-2">{loginError}</p>}
             </label>
 
-            <div className="flex items-center w-80 gap-3">
+            <div className="flex items-center w-80 gap-3 mt-2">
               <div className="relative flex items-center">
                 <input
                   type="checkbox"
