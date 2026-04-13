@@ -47,6 +47,7 @@ const RegisterPage = () => {
   const [phone, setPhone] = useState("+20 ");
   const [countryCode, setCountryCode] = useState("EG");
   const [errors, setErrors] = useState({ username: "", email: "", phone: "" });
+  const [showDuplicatePopup, setShowDuplicatePopup] = useState(false);
 
   const [role, setRole] = useState("CEO");
   const [age, setAge] = useState("");
@@ -55,6 +56,7 @@ const RegisterPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [otp, setOtp] = useState("");
 
   const handleNext = async () => {
     if (currentStep === 1) {
@@ -100,8 +102,7 @@ const RegisterPage = () => {
         if (error) throw error;
 
         if (data) {
-          newErrors.email = "Email already registered";
-          setErrors(newErrors);
+          setShowDuplicatePopup(true);
           setLoading(false);
           return;
         }
@@ -119,7 +120,7 @@ const RegisterPage = () => {
         setCurrentStep(2);
         return;
       }
-    }    setDirection(1);
+    } setDirection(1);
     setCurrentStep(currentStep + 1);
   };
 
@@ -168,7 +169,51 @@ const RegisterPage = () => {
       if (error) throw error;
 
       if (data.user) {
-        // Direct DB Sync
+        if (data.session) {
+          // If session exists, email confirmations are disabled in Supabase. Skip OTP step!
+          const { error: dbError } = await supabase.from("users").upsert({
+            id: data.user.id,
+            username,
+            email,
+            phone,
+            role,
+            age: age ? parseInt(age) : null,
+            company,
+            settings: { mode: "PRO", notifications: true }
+          });
+          if (dbError) console.error("DB Sync error:", dbError);
+          toast.success("Account Sealed. Welcome to Skipscope!");
+          setTimeout(() => router.push("/app/dashboard"), 1500);
+        } else {
+          // Email confirmation is enabled, wait for OTP
+          toast.success("Code sent! Check your email.");
+          setDirection(1);
+          setCurrentStep(4);
+        }
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Signup failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!otp || otp.length < 6) {
+      toast.error("Please enter the 6-digit code");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token: otp,
+        type: 'signup'
+      });
+      if (error) throw error;
+
+      if (data.user) {
         const { error: dbError } = await supabase.from("users").upsert({
           id: data.user.id,
           username,
@@ -177,20 +222,18 @@ const RegisterPage = () => {
           role,
           age: age ? parseInt(age) : null,
           company,
-          settings: { mode: "PRO", notifications: true } // Default settings
+          settings: { notifications: true }
         });
 
         if (dbError) console.error("DB Sync error:", dbError);
 
         toast.success("Account Sealed. Welcome to Skipscope!");
-
-        // Short delay for the feeling of "processing"
         setTimeout(() => {
           router.push("/app/dashboard");
         }, 1500);
       }
-    } catch (error: any) {
-      toast.error(error.message || "Signup failed");
+    } catch (err: any) {
+      toast.error(err.message || "Invalid OTP Code");
     } finally {
       setLoading(false);
     }
@@ -221,6 +264,7 @@ const RegisterPage = () => {
       e.preventDefault();
       if (currentStep === 1 || currentStep === 2) handleNext();
       else if (currentStep === 3) handleRegister();
+      else if (currentStep === 4) handleVerifyOTP();
     }
   };
 
@@ -246,13 +290,14 @@ const RegisterPage = () => {
       case 1: return "Identity Access";
       case 2: return "Professional Profile";
       case 3: return "Security Gate";
+      case 4: return "Verify Email";
       default: return "Join Skipscope";
     }
   };
 
   return (
     <div
-      className="flex justify-center items-center h-screen bg-transparent overflow-hidden px-4"
+      className="fixed inset-0 flex justify-center items-center bg-transparent overflow-hidden px-4"
       onKeyDown={handleKeyDown}
     >
       <Toaster position="top-right" toastOptions={{ style: { background: "#0d0d0d", color: "#f2f2f2", border: "1px solid rgba(255, 255, 255, 0.1)" } }} />
@@ -269,7 +314,7 @@ const RegisterPage = () => {
             {stepTitle()}
           </motion.h1>
           <div className="flex gap-2">
-            {[1, 2, 3].map((s) => (
+            {[1, 2, 3, 4].map((s) => (
               <div
                 key={s}
                 className={`h-1 rounded-full transition-all duration-500 ${s === currentStep ? "w-8 bg-brand-primary" : "w-4 bg-border-light"}`}
@@ -452,7 +497,34 @@ const RegisterPage = () => {
                       disabled={loading}
                       className="flex-[2] h-14 rounded-xl bg-brand-primary text-text-button font-black uppercase italic tracking-widest shadow-lg shadow-brand-glow-strong disabled:opacity-50"
                     >
-                      {loading ? "Establishing..." : "Seal Account"}
+                      {loading ? "Establishing..." : "Send Verification"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {currentStep === 4 && (
+                <div className="flex flex-col gap-5">
+                  <div className="relative block">
+                    <input
+                      type="text"
+                      placeholder=""
+                      className="bg-background-third border border-border-light w-full h-14 rounded-xl px-14 focus:border-brand-primary/50 outline-none text-text-primary transition-all text-center tracking-[0.5em] font-mono text-xl"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      maxLength={6}
+                    />
+                    <Lock className="absolute top-4 left-5 opacity-40 border-r border-border-muted pr-2" size={20} />
+                  </div>
+
+                  <div className="flex gap-2 mt-4">
+                    <button onClick={handleBack} className="flex-1 h-14 rounded-xl border border-border-light text-text-secondry font-bold uppercase italic text-xs hover:bg-black/5 dark:hover:bg-white/5">Back</button>
+                    <button
+                      onClick={handleVerifyOTP}
+                      disabled={loading}
+                      className="flex-[2] h-14 rounded-xl bg-brand-primary text-text-button font-black uppercase italic tracking-widest shadow-lg shadow-brand-glow-strong disabled:opacity-50"
+                    >
+                      {loading ? "Verifying..." : "Verify Identity"}
                     </button>
                   </div>
                 </div>
@@ -470,7 +542,51 @@ const RegisterPage = () => {
             Already a member? Proceed to Login
           </button>
         </footer>
+
       </AuthContainer>
+      <AnimatePresence>
+        {showDuplicatePopup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-background-third border border-border-light rounded-2xl p-6 w-[90%] max-w-sm shadow-2xl flex flex-col gap-4 text-center"
+            >
+              <div className="flex justify-center mb-2">
+                <div className="w-12 h-12 rounded-full bg-brand-primary/20 flex items-center justify-center border border-brand-primary/50 text-brand-primary">
+                  <Mail size={24} />
+                </div>
+              </div>
+              <h3 className="text-xl font-black text-text-primary uppercase italic">Email Registered</h3>
+              <p className="text-sm text-text-secondry leading-relaxed">
+                This email is already in our system. Did you forget your global password?
+              </p>
+              <div className="flex gap-3 mt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowDuplicatePopup(false)}
+                  className="flex-1 h-12 rounded-xl border border-border-light text-text-secondry font-bold uppercase italic text-xs hover:bg-white/5 transition-colors"
+                >
+                  No, back
+                </button>
+                <button
+                  type="button"
+                  onClick={() => router.push("/app/auth/forgot-password")}
+                  className="flex-1 h-12 rounded-xl bg-brand-primary text-text-button font-black uppercase italic tracking-widest shadow-lg shadow-brand-glow-strong hover:bg-brand-primary-strong transition-all"
+                >
+                  Yes, reset
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
