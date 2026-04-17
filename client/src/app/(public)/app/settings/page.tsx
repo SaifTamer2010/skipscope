@@ -5,13 +5,12 @@ import ThemeToggle from "@/components/ThemeToggle";
 import { useUserStore } from "@/store/userStore";
 import api from "@/lib/api";
 import toast from "react-hot-toast";
-import { User, Bell, Palette, AlertTriangle, ShieldCheck, Mail, Save, Building2, Phone, Hash, Trash2 } from "lucide-react";
+import { User, Bell, Palette, AlertTriangle, ShieldCheck, Mail, Save, Building2, Phone, Hash, Trash2, Headset } from "lucide-react";
 import DeleteAccountModal from "@/components/ui/modals/DeleteAccountModal";
+import SupportModal from "@/src/components/ui/modals/SupportModal";
+import { AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
-
-
-
 
 export default function SettingsPage() {
   const user = useUserStore((state) => state.user);
@@ -25,12 +24,12 @@ export default function SettingsPage() {
     emailUpdates: true,
   });
 
-
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  
+
   const router = useRouter();
   const logout = useUserStore((state) => state.logout);
 
@@ -49,9 +48,7 @@ export default function SettingsPage() {
           notifications: userData.settings?.notifications ?? true,
           emailUpdates: userData.settings?.emailUpdates ?? true,
         }));
-
       }
-
     } catch (error) {
       console.error("Failed to load settings", error);
     }
@@ -63,7 +60,6 @@ export default function SettingsPage() {
   }, []);
 
   if (!mounted) return null;
-
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,8 +80,6 @@ export default function SettingsPage() {
     try {
       await api.delete("/user/account");
       toast.success("Account successfully deleted");
-      
-      // Clear store, sign out and redirect
       logout();
       await supabase.auth.signOut();
       router.push("/");
@@ -97,7 +91,6 @@ export default function SettingsPage() {
       setIsDeleting(false);
     }
   };
-
 
   return (
     <div className="max-w-4xl mx-auto space-y-12 pb-20 px-4">
@@ -215,7 +208,6 @@ export default function SettingsPage() {
             </div>
           </div>
 
-
           <button
             type="submit"
             disabled={loading}
@@ -226,7 +218,7 @@ export default function SettingsPage() {
             ) : (
               <>
                 <Save size={18} className="transition-transform group-hover:scale-110" />
-                Commit Changes
+                Save
               </>
             )}
           </button>
@@ -251,56 +243,39 @@ export default function SettingsPage() {
 
       {/* Notification Settings */}
       <div className="bg-background-secondry/40 backdrop-blur-xl border border-border-light rounded-[2.5rem] p-8 md:p-10 shadow-2xl">
-        <div className="flex items-center gap-4 mb-10">
+        <div className="flex items-center gap-4 mb-6">
           <div className="w-12 h-12 rounded-2xl bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20">
             <Bell size={24} className="text-brand-primary" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-text-primary tracking-tight">Signal Protocols</h2>
+            <h2 className="text-xl font-bold text-text-primary tracking-tight">Email Notifications</h2>
             <p className="text-[10px] font-bold text-text-secondry uppercase tracking-widest">Automated alerting system</p>
           </div>
         </div>
 
-        <div className="space-y-8">
-          <div className="flex items-center justify-between group">
-            <div className="space-y-1">
-              <h3 className="font-bold text-text-primary group-hover:text-brand-primary transition-colors">Operational Alerts</h3>
-              <p className="text-xs text-text-secondry font-medium">
-                High-priority signals for task completion and system events.
-              </p>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={settings.notifications}
-                onChange={(e) =>
-                  setSettings({ ...settings, notifications: e.target.checked })
-                }
-                className="sr-only peer"
-              />
-              <div className="w-14 h-7 bg-background-main/50 border border-border-muted rounded-full peer peer-checked:bg-brand-primary/20 peer-checked:border-brand-primary/50 transition-all duration-300 after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-text-secondry after:rounded-full after:h-[21px] after:w-[21px] after:transition-all peer-checked:after:translate-x-7 peer-checked:after:bg-brand-primary shadow-inner shadow-black/20"></div>
-            </label>
-          </div>
+        <div className="py-6 text-center border-2 border-dashed border-border-muted rounded-3xl bg-background-main/20">
+          <p className="text-xs font-bold text-text-secondry uppercase tracking-widest italic opacity-50">Signal Integration Pending Deployment</p>
+        </div>
+      </div>
 
-          <div className="flex items-center justify-between group">
-            <div className="space-y-1">
-              <h3 className="font-bold text-text-primary group-hover:text-brand-primary transition-colors">Digest Updates (Email)</h3>
-              <p className="text-xs text-text-secondry font-medium">
-                Asynchronous reporting delivered to your primary endpoint.
-              </p>
+      {/* Support Settings */}
+      <div className="bg-background-secondry/40 backdrop-blur-xl border border-border-light rounded-[2.5rem] p-8 md:p-10 shadow-2xl">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-brand-primary/10 flex items-center justify-center border border-brand-primary/20">
+              <Headset size={24} className="text-brand-primary" />
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={settings.emailUpdates}
-                onChange={(e) =>
-                  setSettings({ ...settings, emailUpdates: e.target.checked })
-                }
-                className="sr-only peer"
-              />
-              <div className="w-14 h-7 bg-background-main/50 border border-border-muted rounded-full peer peer-checked:bg-brand-primary/20 peer-checked:border-brand-primary/50 transition-all duration-300 after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-text-secondry after:rounded-full after:h-[21px] after:w-[21px] after:transition-all peer-checked:after:translate-x-7 peer-checked:after:bg-brand-primary shadow-inner shadow-black/20"></div>
-            </label>
+            <div>
+              <h2 className="text-xl font-bold text-text-primary tracking-tight">Need Help?</h2>
+              <p className="text-[10px] font-bold text-text-secondry uppercase tracking-widest">Technical & Operational Support</p>
+            </div>
           </div>
+          <button
+            onClick={() => setIsSupportModalOpen(true)}
+            className="px-8 py-3.5 bg-brand-primary/10 hover:bg-brand-primary border border-brand-primary/30 hover:border-brand-primary rounded-2xl font-bold transition-all duration-300 text-brand-primary hover:text-text-button shadow-lg shadow-brand-primary/5 flex items-center justify-center gap-2"
+          >
+            Open Support Ticket
+          </button>
         </div>
       </div>
 
@@ -334,15 +309,19 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Confirmation Modal */}
-      {isDeleteModalOpen && (
-        <DeleteAccountModal 
-          onClose={() => setIsDeleteModalOpen(false)}
-          onConfirm={handleDeleteAccount}
-          loading={isDeleting}
-        />
-      )}
-
+      {/* Modals */}
+      <AnimatePresence>
+        {isDeleteModalOpen && (
+          <DeleteAccountModal 
+            onClose={() => setIsDeleteModalOpen(false)}
+            onConfirm={handleDeleteAccount}
+            loading={isDeleting}
+          />
+        )}
+        {isSupportModalOpen && (
+          <SupportModal onClose={() => setIsSupportModalOpen(false)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
