@@ -1,8 +1,13 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import helmet from "helmet";
 var morgan = require("morgan");
 import router from "./router";
+import { SlackService } from "./services/slackService";
+import { errorMiddleware } from "./middleware/errorMiddleware";
+import { requestIdMiddleware } from "./middleware/requestIdMiddleware";
+import { globalLimiter } from "./middleware/rateLimiter";
 
 dotenv.config();
 
@@ -10,67 +15,29 @@ const app = express();
 const PORT = Number(process.env.PORT || 8080);
 
 // ============================================================================
-// SECURITY HEADERS MIDDLEWARE
+// PROCESS ERROR HANDLERS
 // ============================================================================
-// Manual implementation of security headers (no helmet dependency)
-// Configured for production SaaS deployment behind Fly.io
 
-app.use((req, res, next) => {
-  // Strict-Transport-Security: Force HTTPS for 1 year
-  res.setHeader(
-    "Strict-Transport-Security",
-    "max-age=31536000; includeSubDomains; preload",
-  );
-
-  // Content-Security-Policy: Strict policy for API server
-  res.setHeader(
-    "Content-Security-Policy",
-    [
-      "default-src 'self'",
-      "script-src 'self'",
-      "style-src 'self'",
-      "img-src 'self' data: https:",
-      `connect-src 'self' https://*.supabase.co ${process.env.FRONTEND_URL || "http://localhost:3000"}`,
-      "font-src 'self' data:",
-      "object-src 'none'",
-      "media-src 'self'",
-      "frame-src 'none'",
-      "base-uri 'self'",
-      "form-action 'self'",
-      "frame-ancestors 'none'",
-      "upgrade-insecure-requests",
-    ].join("; "),
-  );
-
-  // X-Frame-Options: Prevent clickjacking
-  res.setHeader("X-Frame-Options", "DENY");
-
-  // X-Content-Type-Options: Prevent MIME sniffing
-  res.setHeader("X-Content-Type-Options", "nosniff");
-
-  // Referrer-Policy: Control referrer information
-  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
-
-  // Permissions-Policy: Restrict browser features
-  res.setHeader(
-    "Permissions-Policy",
-    "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()",
-  );
-
-  // X-DNS-Prefetch-Control: Control DNS prefetching
-  res.setHeader("X-DNS-Prefetch-Control", "off");
-
-  // X-Download-Options: Prevent IE from executing downloads
-  res.setHeader("X-Download-Options", "noopen");
-
-  // X-Permitted-Cross-Domain-Policies: Restrict cross-domain policies
-  res.setHeader("X-Permitted-Cross-Domain-Policies", "none");
-
-  // Remove X-Powered-By header
-  res.removeHeader("X-Powered-By");
-
-  next();
+process.on("uncaughtException", async (error) => {
+  console.error("Uncaught Exception:", error);
+  await SlackService.notifyError(error, "uncaught");
+  process.exit(1);
 });
+
+process.on("unhandledRejection", async (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+  const error = reason instanceof Error ? reason : new Error(String(reason));
+  await SlackService.notifyError(error, "rejection");
+});
+
+// Helmet for secure HTTP headers
+app.use(helmet());
+
+// Request ID for tracking
+app.use(requestIdMiddleware);
+
+// Global rate limiter
+app.use(globalLimiter);
 
 // Trust proxy - CRITICAL for Fly.io deployment
 // This ensures HSTS and secure cookies work correctly behind the reverse proxy
@@ -116,17 +83,7 @@ app.use((req, res) => {
 });
 
 // Global error handler
-app.use(
-  (
-    err: any,
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ) => {
-    console.error("Error:", err);
-    res.status(500).json({ error: "Internal server error" });
-  },
-);
+app.use(errorMiddleware);
 
 // ============================================================================
 // SERVER START

@@ -1,5 +1,8 @@
 import { Router } from "express";
 import { authMiddleware } from "../middleware/auth";
+import { skipTraceLimiter } from "../middleware/rateLimiter";
+import { validate } from "../middleware/validationMiddleware";
+import { submitRequestSchema } from "../schemas/requestSchema";
 
 // Controllers
 import getAllRequests from "../controllers/client/Requests/getAllRequests";
@@ -14,7 +17,8 @@ const router = Router();
 router.use(authMiddleware);
 
 // Get all requests for the logged-in user & Submit a new request
-router.get("/", getAllRequests).post("/", submitNewRequest);
+router.get("/", getAllRequests);
+router.post("/", skipTraceLimiter, validate(submitRequestSchema), submitNewRequest);
 
 // Download file (Specific route before generic /:id)
 router.get("/file/:fileId", downloadFile);

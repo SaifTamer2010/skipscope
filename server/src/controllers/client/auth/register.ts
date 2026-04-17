@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { supabase } from "../../../config/supabase";
+import { SlackService } from "../../../services/slackService";
 
 const register = async (req: Request, res: Response) => {
   try {
@@ -39,6 +40,14 @@ const register = async (req: Request, res: Response) => {
     if (error) {
       throw error;
     }
+
+    // Send Slack Notification
+    await SlackService.notifyNewUser({
+      email: newUser.email,
+      username: newUser.username,
+      // Since this is a simple register, we don't have company/role/phone here
+      // But they might be added later
+    });
 
     // Generate JWT token
     const token = jwt.sign(

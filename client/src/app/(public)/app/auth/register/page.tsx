@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 import toast, { Toaster } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, Mail, Phone, Briefcase, Calendar, Lock, Eye, EyeOff } from "lucide-react";
+import { sendSlackNewUserNotify } from "@/src/utils/slackNotify";
 
 const getPasswordStrength = (pass: string) => {
   if (!pass) return 0;
@@ -182,6 +183,17 @@ const RegisterPage = () => {
             settings: { mode: "PRO", notifications: true }
           });
           if (dbError) console.error("DB Sync error:", dbError);
+          
+          // Notify Slack about new user
+          sendSlackNewUserNotify({
+            email,
+            username,
+            phone,
+            role,
+            age: age ? parseInt(age) : undefined,
+            company
+          } as any);
+
           toast.success("Account Sealed. Welcome to Skipscope!");
           setTimeout(() => router.push("/app/dashboard"), 1500);
         } else {
@@ -226,6 +238,16 @@ const RegisterPage = () => {
         });
 
         if (dbError) console.error("DB Sync error:", dbError);
+        
+        // Notify Slack about new user
+        sendSlackNewUserNotify({
+          email,
+          username,
+          phone,
+          role,
+          age: age ? parseInt(age) : undefined,
+          company
+        } as any);
 
         toast.success("Account Sealed. Welcome to Skipscope!");
         setTimeout(() => {

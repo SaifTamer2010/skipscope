@@ -9,6 +9,9 @@ import assignRequest from "../controllers/admin/kanban/assignRequest";
 import assignProviderRequest from "../controllers/admin/kanban/assignProviderRequest";
 import updateNotes from "../controllers/admin/kanban/updateNotes";
 import getColumns from "../controllers/admin/kanban/getColumns";
+import updateColumn from "../controllers/admin/kanban/updateColumn";
+import deleteColumn from "../controllers/admin/kanban/deleteColumn";
+import createColumn from "../controllers/admin/kanban/createColumn";
 import updateFinancials from "../controllers/admin/kanban/updateFinancials";
 import updateStatus from "../controllers/admin/kanban/updateStatus";
 import hardDeleteRequest from "../controllers/admin/kanban/hardDeleteRequest";
@@ -67,6 +70,24 @@ router.patch("/notes", updateNotes);
  * Get all kanban columns
  */
 router.get("/columns", getColumns);
+
+/**
+ * POST /api/admin/kanban/columns
+ * Create a new kanban column
+ */
+router.post("/columns", requireSuperAdmin, createColumn);
+
+/**
+ * PUT /api/admin/kanban/columns/:id
+ * Update a kanban column
+ */
+router.put("/columns/:id", requireSuperAdmin, updateColumn);
+
+/**
+ * DELETE /api/admin/kanban/columns/:id
+ * Delete a kanban column
+ */
+router.delete("/columns/:id", requireSuperAdmin, deleteColumn);
 
 /**
  * PATCH /api/admin/kanban/financials

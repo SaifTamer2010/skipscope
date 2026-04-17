@@ -7,17 +7,31 @@ import {
   LogOut,
   Kanban,
   Database,
-  ShieldCheck
+  ShieldCheck,
+  Settings
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { ChevronDown, ChevronRight, List as ListIcon, History } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ChevronDown, ChevronRight, List as ListIcon, History, ShieldAlert } from "lucide-react";
 
 const AdminSidebar = ({ isOpen }: { isOpen: boolean }) => {
   const router = useRouter();
   const pathname = usePathname();
   const [requestsOpen, setRequestsOpen] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem("admin_user");
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setIsSuperAdmin(!!user.isSuperAdmin);
+      } catch (e) {
+        console.error("Error parsing admin_user", e);
+      }
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("admin_token");
@@ -41,6 +55,13 @@ const AdminSidebar = ({ isOpen }: { isOpen: boolean }) => {
     { name: "Users", icon: Users, path: "/admin/app/users" },
     { name: "Providers", icon: Database, path: "/admin/app/providers" },
   ];
+
+  if (isSuperAdmin) {
+    menuItems.push({ name: "Manage Admins", icon: ShieldAlert, path: "/admin/app/manage-admins" });
+  }
+
+  menuItems.push({ name: "Settings", icon: Settings, path: "/admin/app/settings" });
+
 
   return (
     <div

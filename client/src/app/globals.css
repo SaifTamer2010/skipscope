@@ -1,3 +1,6 @@
+@import "tailwindcss";
+/* @config "../../tailwind.config.js"; */
+
 html {
   scroll-behavior: smooth;
 }
@@ -30,8 +33,6 @@ html {
 }
 
 
-@import "tailwindcss";
-@config "../../tailwind.config.js";
 
 :root {
   --color-background-main: #000000;
@@ -88,7 +89,8 @@ body {
   transition: background 0.3s ease, color 0.3s ease;
 }
 
-.light, .light body {
+.light,
+.light body {
   --color-background-main: #ffffff;
   --color-background-secondry: #f8f9fa;
   --color-background-third: #f1f3f5;
