@@ -226,7 +226,7 @@ const ViewDetailsModal = ({
               </div>
 
 
-              {/* Advanced Intelligence Section */}
+              {/* Advanced Search Section */}
               <div className="grid grid-cols-1 gap-8 pt-4">
                 <div className="space-y-4">
                   <label className="text-[10px] font-black text-text-secondry uppercase tracking-widest flex items-center gap-2">
@@ -278,7 +278,7 @@ const ViewDetailsModal = ({
                     )}
                     {details.client_notes && (
                       <div className="space-y-3">
-                        <label className="text-[10px] font-black text-brand-primary uppercase tracking-widest">Intelligence Report</label>
+                        <label className="text-[10px] font-black text-brand-primary uppercase tracking-widest">Search Report</label>
                         <div className="p-4 bg-brand-primary/5 rounded-xl border border-brand-primary/10 text-xs text-text-primary/90 leading-relaxed font-medium">
                           {details.client_notes}
                         </div>

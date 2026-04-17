@@ -5,7 +5,7 @@ import { Search, Zap, Target } from "lucide-react";
 
 const features = [
   {
-    title: "Deep Search Intelligence",
+    title: "Deep Search Analytics",
     description: "Uncover hidden data points and verified contact info that standard tools miss.",
     icon: <Search className="w-8 h-8 text-brand-primary" />,
   },
@@ -44,7 +44,7 @@ const FeaturesGrid = () => {
             viewport={{ once: true }}
             className="bg-background-third border border-border-muted p-8 rounded-2xl hover:border-brand-primary-strong/30 transition-colors group"
           >
-            <div className="text-4xl mb-6 group-hover:scale-110 transition-transform">{feature.icon}</div>
+            <div className="text-4xl mb-6 group-hover:scale-110 group-hover:ml-2 transition-all">{feature.icon}</div>
             <h3 className="text-xl font-bold text-text-primary mb-4">{feature.title}</h3>
             <p className="text-text-secondry text-sm leading-relaxed">{feature.description}</p>
           </motion.div>

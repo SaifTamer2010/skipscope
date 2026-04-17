@@ -59,8 +59,12 @@ const TestimonialMarquee = ({ testimonials, baseVelocity = -10 }: { testimonials
             className="w-[350px] md:w-[550px] p-6 rounded-2xl bg-background-secondry/80 backdrop-blur-sm border border-border-light flex flex-col gap-4 flex-shrink-0"
           >
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-background-third/50 border border-border-light flex items-center justify-center text-[10px] text-text-secondry uppercase tracking-tighter italic">
-                Image
+              <div className="w-12 h-12 rounded-full bg-background-third/50 border border-border-light overflow-hidden">
+                <img 
+                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(t.name)}&background=random&color=fff&bold=true`} 
+                  alt={t.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div>
                 <div className="font-bold text-text-primary text-sm">{t.name}</div>

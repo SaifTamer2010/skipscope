@@ -36,7 +36,7 @@ export default function LandingPage() {
               <ThemeToggle />
             </div>
           </div>
-          <div className="text-xs text-text-secondry font-medium italic">© 2026 Skipscope Intelligence Labs</div>
+          <div className="text-xs text-text-secondry font-medium italic">© 2026 Skipscope Data Labs</div>
         </div>
       </footer>
 
@@ -55,7 +55,7 @@ export default function LandingPage() {
               "price": "0.00",
               "priceCurrency": "USD"
             },
-            "description": "Precision real estate intelligence and skip tracing platform. Find property owners and verified contact information with 99.8% accuracy.",
+            "description": "Precision real estate search and skip tracing platform. Find property owners and verified contact information with 99.8% accuracy.",
             "aggregateRating": {
               "@type": "AggregateRating",
               "ratingValue": "4.9",

@@ -20,7 +20,7 @@ const LoadingScreen = () => {
       {/* Brand Signature */}
       <div className="mt-8 flex flex-col items-center gap-2">
         <span className="text-[10px] font-black text-text-primary uppercase tracking-[0.4em] opacity-40 animate-pulse">
-          SkipScope Intelligence
+          SkipScope Search
         </span>
         <div className="h-[1px] w-8 bg-brand-primary/30"></div>
       </div>

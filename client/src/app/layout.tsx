@@ -6,15 +6,15 @@ import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://skipscope.com"),
-  title: "SkipScope | Precision Real Estate Intelligence & Skip Tracing",
-  description: "Scale your real estate portfolio with SkipScope's high-accuracy skip tracing, bulk lead enrichment, and deep search intelligence. 99.8% accuracy for modern real estate professionals.",
-  keywords: ["skip tracing", "real estate leads", "property data", "real estate intelligence", "contact enrichment", "distressed property data"],
+  title: "SkipScope | Precision Real Estate Search & Skip Tracing",
+  description: "Scale your real estate portfolio with SkipScope's high-accuracy skip tracing, bulk lead enrichment, and deep search analytics. 99.8% accuracy for modern real estate professionals.",
+  keywords: ["skip tracing", "real estate leads", "property data", "real estate analytics", "contact enrichment", "distressed property data"],
   icons: {
     icon: "/favicon.png", // Path is relative to the public directory
     apple: "/favicon.png",
   },
   openGraph: {
-    title: "SkipScope | Lead Intelligence for Real Estate Pros",
+    title: "SkipScope | Lead Search for Real Estate Pros",
     description: "Find more deals with the most accurate skip tracing tool on the market. 99.8% precision for wholesalers and investors.",
     url: "https://skipscope.com",
     siteName: "SkipScope",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
         url: "/data/hero.png",
         width: 1200,
         height: 630,
-        alt: "SkipScope Real Estate Intelligence Platform",
+        alt: "SkipScope Real Estate Search Platform",
       },
     ],
     locale: "en_US",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "SkipScope | Real Estate Skip Tracing & Lead Intelligence",
+    title: "SkipScope | Real Estate Skip Tracing & Lead Search",
     description: "Scale your real estate deals with 99.8% accurate data.",
     images: ["/data/hero.png"],
   },

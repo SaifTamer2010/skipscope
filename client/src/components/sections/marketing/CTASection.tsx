@@ -18,7 +18,7 @@ const CTASection = () => {
           Ready to Scope more <br /><span className="italic text-brand-primary-strong">DEALS?</span>
         </h2>
         <p className="text-text-secondry text-lg mb-12 max-w-xl mx-auto italic font-medium">
-          Join the elite network of real estate professionals using intelligence to win.
+          Join the elite network of real estate professionals using data to win.
         </p>
         <div className="scale-125 mb-16">
           <MainButton Goto="/app/auth/register">

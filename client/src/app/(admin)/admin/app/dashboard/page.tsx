@@ -279,7 +279,7 @@ export default function AdminDashboardPage() {
               <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 to-transparent"></div>
               <div className="flex items-center justify-between mb-4 relative z-10">
                 <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                   Net Intelligence Profit
+                   Net Operational Profit
                 </h3>
                 <span className="p-1.5 bg-emerald-500/20 shadow-inner rounded-md text-emerald-400">
                   <TrendingUp size={14} strokeWidth={3} />

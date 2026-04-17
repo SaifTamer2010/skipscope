@@ -3,8 +3,8 @@
 import { motion } from "framer-motion";
 
 const comparisonData = [
-  { parameter: "Data Accuracy", us: "99.8%", them: "60-70%" },
-  { parameter: "Processing Speed", us: "Minutes", them: "Days" },
+  { parameter: "Data Accuracy", us: "91.8%", them: "60-70%" },
+  { parameter: "Processing Speed", us: "Hours", them: "Weeks" },
   { parameter: "Real-time Verification", us: "✅ Included", them: "❌ No" },
   { parameter: "Hidden Lead Discovery", us: "✅ Advanced", them: "❌ Standard" },
   { parameter: "Data Privacy", us: "✅ Bank-grade", them: "⚠️ Variable" },
@@ -22,7 +22,7 @@ const ComparisonTable = () => {
           <thead>
             <tr className="border-b border-border-light uppercase text-xs tracking-widest text-text-secondry">
               <th className="py-6 px-4">Feature</th>
-              <th className="py-6 px-4 text-brand-primary">Skipscope Intelligence</th>
+              <th className="py-6 px-4 text-brand-primary">Skipscope Search</th>
               <th className="py-6 px-4">Standard Providers</th>
             </tr>
           </thead>

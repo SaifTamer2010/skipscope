@@ -14,7 +14,7 @@ const HeroSection = () => {
         className="flex-1 text-center md:text-left"
       >
         <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-6">
-          <span className="text-text-primary">Precision Intelligence for </span>
+          <span className="text-text-primary">Precision Search for </span>
             <span className="bg-gradient-to-r from-brand-primary to-brand-primary-dark bg-clip-text text-transparent italic">
              Real Estate Experts
            </span>
@@ -28,11 +28,20 @@ const HeroSection = () => {
              <span className="font-bold">Scale Now</span>
            </MainButton>
            <div className="flex -space-x-4">
-             {[1, 2, 3, 4].map((i) => (
-               <div key={i} className="w-10 h-10 rounded-full border-2 border-background-main bg-background-third flex items-center justify-center text-[10px] text-text-secondry">
-                 User
-               </div>
-             ))}
+              {[
+                { name: "John Doe", color: "0D8ABC" },
+                { name: "Sarah Smith", color: "6610f2" },
+                { name: "Mike Ross", color: "fd7e14" },
+                { name: "Anna Bell", color: "20c997" }
+              ].map((user, i) => (
+                <div key={i} className="w-10 h-10 rounded-full border-2 border-background-main bg-background-third overflow-hidden shadow-lg hover:rotate-3 transition-all duration-300 relative z-[10] border border-white/10">
+                  <img 
+                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=${user.color}&color=fff&bold=true`} 
+                    alt={user.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
              <div className="pl-6 text-sm text-text-secondry flex items-center italic">
                Join 500+ professionals
              </div>
@@ -48,7 +57,7 @@ const HeroSection = () => {
        >
          <Image
            src="/data/hero.png"
-           alt="SkipScope lead intelligence dashboard showing real estate property data and contact analytics"
+           alt="SkipScope lead search dashboard showing real estate property data and contact analytics"
            fill
            className="object-cover"
            priority

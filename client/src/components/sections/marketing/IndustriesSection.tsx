@@ -45,26 +45,26 @@ const useCases = [
     ],
     metric: "Quality Conversion"
   },
-  {
-    role: "Health Insurance Providers",
-    benefit: "Connect with prospects in your target markets with accuracy and compliance in mind.",
-    icon: <Shield className="w-6 h-6 text-indigo-600" />,
-    results: [
-      { label: "Aged Leads Enriched", value: "2,100" },
-      { label: "TCPA Compliant", value: "100%" },
-    ],
-    metric: "Compliant Leads"
-  },
-  {
-    role: "Debt Collection Agencies",
-    benefit: "Data that ensures higher contact rates and greater recovery success.",
-    icon: <DollarSign className="w-6 h-6 text-purple-600" />,
-    results: [
-      { label: "Valid Contact Info Found", value: "98%" },
-      { label: "Recovery Rate Boost", value: "+30%" },
-    ],
-    metric: "Max Recovery"
-  },
+  // {
+  //   role: "Health Insurance Providers",
+  //   benefit: "Connect with prospects in your target markets with accuracy and compliance in mind.",
+  //   icon: <Shield className="w-6 h-6 text-indigo-600" />,
+  //   results: [
+  //     { label: "Aged Leads Enriched", value: "2,100" },
+  //     { label: "TCPA Compliant", value: "100%" },
+  //   ],
+  //   metric: "Compliant Leads"
+  // },
+  // {
+  //   role: "Debt Collection Agencies",
+  //   benefit: "Data that ensures higher contact rates and greater recovery success.",
+  //   icon: <DollarSign className="w-6 h-6 text-purple-600" />,
+  //   results: [
+  //     { label: "Valid Contact Info Found", value: "98%" },
+  //     { label: "Recovery Rate Boost", value: "+30%" },
+  //   ],
+  //   metric: "Max Recovery"
+  // },
 ];
 
 const IndustriesSection = () => {
@@ -78,7 +78,7 @@ const IndustriesSection = () => {
             Tailored for Every <br />
             <span className="bg-gradient-to-r from-brand-primary to-brand-primary-dark bg-clip-text text-transparent italic">Market Role</span>
           </h2>
-          <p className="text-text-secondry mb-12 text-lg">Whether you are sourcing your first deal or managing a major portfolio, Skipscope provides the intelligence you need.</p>
+          <p className="text-text-secondry mb-12 text-lg">Whether you are sourcing your first deal or managing a major portfolio, Skipscope provides the insights you need.</p>
           <div className="space-y-4">
             {useCases.map((useCase, idx) => (
               <motion.div
@@ -158,7 +158,7 @@ const IndustriesSection = () => {
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold text-text-primary mb-2">Select a Market Role</h3>
-                    <p className="text-text-secondry max-w-xs mx-auto">Hover over the roles on the left to see live intelligence metrics and found data examples.</p>
+                    <p className="text-text-secondry max-w-xs mx-auto">Hover over the roles on the left to see live metrics and found data examples.</p>
                   </div>
                 </div>
               )}
@@ -169,7 +169,7 @@ const IndustriesSection = () => {
         </div>
       </div>
       <div className="mt-24 text-center opacity-40">
-        <p className="text-lg text-text-secondry italic font-medium italic underline decoration-brand-primary-strong/50 underline-offset-8">Precision Intelligence tailored for high-stakes markets.</p>
+        <p className="text-lg text-text-secondry italic font-medium italic underline decoration-brand-primary-strong/50 underline-offset-8">Precision Insights tailored for high-stakes markets.</p>
       </div>
     </section>
   );

@@ -270,7 +270,7 @@ const MarketingNavbar = () => {
               </motion.div>
 
               <div className="mt-12 text-center text-text-secondry/20 text-xs font-bold uppercase tracking-[0.3em]">
-                Fast Track Intelligence
+                Fast Track Search
               </div>
             </motion.div>
           )}

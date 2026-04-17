@@ -89,7 +89,7 @@ const ProductShowcase = () => {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-background-third/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
 
-                <h4 className="text-xl md:text-3xl font-bold text-text-primary mb-2 md:mb-4 tracking-tight">Lead Intelligence</h4>
+                <h4 className="text-xl md:text-3xl font-bold text-text-primary mb-2 md:mb-4 tracking-tight">Lead Insights</h4>
                 <p className="text-text-secondry text-xs md:text-lg font-medium leading-relaxed opacity-90">
                   Get a complete view of your property owners, verified contacts, and deal status in only one place.
                 </p>
