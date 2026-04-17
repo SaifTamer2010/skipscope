@@ -6,6 +6,7 @@ import requestRoutes from "./routes/requests";
 import notificationRoutes from "./routes/notifications";
 import historyRoutes from "./routes/history";
 import userRoutes from "./routes/user";
+import supportRoutes from "./routes/support";
 
 // Admin Controllers
 import adminAuthRoutes from "./routes/admin-auth";
@@ -24,6 +25,7 @@ router.use("/requests", requestRoutes);
 router.use("/notifications", notificationRoutes);
 router.use("/history", historyRoutes);
 router.use("/user", userRoutes);
+router.use("/support", supportRoutes);
 
 // Admin routes
 router.use("/admin/auth", adminAuthRoutes);

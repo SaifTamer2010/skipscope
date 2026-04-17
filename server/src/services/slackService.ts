@@ -113,4 +113,55 @@ export class SlackService {
 
     await this.sendMessage(webhookUrl, payload);
   }
+
+  /**
+   * Send notification for a support request
+   */
+  static async notifySupportRequest(request: { name: string; email: string; subject: string; message: string; metadata?: any }): Promise<void> {
+    const webhookUrl = process.env.SLACK_WEBHOOK_URL_SUPPORT || process.env.SLACK_WEBHOOK_URL || process.env.SLACK_WEBHOOK_URL_REQUESTS;
+
+    const payload = {
+      blocks: [
+        {
+          type: "header",
+          text: {
+            type: "plain_text",
+            text: "📩 NEW SUPPORT REQUEST"
+          }
+        },
+        {
+          type: "section",
+          fields: [
+            { type: "mrkdwn", text: `*From:*\n${request.name}` },
+            { type: "mrkdwn", text: `*Email:*\n${request.email}` }
+          ]
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `*Subject:*\n${request.subject}`
+          }
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `*Message:*\n\`\`\`${request.message}\`\`\``
+          }
+        },
+        {
+          type: "context",
+          elements: [
+            {
+              type: "mrkdwn",
+              text: `Source: SkipScope Website Support Form | Time: ${new Date().toLocaleString()}`
+            }
+          ]
+        }
+      ]
+    };
+
+    await this.sendMessage(webhookUrl, payload);
+  }
 }
