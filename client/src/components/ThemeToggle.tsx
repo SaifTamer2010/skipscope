@@ -11,8 +11,15 @@ export default function ThemeToggle() {
     setMounted(true);
     const savedTheme = (localStorage.getItem("theme") as "dark" | "light") || "light";
     setTheme(savedTheme);
-    document.documentElement.classList.toggle("light", savedTheme === "light");
-    document.documentElement.classList.toggle("dark", savedTheme === "dark");
+    
+    // Ensure html element has correct classes
+    if (savedTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+    } else {
+      document.documentElement.classList.add("light");
+      document.documentElement.classList.remove("dark");
+    }
   }, []);
 
   if (!mounted) return <div className="w-14 h-7" />; // Prevent hydration mismatch
@@ -21,8 +28,15 @@ export default function ThemeToggle() {
     const newTheme = theme === "dark" ? "light" : "dark";
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
-    document.documentElement.classList.toggle("light", newTheme === "light");
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
+    
+    // Update html element
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+    } else {
+      document.documentElement.classList.add("light");
+      document.documentElement.classList.remove("dark");
+    }
   };
 
 
