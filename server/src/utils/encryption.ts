@@ -34,3 +34,10 @@ export function decryptSecret(encryptedSecret: string): string {
   decrypted += decipher.final("utf8");
   return decrypted;
 }
+
+/**
+ * Hash OTP for storage (SHA-256)
+ */
+export function hashOTP(otp: string): string {
+  return crypto.createHash("sha256").update(otp).digest("hex");
+}

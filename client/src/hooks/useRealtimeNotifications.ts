@@ -204,7 +204,7 @@ export function useRealtimeNotifications() {
   // Connect to SSE when user is authenticated
   useEffect(() => {
     if (user) {
-      fetchNotifications();
+      // fetchNotifications();
       // connectToSSE();
     }
 

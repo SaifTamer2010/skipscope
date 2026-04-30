@@ -170,37 +170,24 @@ const RegisterPage = () => {
       if (error) throw error;
 
       if (data.user) {
-        if (data.session) {
-          // If session exists, email confirmations are disabled in Supabase. Skip OTP step!
-          const { error: dbError } = await supabase.from("users").upsert({
-            id: data.user.id,
-            username,
-            email,
-            phone,
-            role,
-            age: age ? parseInt(age) : null,
-            company,
-            settings: { mode: "PRO", notifications: true }
+        // Always use custom OTP system
+        try {
+          const apiRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/send-otp`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
           });
-          if (dbError) console.error("DB Sync error:", dbError);
           
-          // Notify Slack about new user
-          sendSlackNewUserNotify({
-            email,
-            username,
-            phone,
-            role,
-            age: age ? parseInt(age) : undefined,
-            company
-          } as any);
+          if (!apiRes.ok) {
+            const apiData = await apiRes.json();
+            throw new Error(apiData.error || "Failed to send verification code");
+          }
 
-          toast.success("Account Sealed. Welcome to Skipscope!");
-          setTimeout(() => router.push("/app/dashboard"), 1500);
-        } else {
-          // Email confirmation is enabled, wait for OTP
           toast.success("Code sent! Check your email.");
           setDirection(1);
           setCurrentStep(4);
+        } catch (err: any) {
+          toast.error(err.message);
         }
       }
     } catch (error: any) {
@@ -218,16 +205,24 @@ const RegisterPage = () => {
     }
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.verifyOtp({
-        email,
-        token: otp,
-        type: 'signup'
+      const apiRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
       });
-      if (error) throw error;
 
-      if (data.user) {
+      const apiData = await apiRes.json();
+      if (!apiRes.ok) throw new Error(apiData.error || "Invalid OTP Code");
+
+      // Success! Store token and sync user
+      localStorage.setItem("ss-token", apiData.token);
+
+      // We need the user ID from Supabase (since we signed up in step 3)
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (user) {
         const { error: dbError } = await supabase.from("users").upsert({
-          id: data.user.id,
+          id: user.id,
           username,
           email,
           phone,
