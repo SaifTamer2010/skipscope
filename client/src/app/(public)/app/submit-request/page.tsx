@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/shadcn/select";
+import { X } from "lucide-react";
 
 const motivations: string[] = [
   "Active Foreclosures",
@@ -337,10 +338,10 @@ export default function SubmitRequestPage() {
                   </div>
                   <button
                     type="button"
-                    onClick={() => setOwnershipCriteriaFinale((prev) => prev.filter((i) => i.value !== item.value))}
-                    className="text-text-secondry hover:text-rose-500 transition-colors"
+                    onClick={() => setOwnershipCriteriaFinale((prev) => prev.filter((i) => i.key !== item.key))}
+                    className="text-text-secondry hover:text-red-500 transition-colors p-1"
                   >
-                    <Image src={"/x.svg"} alt={"remove"} width={12} height={12} className="opacity-40 group-hover:opacity-100" />
+                    <X size={14} className="opacity-40 group-hover:opacity-100" />
                   </button>
                 </div>
               ))}
