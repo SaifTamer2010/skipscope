@@ -13,10 +13,10 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
+  // const router = useRouter();
   const pathname = usePathname();
-  const isAuthenticated = useUserStore((state) => state.isAuthenticated);
-  const user = useUserStore((state) => state.user);
+  // const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+  // const user = useUserStore((state) => state.user);
 
   // Check if current route is an auth route
   const isAuthRoute = pathname?.startsWith("/app/auth"); //true if no authenticated

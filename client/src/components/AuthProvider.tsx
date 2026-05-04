@@ -1,15 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useUserStore } from "@/store/userStore";
 import { usePathname, useRouter } from "next/navigation";
+import FullScreenLoading from "./FullScreenLoading";
 
 export default function AuthProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const [loading, setLoading] = useState<boolean>(true);
   const setUser = useUserStore((state) => state.setUser);
 
   const router = useRouter();
@@ -31,29 +33,39 @@ export default function AuthProvider({
       ) {
         setUser(data.session.user);
         router.push("/app/dashboard");
+        // setLoading(false);
       } else if (!data.session && !pathname.startsWith("/app/auth")) {
         router.push("/app/auth/login");
+        // setLoading(false);
       } else if (data.session) {
         setUser(data.session.user);
+        // setLoading(false);
       }
     };
 
-    getSession();
+    getSession()
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
 
-      if (event === "SIGNED_OUT") {
-        router.push("/app/auth/login"); // Redirect to login on sign out
+      console.log(event)
+      if (event === "INITIAL_SESSION") {
+
+        // router.push("/app/auth/login"); // Redirect to login on sign out
       }
     });
 
     return () => {
+      setLoading(false)
       subscription.unsubscribe();
     };
   }, [setUser, router, pathname]);
+
+  if (loading) {
+    return <FullScreenLoading />;
+  }
 
   return <>{children}</>;
 }

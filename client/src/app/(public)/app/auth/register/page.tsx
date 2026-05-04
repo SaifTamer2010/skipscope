@@ -424,6 +424,7 @@ const RegisterPage = () => {
                       <option value="CEO">CEO / Founder</option>
                       <option value="Investor">Real Estate Investor</option>
                       <option value="Realtor">Licensed Realtor</option>
+                      <option value="Prefer not to say">Prefer not to say</option>
                     </select>
                   </div>
 

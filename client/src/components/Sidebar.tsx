@@ -32,11 +32,11 @@ const menuItems = [
     path: "/app/submit-request",
     icon: Send,
   },
-  {
+  /* {
     name: "Notifications",
     path: "/app/notifications",
     icon: Bell,
-  },
+  }, */
   {
     name: "History",
     path: "/app/history",

@@ -29,9 +29,9 @@ export default function AdminAuthProvideradm({
     } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
 
-      if (event === "SIGNED_OUT") {
-        router.push("/app/auth/login"); // Redirect to login on sign out
-      }
+      // if (event === "SIGNED_OUT") {
+      //   router.push("/app/auth/login"); // Redirect to login on sign out
+      // }
     });
 
     return () => {
