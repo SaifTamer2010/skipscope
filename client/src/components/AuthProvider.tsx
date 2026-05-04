@@ -52,8 +52,7 @@ export default function AuthProvider({
 
       console.log(event)
       if (event === "INITIAL_SESSION") {
-
-        // router.push("/app/auth/login"); // Redirect to login on sign out
+        router.push("/app/auth/login"); // Redirect to login on sign out
       }
     });
 
