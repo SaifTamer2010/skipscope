@@ -18,7 +18,7 @@ export default function AuthProvider({
   const pathname = usePathname();
 
   useEffect(() => {
-    const getSession: any = async () => {
+    const getSession = async () => {
       const { data, error } = await supabase.auth.getSession();
 
       if (error) {
@@ -27,37 +27,38 @@ export default function AuthProvider({
         setUser(null);
       }
 
-      if (
-        data.session &&
-        (pathname === "/app/auth/login" || pathname === "/app/auth/register")
-      ) {
-        setUser(data.session.user);
+      const session = data.session;
+      const isAuthPage = pathname.startsWith("/app/auth");
+
+      if (session && isAuthPage) {
+        setUser(session.user);
         router.push("/app/dashboard");
-        // setLoading(false);
-      } else if (!data.session && !pathname.startsWith("/app/auth")) {
+      } else if (!session && !isAuthPage) {
         router.push("/app/auth/login");
-        // setLoading(false);
-      } else if (data.session) {
-        setUser(data.session.user);
-        // setLoading(false);
+      } else if (session) {
+        setUser(session.user);
       }
+      
+      setLoading(false);
     };
 
-    getSession()
+    getSession();
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
 
-      console.log(event)
-      if (event === "INITIAL_SESSION") {
-        router.push("/app/auth/login"); // Redirect to login on sign out
+      if (event === "SIGNED_IN") {
+        setLoading(false);
+        router.push("/app/dashboard");
+      } else if (event === "SIGNED_OUT") {
+        setLoading(false);
+        router.push("/app/auth/login");
       }
     });
 
     return () => {
-      setLoading(false)
       subscription.unsubscribe();
     };
   }, [setUser, router, pathname]);

@@ -52,7 +52,8 @@ const menuItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const logout = useUserStore((state) => state.logout);
   const unreadCount = useNotificationStore((state) => state.unreadCount);
 
