@@ -85,7 +85,7 @@ const ProductShowcase = () => {
                   y: cardY,
                 }}
                 whileHover={{ scale: 1.02 }}
-                className="p-6 md:p-12 bg-background-main/80 backdrop-blur-3xl border border-border-light rounded-3xl md:rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-10 text-center max-w-sm md:max-w-md relative overflow-hidden group"
+                className="p-6 md:p-12 bg-background-main/80 backdrop-blur-3xl border border-border-light rounded-3xl md:rounded-[2.5rem] shadow-primary z-10 text-center max-w-sm md:max-w-md relative overflow-hidden group"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-background-third/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
 

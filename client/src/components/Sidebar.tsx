@@ -2,21 +2,21 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUserStore } from "@/store/userStore";
 import { useNotificationStore } from "@/store/notificationStore";
 import Logo from "@/components/ui/logo/logo";
 import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import SupportModal from "@/src/components/ui/modals/SupportModal";
-import { 
-  LayoutDashboard, 
-  Send, 
-  Bell, 
-  History, 
-  Settings, 
-  LogOut, 
-  Menu, 
+import {
+  LayoutDashboard,
+  Send,
+  Bell,
+  History,
+  Settings,
+  LogOut,
+  Menu,
   X,
   LifeBuoy
 } from "lucide-react";
@@ -32,11 +32,11 @@ const menuItems = [
     path: "/app/submit-request",
     icon: Send,
   },
-  /* {
-    name: "Notifications",
-    path: "/app/notifications",
-    icon: Bell,
-  }, */
+  // {
+  //   name: "Notifications",
+  //   path: "/app/notifications",
+  //   icon: Bell,
+  // },
   {
     name: "History",
     path: "/app/history",
@@ -52,8 +52,7 @@ const menuItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const logout = useUserStore((state) => state.logout);
   const unreadCount = useNotificationStore((state) => state.unreadCount);
 
@@ -68,6 +67,42 @@ export default function Sidebar() {
     }
   };
 
+  // Mobile swipe gesture
+  useEffect(() => {
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX = e.touches[0].clientX;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      touchEndX = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = () => {
+      const swipeDistance = touchEndX - touchStartX;
+      const threshold = 80;
+      const edgeThreshold = 60;
+
+      if (isCollapsed && touchStartX < edgeThreshold && swipeDistance > threshold) {
+        setIsCollapsed(false);
+      } else if (!isCollapsed && swipeDistance < -threshold) {
+        setIsCollapsed(true);
+      }
+    };
+
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+    return () => {
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [isCollapsed]);
+
   return (
     <>
       <AnimatePresence>
@@ -75,30 +110,22 @@ export default function Sidebar() {
       </AnimatePresence>
 
       {/* Mobile Toggle Button */}
-      <button
+      {/* <button
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-background-secondry rounded-lg border border-white/10"
+        className="lg:hidden fixed top-4 left-4 z-50 p-3 bg-background-secondry/80 backdrop-blur-md rounded-xl border border-border-light shadow-lg hover:bg-background-third transition-all"
       >
-        <svg
-          className="w-6 h-6"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d={isCollapsed ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
-          />
-        </svg>
-      </button>
+        {isCollapsed ? (
+          <Menu className="w-6 h-6 text-text-primary" />
+        ) : (
+          <X className="w-6 h-6 text-text-primary" />
+        )}
+      </button> */}
 
       {/* Sidebar */}
       <aside
         className={`
-          fixed lg:sticky top-0 left-0 h-screen bg-background-main/40 backdrop-blur-xl border-r border-border-light
-          transition-all duration-300 ease-in-out z-40
+          fixed lg:sticky top-0 left-0 h-screen bg-background-main border-r border-border-light
+          transition-all duration-300 ease-in-out z-60
           ${isCollapsed ? "-translate-x-full lg:translate-x-0 lg:w-20" : "translate-x-0 w-64"}
         `}
       >
@@ -176,10 +203,9 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* Overlay for mobile */}
       {!isCollapsed && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-30"
+          className="lg:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-50"
           onClick={() => setIsCollapsed(true)}
         />
       )}

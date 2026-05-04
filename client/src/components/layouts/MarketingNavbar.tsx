@@ -109,7 +109,7 @@ const MarketingNavbar = () => {
       height: 64,
       paddingLeft: "1.5rem",
       paddingRight: "1.5rem",
-      boxShadow: "0 25px 50px -12px var(--color-brand-glow)",
+      boxShadow: "0 25px 50px -12px var(--color-shadow-primary)",
     }
   };
 
@@ -214,7 +214,7 @@ const MarketingNavbar = () => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className="fixed left-0 right-0 top-20 bg-background-main/95 backdrop-blur-2xl z-50 md:hidden flex flex-col p-8 border-b border-border-light shadow-2xl shadow-black h-[calc(100vh-80px)]"
+              className="fixed left-0 right-0 top-20 bg-background-main/95 backdrop-blur-2xl z-50 md:hidden flex flex-col p-8 border-b border-border-light shadow-primary h-[calc(100vh-80px)]"
             >
               <div className="flex flex-col gap-6">
                 {links.map((link, idx) => {

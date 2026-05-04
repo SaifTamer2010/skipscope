@@ -170,19 +170,34 @@ const RegisterPage = () => {
       if (error) throw error;
 
       if (data.user) {
-        // Always use custom OTP system
-        try {
-          const apiRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/send-otp`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email }),
+        if (data.session) {
+          // If session exists, email confirmations are disabled in Supabase. Skip OTP step!
+          const { error: dbError } = await supabase.from("users").upsert({
+            id: data.user.id,
+            username,
+            email,
+            phone,
+            role,
+            age: age ? parseInt(age) : null,
+            company,
+            settings: { mode: "PRO", notifications: true }
           });
-          
-          if (!apiRes.ok) {
-            const apiData = await apiRes.json();
-            throw new Error(apiData.error || "Failed to send verification code");
-          }
+          if (dbError) console.error("DB Sync error:", dbError);
 
+          // Notify Slack about new user
+          sendSlackNewUserNotify({
+            email,
+            username,
+            phone,
+            role,
+            age: age ? parseInt(age) : undefined,
+            company
+          } as any);
+
+          toast.success("Account Sealed. Welcome to Skipscope!");
+          setTimeout(() => router.push("/app/dashboard"), 1500);
+        } else {
+          // Email confirmation is enabled, wait for OTP
           toast.success("Code sent! Check your email.");
           setDirection(1);
           setCurrentStep(4);
@@ -233,7 +248,7 @@ const RegisterPage = () => {
         });
 
         if (dbError) console.error("DB Sync error:", dbError);
-        
+
         // Notify Slack about new user
         sendSlackNewUserNotify({
           email,
