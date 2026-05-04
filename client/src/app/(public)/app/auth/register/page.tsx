@@ -183,7 +183,7 @@ const RegisterPage = () => {
             settings: { mode: "PRO", notifications: true }
           });
           if (dbError) console.error("DB Sync error:", dbError);
-          
+
           // Notify Slack about new user
           sendSlackNewUserNotify({
             email,
@@ -238,7 +238,7 @@ const RegisterPage = () => {
         });
 
         if (dbError) console.error("DB Sync error:", dbError);
-        
+
         // Notify Slack about new user
         sendSlackNewUserNotify({
           email,
