@@ -201,8 +201,6 @@ const RegisterPage = () => {
           toast.success("Code sent! Check your email.");
           setDirection(1);
           setCurrentStep(4);
-        } catch (err: any) {
-          toast.error(err.message);
         }
       }
     } catch (error: any) {

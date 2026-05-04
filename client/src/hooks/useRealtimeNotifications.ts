@@ -15,7 +15,7 @@ export interface Notification {
  */
 export function useRealtimeNotifications() {
   return {
-    notifications: [],
+    notifications: [] as Notification[],
     isConnected: false,
     markAsRead: async (_id: string) => { },
     markAllAsRead: async () => { },
