@@ -89,7 +89,7 @@ const IndustriesSection = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ delay: idx * 0.1 }}
                 className={`flex items-start gap-4 p-6 rounded-2xl border transition-all duration-500 cursor-pointer ${hoveredRole === useCase.role
-                  ? "border-brand-primary-strong/40 bg-brand-primary-strong/5 shadow-[0_0_30px_rgba(220,38,38,0.05)]"
+                  ? "border-brand-primary-strong/40 bg-brand-primary-strong/5 shadow-primary"
                   : "border-border-muted bg-background-secondry/50"
                   }`}
               >
