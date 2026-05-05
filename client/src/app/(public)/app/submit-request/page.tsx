@@ -352,12 +352,12 @@ export default function SubmitRequestPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-2">
-              <label className="text-xs font-bold text-text-secondry uppercase tracking-wider ml-1">Volume Requirement *</label>
+              <label className="text-xs font-bold text-text-secondry uppercase tracking-wider ml-1">Number of Leads Required *</label>
               <input
                 type="number"
                 value={rows}
                 onChange={(e) => setRows(e.target.value)}
-                placeholder="Number of leads needed"
+                placeholder="Enter the exact number of leads"
                 className="w-full px-5 py-3.5 bg-background-main/50 border border-border-light rounded-2xl focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all text-text-primary font-medium"
               />
             </div>

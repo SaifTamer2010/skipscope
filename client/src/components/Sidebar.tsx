@@ -15,9 +15,11 @@ import {
   Settings,
   LogOut,
   Menu,
-  X
+  X,
+  LifeBuoy
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import SupportModal from "@/src/components/ui/modals/SupportModal";
 
 const menuItems = [
   {
@@ -50,7 +52,8 @@ const menuItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const logout = useUserStore((state) => state.logout);
   const unreadCount = useNotificationStore((state) => state.unreadCount);
 
@@ -103,6 +106,10 @@ export default function Sidebar() {
 
   return (
     <>
+      <AnimatePresence>
+        {isSupportModalOpen && <SupportModal onClose={() => setIsSupportModalOpen(false)} />}
+      </AnimatePresence>
+
       {/* Mobile Toggle Button */}
       {/* <button
         onClick={() => setIsCollapsed(!isCollapsed)}
@@ -176,8 +183,15 @@ export default function Sidebar() {
             })}
           </nav>
 
-          {/* Logout */}
+          {/* Bottom Actions */}
           <div className="pt-4 mt-4 border-t border-border-light space-y-2">
+            <button
+              onClick={() => setIsSupportModalOpen(true)}
+              className="w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 text-text-secondry hover:text-brand-primary hover:bg-brand-primary/10 border border-transparent hover:border-brand-primary/20 group"
+            >
+              <LifeBuoy className={`w-5 h-5 transition-transform duration-300 group-hover:rotate-12`} />
+              {!isCollapsed && <span className="font-bold uppercase tracking-tight text-sm">Need Help?</span>}
+            </button>
 
             <button
               onClick={handleLogout}
