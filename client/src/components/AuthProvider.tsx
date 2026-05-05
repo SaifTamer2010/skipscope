@@ -51,7 +51,9 @@ export default function AuthProvider({
 
       if (event === "SIGNED_IN") {
         setLoading(false);
-        router.push("/app/dashboard");
+        if (pathname.startsWith("/app/auth")) {
+          router.push("/app/dashboard");
+        }
       } else if (event === "SIGNED_OUT") {
         setLoading(false);
         router.push("/app/auth/login");
