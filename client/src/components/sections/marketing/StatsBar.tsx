@@ -3,9 +3,9 @@
 import { motion } from "framer-motion";
 
 const stats = [
-  { label: "Properties Analyzed", value: "1.2M+" },
-  { label: "Contact Accuracy", value: "99.8%" },
-  { label: "Active Professionals", value: "500+" },
+  { label: "Properties Analyzed", value: "500M+" },
+  { label: "Contact Accuracy", value: "90%" },
+  { label: "Active Professionals", value: "100+" },
 ];
 
 const StatsBar = () => {

@@ -27,7 +27,7 @@ export default function AuthProvider({
 
       if (
         data.session &&
-        (pathname === "/app/auth/login" || pathname === "/app/auth/register")
+        pathname === "/app/auth/login"
       ) {
         setUser(data.session.user);
         router.push("/app/dashboard");

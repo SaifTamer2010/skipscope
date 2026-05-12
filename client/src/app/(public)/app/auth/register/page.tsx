@@ -2,7 +2,7 @@
 
 import AuthContainer from "@/src/components/ui/auth/authContainer";
 import Logo from "@/src/components/ui/logo/logo";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import toast, { Toaster } from "react-hot-toast";
@@ -58,6 +58,40 @@ const RegisterPage = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [otp, setOtp] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const otpInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (currentStep === 4 && otpInputRef.current) {
+      otpInputRef.current.focus();
+    }
+  }, [currentStep]);
+
+  useEffect(() => {
+    if (resendCooldown > 0) {
+      const timer = setTimeout(() => setResendCooldown(resendCooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCooldown]);
+
+  const handleResendOTP = async () => {
+    if (resendCooldown > 0) return;
+    setLoading(true);
+    try {
+      const cleanEmail = email.trim().toLowerCase();
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: cleanEmail,
+      });
+      if (error) throw error;
+      toast.success("New code sent!");
+      setResendCooldown(60);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to resend code");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleNext = async () => {
     if (currentStep === 1) {
@@ -97,8 +131,9 @@ const RegisterPage = () => {
       }
 
       setLoading(true);
+      const cleanEmail = email.trim().toLowerCase();
       try {
-        const { data, error } = await supabase.rpc('check_email_exists', { p_email: email });
+        const { data, error } = await supabase.rpc('check_email_exists', { p_email: cleanEmail });
 
         if (error) throw error;
 
@@ -153,8 +188,9 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
+      const cleanEmail = email.trim().toLowerCase();
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: cleanEmail,
         password,
         options: {
           data: {
@@ -167,7 +203,22 @@ const RegisterPage = () => {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Guard: If user is already in Auth but unverified, resend the code
+        if (error.message.toLowerCase().includes("already registered")) {
+          const { error: resendError } = await supabase.auth.resend({
+            type: 'signup',
+            email: cleanEmail,
+          });
+
+          if (resendError) throw resendError;
+
+          toast.success("Welcome back! Please check your email for a verification link.");
+          setTimeout(() => router.push("/app/dashboard"), 1500);
+          return;
+        }
+        throw error;
+      }
 
       if (data.user) {
         if (data.session) {
@@ -197,10 +248,10 @@ const RegisterPage = () => {
           toast.success("Account Sealed. Welcome to Skipscope!");
           setTimeout(() => router.push("/app/dashboard"), 1500);
         } else {
-          // Email confirmation is enabled, wait for OTP
-          toast.success("Code sent! Check your email.");
-          setDirection(1);
-          setCurrentStep(4);
+          // Email confirmation is enabled, but we removed the OTP step. 
+          // Just inform user and redirect (they'll need to verify from email link if required)
+          toast.success("Registration successful! Please check your email.");
+          setTimeout(() => router.push("/app/dashboard"), 1500);
         }
       }
     } catch (error: any) {
@@ -218,8 +269,9 @@ const RegisterPage = () => {
     }
     setLoading(true);
     try {
+      const cleanEmail = email.trim().toLowerCase();
       const { data, error } = await supabase.auth.verifyOtp({
-        email,
+        email: cleanEmail,
         token: otp,
         type: 'signup'
       });
@@ -256,6 +308,7 @@ const RegisterPage = () => {
       }
     } catch (err: any) {
       toast.error(err.message || "Invalid OTP Code");
+      setOtp(""); // Clear on fail
     } finally {
       setLoading(false);
     }
@@ -286,7 +339,6 @@ const RegisterPage = () => {
       e.preventDefault();
       if (currentStep === 1 || currentStep === 2) handleNext();
       else if (currentStep === 3) handleRegister();
-      else if (currentStep === 4) handleVerifyOTP();
     }
   };
 
@@ -312,7 +364,6 @@ const RegisterPage = () => {
       case 1: return "Identity Access";
       case 2: return "Professional Profile";
       case 3: return "Security Gate";
-      case 4: return "Verify Email";
       default: return "Join Skipscope";
     }
   };
@@ -336,7 +387,7 @@ const RegisterPage = () => {
             {stepTitle()}
           </motion.h1>
           <div className="flex gap-2">
-            {[1, 2, 3, 4].map((s) => (
+            {[1, 2, 3].map((s) => (
               <div
                 key={s}
                 className={`h-1 rounded-full transition-all duration-500 ${s === currentStep ? "w-8 bg-brand-primary" : "w-4 bg-border-light"}`}
@@ -525,32 +576,7 @@ const RegisterPage = () => {
                 </div>
               )}
 
-              {currentStep === 4 && (
-                <div className="flex flex-col gap-5">
-                  <div className="relative block">
-                    <input
-                      type="text"
-                      placeholder=""
-                      className="bg-background-third border border-border-light w-full h-14 rounded-xl px-14 focus:border-brand-primary/50 outline-none text-text-primary transition-all text-center tracking-[0.5em] font-mono text-xl"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                      maxLength={6}
-                    />
-                    <Lock className="absolute top-4 left-5 opacity-40 border-r border-border-muted pr-2" size={20} />
-                  </div>
 
-                  <div className="flex gap-2 mt-4">
-                    <button onClick={handleBack} className="flex-1 h-14 rounded-xl border border-border-light text-text-secondry font-bold uppercase italic text-xs hover:bg-black/5 dark:hover:bg-white/5">Back</button>
-                    <button
-                      onClick={handleVerifyOTP}
-                      disabled={loading}
-                      className="flex-[2] h-14 rounded-xl bg-brand-primary text-text-button font-black uppercase italic tracking-widest shadow-lg shadow-brand-glow-strong disabled:opacity-50"
-                    >
-                      {loading ? "Verifying..." : "Verify Identity"}
-                    </button>
-                  </div>
-                </div>
-              )}
             </motion.div>
           </AnimatePresence>
         </div>

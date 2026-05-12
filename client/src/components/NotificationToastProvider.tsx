@@ -18,15 +18,15 @@ export default function NotificationToastProvider() {
 
   useEffect(() => {
     // 1. Initial Mount: Mark existing unread notifications as processed to avoid back-to-back toasts
-    if (isInitialMount.current && notifications.length > 0) {
-      notifications.forEach((n) => {
-        if (n.id) processedIds.current.add(n.id);
-      });
-      isInitialMount.current = false;
-      return;
-    }
+    //   // if (isInitialMount.current && notifications.length > 0) {
+    //   //   notifications.forEach((n) => {
+    //   //     if (n.id) processedIds.current.add(n.id);
+    //   //   });
+    //   //   isInitialMount.current = false;
+    //   //   return;
+    // }
 
-    if (isInitialMount.current && notifications.length === 0) return;
+    //   if (isInitialMount.current && notifications.length === 0) return;
 
     // 2. Process Notifications: Only toast newly arrived notifications with fresh IDs
     notifications.forEach((n: Notification) => {
