@@ -8,7 +8,7 @@ import { useNotificationStore } from "@/store/notificationStore";
 import Logo from "@/components/ui/logo/logo";
 import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
-import SupportModal from "@/src/components/ui/modals/SupportModal";
+import SupportModal from "@/components/ui/modals/SupportModal";
 import {
   LayoutDashboard,
   Send,
@@ -17,8 +17,6 @@ import {
   Settings,
   LogOut,
   Menu,
-  X,
-  LifeBuoy
   X,
   LifeBuoy
 } from "lucide-react";
@@ -54,8 +52,6 @@ const menuItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const logout = useUserStore((state) => state.logout);
@@ -114,12 +110,8 @@ export default function Sidebar() {
         {isSupportModalOpen && <SupportModal onClose={() => setIsSupportModalOpen(false)} />}
       </AnimatePresence>
 
-      <AnimatePresence>
-        {isSupportModalOpen && <SupportModal onClose={() => setIsSupportModalOpen(false)} />}
-      </AnimatePresence>
-
       {/* Mobile Toggle Button */}
-      {/* <button
+      <button
         onClick={() => setIsCollapsed(!isCollapsed)}
         className="lg:hidden fixed top-4 left-4 z-50 p-3 bg-background-secondry/80 backdrop-blur-md rounded-xl border border-border-light shadow-lg hover:bg-background-third transition-all"
       >
@@ -128,7 +120,7 @@ export default function Sidebar() {
         ) : (
           <X className="w-6 h-6 text-text-primary" />
         )}
-      </button> */}
+      </button>
 
       {/* Sidebar */}
       <aside
@@ -192,15 +184,7 @@ export default function Sidebar() {
           </nav>
 
           {/* Bottom Actions */}
-          {/* Bottom Actions */}
           <div className="pt-4 mt-4 border-t border-border-light space-y-2">
-            <button
-              onClick={() => setIsSupportModalOpen(true)}
-              className="w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 text-text-secondry hover:text-brand-primary hover:bg-brand-primary/10 border border-transparent hover:border-brand-primary/20 group"
-            >
-              <LifeBuoy className={`w-5 h-5 transition-transform duration-300 group-hover:rotate-12`} />
-              {!isCollapsed && <span className="font-bold uppercase tracking-tight text-sm">Need Help?</span>}
-            </button>
             <button
               onClick={() => setIsSupportModalOpen(true)}
               className="w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 text-text-secondry hover:text-brand-primary hover:bg-brand-primary/10 border border-transparent hover:border-brand-primary/20 group"
