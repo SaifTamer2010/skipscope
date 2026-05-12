@@ -38,7 +38,7 @@ export default function AuthProvider({
       } else if (session) {
         setUser(session.user);
       }
-      
+
       setLoading(false);
     };
 

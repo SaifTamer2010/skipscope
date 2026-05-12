@@ -26,7 +26,7 @@ export default function NotificationToastProvider() {
       return;
     }
 
-    if (isInitialMount.current && notifications.length === 0) return;
+    //   if (isInitialMount.current && notifications.length === 0) return;
 
     // 2. Process Notifications: Only toast newly arrived notifications with fresh IDs
     notifications.forEach((n: Notification) => {
