@@ -75,6 +75,10 @@ npm install
 npm run dev            # http://localhost:3000
 ```
 
+## License
+
+All rights reserved. The source is published for portfolio purposes only.
+
 ## Built by
 
 [Saif Tamer](https://github.com/SaifTamer2010) · [LinkedIn](https://www.linkedin.com/in/saif-tamer-6477a7349/)
