@@ -1,6 +1,6 @@
 # Skipscope: skip tracing and lead data for real-estate investors
 
-**Live:** [skipscope.vercel.app](https://www.skipscope.com)
+**Live:** [skipscope.com](https://skipscope.com)
 
 ![Skipscope landing page](./docs/skipscope.png)
 
