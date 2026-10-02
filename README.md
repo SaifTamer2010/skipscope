@@ -4,6 +4,12 @@
 
 ![Skipscope landing page](./docs/skipscope.png)
 
+### Demo
+
+![Skipscope demo: request pipeline and request details](./docs/skipscope-demo.gif)
+
+![Request detail with workflow status, financials and file sharing](./docs/request-detail.png)
+
 ## What it is
 
 Real-estate investors need accurate owner contact data to reach motivated sellers. Skipscope gives them a client portal to submit skip-tracing requests and get results back, and gives the team an internal dashboard to process those requests.
